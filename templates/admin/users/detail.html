@@ -1,0 +1,56 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}User Details - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/users/users.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="users-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-user-circle"></i> User Details</h1>
+            <p class="text-muted" id="userTypeLabel"></p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-secondary" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <button class="btn-danger" id="suspendBtn" onclick="openSuspendModal()">
+                <i class="fas fa-ban"></i> Suspend User
+            </button>
+        </div>
+    </div>
+
+    <div id="userDetailContent"></div>
+</div>
+
+<!-- Suspend Modal -->
+<div id="suspendModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-ban"></i> Suspend User</h3>
+            <button class="modal-close" onclick="closeSuspendModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Suspension Reason</label>
+                <textarea id="suspendReason" rows="3" class="form-control" placeholder="Reason for suspension..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeSuspendModal()">Cancel</button>
+            <button class="btn-danger" onclick="confirmSuspend()">
+                <i class="fas fa-ban"></i> Suspend User
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/users/detail.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Search Events - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/event/search.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="search-page">
+    <div class="container">
+        <div class="search-header">
+            <h1>Search Events</h1>
+            <p id="searchQueryInfo">Find your perfect event</p>
+        </div>
+        
+        <div class="filters-section">
+            <div class="filters-wrapper">
+                <div class="filter-group">
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select id="cityFilter" class="filter-select">
+                        <option value="">All Cities</option>
+                        <option value="nairobi">Nairobi</option>
+                        <option value="mombasa">Mombasa</option>
+                        <option value="kisumu">Kisumu</option>
+                        <option value="eldoret">Eldoret</option>
+                        <option value="nakuru">Nakuru</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select id="sortBy" class="filter-select">
+                        <option value="date_asc">Date: Soonest First</option>
+                        <option value="date_desc">Date: Latest First</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results-count" id="resultsCount"></div>
+        
+        <div class="events-grid" id="searchResultsGrid"></div>
+        
+        <div class="pagination" id="pagination"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/events/search.js' %}"></script>
+{% endblock %}

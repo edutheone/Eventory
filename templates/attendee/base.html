@@ -1,0 +1,458 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}EventHub - Attendee Portal{% endblock %}</title>
+    
+    <!-- Meta Tags for Search Engine Optimization (SEO) -->
+    <meta name="description" content="{% block meta_description %}Discover and book tickets for the best events in Kenya. From music concerts to technology conferences, find your next experience on EventHub.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}events, tickets, booking, concerts, conferences, sports, events in Kenya, EventHub{% endblock %}">
+    <meta name="author" content="EventHub Team">
+    
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}EventHub - Discover Amazing Events{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Discover and book tickets for the best events in Kenya.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'icons/favicon.svg' %}{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}EventHub - Discover Amazing Events{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Discover and book tickets for the best events in Kenya.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{% static 'icons/favicon.svg' %}{% endblock %}">
+    
+    <!-- Favicon - Single SVG file for all modern browsers -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'icons/favicon.svg' %}">
+    <link rel="shortcut icon" type="image/svg+xml" href="{% static 'icons/favicon.svg' %}">
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#f59e0b">
+    <meta name="msapplication-TileColor" content="#f59e0b">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&family=Kaushan+Script&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="{% static 'css/shared/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shared/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shared/typography.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shared/buttons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shared/animations.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shared/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shared/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shared/utilities.css' %}">
+    
+    <!-- Components -->
+    <link rel="stylesheet" href="{% static 'css/attendee/components/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/attendee/components/footer.css' %}">
+    
+    <!-- Loader CSS -->
+    <link rel="stylesheet" href="{% static 'css/attendee/components/loading-spinner.css' %}">
+    
+    <style>
+    /* ============================================
+       GLOBAL FIXES
+       ============================================ */
+    
+    /* Prevent horizontal scrolling */
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* REMOVED: main, section, div, article, .container { overflow: visible !important; }
+       This was breaking carousels! */
+    
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    /* ============================================
+       GRADIENT FOR ALL H1 BY DEFAULT
+       ============================================ */
+    
+    /* ALL h1 elements get the orange gradient by default */
+    h1 {
+        background: linear-gradient(135deg, #f59e0b, #ec6408) !important;
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+        color: transparent !important;
+        text-align: center !important;
+        display: block !important;
+        width: 100% !important;
+        font-family: 'Kaushan Script', cursive !important;
+        font-weight: 400 !important;
+        letter-spacing: 1px !important;
+        margin: 0 auto 1rem auto !important;
+        padding: 0.5rem 1rem !important;
+        line-height: 1.4 !important;
+        font-size: clamp(48px, 8vw, 88px) !important;
+    }
+    
+    /* ============================================
+       EXCLUDE HERO SECTION COMPLETELY
+       ============================================ */
+    
+    /* Hero section - COMPLETE EXCLUSION - restore original styles */
+    .hero-section h1,
+    .hero-content h1,
+    .hero-section .hero-content h1 {
+        all: revert !important;
+        background: none !important;
+        -webkit-background-clip: unset !important;
+        background-clip: unset !important;
+        color: #ffffff !important;
+        text-align: center !important;
+        font-size: 4.5rem !important;
+        font-family: 'Kaushan Script', cursive !important;
+        font-weight: 400 !important;
+        padding: 0 !important;
+        margin-bottom: 1.5rem !important;
+        line-height: 1.2 !important;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    /* Keep the highlight gradient in hero */
+    .hero-section .hero-content h1 .highlight {
+        background: linear-gradient(135deg, #f59e0b, #ec6408) !important;
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+        color: transparent !important;
+        display: inline-block !important;
+    }
+    
+    /* Typewriter text color - restore orange/red */
+    .typed-text {
+        color: #ea580c !important;
+        background: none !important;
+        -webkit-background-clip: unset !important;
+        background-clip: unset !important;
+    }
+    
+    /* ============================================
+       EXCLUDE ONLY DASHBOARD
+       ============================================ */
+    
+    /* Dashboard welcome section - NO gradient */
+    .dashboard-container .welcome-content h1,
+    .dashboard-container h1 {
+        all: unset !important;
+        display: block !important;
+        font-family: 'Kaushan Script', cursive !important;
+        font-size: 2rem !important;
+        font-weight: 400 !important;
+        color: #1e293b !important;
+        text-align: left !important;
+        padding: 0.75rem 0 !important;
+        margin-bottom: 0.75rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* Keep the span gradient for dashboard welcome name only */
+    .dashboard-container .welcome-content h1 span {
+        background: linear-gradient(135deg, #f59e0b, #ec6408) !important;
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+        color: transparent !important;
+        display: inline-block !important;
+    }
+    
+    /* Page Headers container */
+    .page-header {
+        text-align: center !important;
+        width: 100% !important;
+        overflow: visible !important;
+        margin: 0 0 2rem 0 !important;
+    }
+    
+    /* Fix for any potential overflow from other elements */
+    * {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    img, video, iframe {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* CAROUSEL FIX - Ensure carousels can scroll */
+    .categories-carousel,
+    .sponsors-carousel,
+    .testimonials-carousel,
+    .featured-carousel {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-behavior: smooth !important;
+    }
+    
+    .categories-carousel::-webkit-scrollbar,
+    .sponsors-carousel::-webkit-scrollbar,
+    .testimonials-carousel::-webkit-scrollbar,
+    .featured-carousel::-webkit-scrollbar {
+        display: none !important;
+    }
+    
+    /* Responsive hero font size */
+    @media (max-width: 1024px) {
+        .hero-section .hero-content h1 {
+            font-size: 3.5rem !important;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .hero-section .hero-content h1 {
+            font-size: 2.5rem !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .hero-section .hero-content h1 {
+            font-size: 2rem !important;
+        }
+    }
+
+    /* ============================================
+       FORCE FIX FOR ALL AVATAR IMAGES
+       ============================================ */
+    
+    /* Target all avatar containers across the site */
+    .author-avatar,
+    .testimonial-avatar,
+    .reviewer-avatar,
+    .featured-author .author-avatar,
+    .testimonial-author .author-avatar,
+    [class*="avatar"] {
+        position: relative !important;
+        width: 56px !important;
+        height: 56px !important;
+        border-radius: 50% !important;
+        overflow: hidden !important;
+        flex-shrink: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: linear-gradient(135deg, #f59e0b, #ec6408) !important;
+    }
+    
+    /* Target ALL images inside any avatar container */
+    .author-avatar img,
+    .testimonial-avatar img,
+    .reviewer-avatar img,
+    .featured-author .author-avatar img,
+    .testimonial-author .author-avatar img,
+    [class*="avatar"] img {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center !important;
+        border-radius: 50% !important;
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: none !important;
+        max-height: none !important;
+    }
+    
+    /* Fix for the testimonials carousel avatars */
+    .testimonial-avatar {
+        width: 60px !important;
+        height: 60px !important;
+        margin: 0 auto 0.75rem auto !important;
+    }
+    
+    /* Featured section larger avatar */
+    .featured-author .author-avatar {
+        width: 64px !important;
+        height: 64px !important;
+    }
+    
+    /* Regular testimonial card avatars */
+    .testimonial-author .author-avatar {
+        width: 48px !important;
+        height: 48px !important;
+    }
+    
+    /* Fallback for when image fails to load or is missing */
+    .author-avatar i,
+    .testimonial-avatar i,
+    .reviewer-avatar i,
+    [class*="avatar"] i {
+        font-size: 1.8rem !important;
+        color: white !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+</style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    {% include 'attendee/components/navbar.html' %}
+    
+    <main id="main-content">
+        {% block content %}
+            {% block attendee_content %}{% endblock %}
+        {% endblock %}
+    </main>
+    
+    {% include 'attendee/components/footer.html' %}
+    
+    <!-- Loader Component -->
+    {% include 'attendee/components/loader.html' %}
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'js/shared/context-framework.js' %}"></script>
+    <script src="{% static 'js/shared/events-prefetch.service.js' %}"></script>
+    <script src="{% static 'js/shared/wishlist-storage.js' %}"></script>
+    <script src="{% static 'js/shared/cart-storage.js' %}"></script>
+    <script src="{% static 'js/attendee/api.config.js' %}"></script>
+    <script src="{% static 'js/attendee/api.service.js' %}"></script>
+    <script src="{% static 'js/attendee/api.endpoints.js' %}"></script>
+    
+    <!-- Account Profile Module — secure storage & autofill -->
+    <script src="{% static 'js/attendee/account-profile.js' %}"></script>
+
+    <!-- Auth Guard -->
+    <script src="{% static 'js/attendee/errors/error-handler.js' %}"></script>
+    <script src="{% static 'js/attendee/auth-guard.js' %}"></script>
+    
+    <!-- Loader JavaScript -->
+    <script src="{% static 'js/attendee/components/loading-spinner.js' %}"></script>
+    
+    <!-- Universal Keyboard Navigation - Works on all pages -->
+    <script src="{% static 'js/shared/universal-keyboard-nav.js' %}"></script>
+
+    <!-- Footer interactions -->
+    <script src="{% static 'js/attendee/components/footer.js' %}"></script>
+    
+    <!-- Auth Module -->
+    
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+        // Global error handler to catch and log errors
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.message, e.filename, e.lineno);
+            return false;
+        });
+        
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled rejection:', e.reason);
+        });
+        
+        // Global logout function
+        window.logout = function() {
+            try {
+                if (window.EventhubEventsPrefetch) {
+                    window.EventhubEventsPrefetch.invalidate();
+                }
+                localStorage.removeItem('attendee_access_token');
+                localStorage.removeItem('attendee_refresh_token');
+                localStorage.removeItem('attendee_user');
+                window.dispatchEvent(new CustomEvent('auth-state-changed', { 
+                    detail: { isLoggedIn: false, user: null } 
+                }));
+                window.location.href = '/login/';
+            } catch(e) {
+                console.error('Logout error:', e);
+                window.location.href = '/login/';
+            }
+        };
+        
+        // Safe loader initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                if (window.PageLoader && typeof window.PageLoader.setMinDisplayTime === 'function') {
+                    window.PageLoader.setMinDisplayTime(800);
+                    console.log('Loader initialized');
+                } else {
+                    console.log('PageLoader not available, using fallback');
+                    window.hideLoader = function() {
+                        const loader = document.getElementById('pageLoader');
+                        if (loader) loader.style.display = 'none';
+                    };
+                    window.showLoader = function() {
+                        const loader = document.getElementById('pageLoader');
+                        if (loader) loader.style.display = 'flex';
+                    };
+                }
+            } catch(e) {
+                console.error('Loader initialization error:', e);
+            }
+        });
+        
+        // Safe manual control functions
+        window.showLoader = function(message) {
+            try {
+                if (window.PageLoader && window.PageLoader.show) {
+                    window.PageLoader.show(message);
+                } else {
+                    const loader = document.getElementById('pageLoader');
+                    if (loader) loader.style.display = 'flex';
+                }
+            } catch(e) {
+                console.error('showLoader error:', e);
+            }
+        };
+        
+        window.hideLoader = function() {
+            try {
+                if (window.PageLoader && window.PageLoader.hide) {
+                    window.PageLoader.hide();
+                } else {
+                    const loader = document.getElementById('pageLoader');
+                    if (loader) loader.style.display = 'none';
+                }
+            } catch(e) {
+                console.error('hideLoader error:', e);
+            }
+        };
+        
+        // Check auth status safely
+        setTimeout(function() {
+            if (window.AuthGuard) {
+                console.log('Auth Guard Status: Loaded');
+            } else {
+                console.log('Auth Guard Status: Not loaded');
+            }
+        }, 500);
+        
+        // Fix for "A display error occurred" - catch any uncaught errors
+        window.addEventListener('error', function(e) {
+            if (e.message && e.message.includes('display error')) {
+                console.warn('Display error caught, preventing reload loop');
+                return true;
+            }
+        });
+        
+        // Force enable carousel scrolling
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousels = document.querySelectorAll('.categories-carousel, .sponsors-carousel, .testimonials-carousel, .featured-carousel');
+            carousels.forEach(carousel => {
+                if (carousel) {
+                    carousel.style.overflowX = 'auto';
+                    carousel.style.overflowY = 'hidden';
+                    console.log('Enabled carousel:', carousel.id || carousel.className);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

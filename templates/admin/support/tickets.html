@@ -1,0 +1,110 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Support Tickets - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/support/support.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="support-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-headset"></i> Support Tickets</h1>
+            <p class="text-muted">Manage customer support requests and inquiries</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-secondary" onclick="refreshTickets()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <h3 id="totalTickets">0</h3>
+            <span>Total Tickets</span>
+        </div>
+        <div class="stat-card">
+            <h3 id="openTickets">0</h3>
+            <span>Open</span>
+        </div>
+        <div class="stat-card">
+            <h3 id="inProgressTickets">0</h3>
+            <span>In Progress</span>
+        </div>
+        <div class="stat-card">
+            <h3 id="resolvedTickets">0</h3>
+            <span>Resolved</span>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="tickets-layout">
+        <!-- Sidebar -->
+        <div class="tickets-sidebar">
+            <div class="ticket-filters">
+                <button class="filter-btn active" onclick="filterTickets('all')">All</button>
+                <button class="filter-btn" onclick="filterTickets('open')">Open</button>
+                <button class="filter-btn" onclick="filterTickets('in-progress')">In Progress</button>
+                <button class="filter-btn" onclick="filterTickets('resolved')">Resolved</button>
+                <button class="filter-btn" onclick="filterTickets('closed')">Closed</button>
+            </div>
+            <input type="text" id="searchTickets" class="search-input" placeholder="Search by ticket #, subject, or customer...">
+            <div id="ticketsList" class="tickets-list">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading tickets...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Panel -->
+        <div class="ticket-detail-panel" id="ticketDetailPanel">
+            <div class="empty-state">
+                <i class="fas fa-ticket-alt"></i>
+                <h3>No Ticket Selected</h3>
+                <p>Select a ticket from the list to view details</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reply Modal -->
+<div id="replyModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-reply"></i> Reply to Customer</h3>
+            <button class="modal-close" onclick="closeReplyModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Your Response</label>
+                <textarea id="replyMessage" rows="5" class="form-control" placeholder="Type your response here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Update Status</label>
+                <select id="replyStatus" class="form-control">
+                    <option value="open">Keep Open</option>
+                    <option value="in-progress">Mark as In Progress</option>
+                    <option value="resolved">Mark as Resolved</option>
+                    <option value="closed">Close Ticket</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeReplyModal()">Cancel</button>
+            <button class="btn-primary" onclick="sendReply()">
+                <i class="fas fa-paper-plane"></i> Send Reply
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/support/tickets.js' %}"></script>
+{% endblock %}

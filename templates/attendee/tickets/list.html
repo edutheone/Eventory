@@ -1,0 +1,73 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}My Tickets - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/tickets/tickets.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/tickets/ticket-card.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="tickets-container">
+    <div class="page-header">
+        <div>
+            <h1>My Tickets</h1>
+            <p class="text-muted">View and manage your event tickets</p>
+        </div>
+        <div class="action-buttons">
+            <button class="btn-events" onclick="window.location.href='/events/'">
+                <i class="fas fa-calendar-alt"></i> Browse Events
+            </button>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <button class="tab-btn active" data-tab="upcoming" onclick="switchTab('upcoming')">Upcoming Events</button>
+        <button class="tab-btn" data-tab="past" onclick="switchTab('past')">Past Events</button>
+    </div>
+
+    <div class="search-container">
+        <div class="search-group">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchTickets" placeholder="Search by event or ticket number...">
+        </div>
+    </div>
+
+    <div id="ticketsList" class="tickets-list">
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading your tickets...</p>
+        </div>
+    </div>
+</div>
+
+<div id="eventReviewModal" class="event-review-modal" hidden aria-hidden="true">
+    <div class="event-review-modal-backdrop" data-close-review-modal></div>
+    <div class="event-review-modal-dialog" role="dialog" aria-labelledby="eventReviewModalTitle" aria-modal="true">
+        <button type="button" class="event-review-modal-close" data-close-review-modal aria-label="Close">
+            <i class="fas fa-times"></i>
+        </button>
+        <h2 id="eventReviewModalTitle">Rate this event</h2>
+        <p class="event-review-modal-event" id="eventReviewModalEventName"></p>
+        <div class="event-review-stars" id="eventReviewStars" role="radiogroup" aria-label="Star rating">
+            <button type="button" class="event-review-star" data-rating="1" aria-label="1 star"><i class="far fa-star"></i></button>
+            <button type="button" class="event-review-star" data-rating="2" aria-label="2 stars"><i class="far fa-star"></i></button>
+            <button type="button" class="event-review-star" data-rating="3" aria-label="3 stars"><i class="far fa-star"></i></button>
+            <button type="button" class="event-review-star" data-rating="4" aria-label="4 stars"><i class="far fa-star"></i></button>
+            <button type="button" class="event-review-star" data-rating="5" aria-label="5 stars"><i class="far fa-star"></i></button>
+        </div>
+        <p class="event-review-rating-label" id="eventReviewRatingLabel">Select a rating</p>
+        <label class="event-review-comment-label" for="eventReviewComment">Review (optional)</label>
+        <textarea id="eventReviewComment" class="event-review-comment" rows="4" maxlength="2000" placeholder="Share your experience at this event…"></textarea>
+        <div class="event-review-modal-actions">
+            <button type="button" class="event-review-btn event-review-btn-secondary" data-close-review-modal>Cancel</button>
+            <button type="button" class="event-review-btn event-review-btn-primary" id="eventReviewSubmitBtn" disabled>Submit review</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/tickets/tickets.js' %}"></script>
+{% endblock %}

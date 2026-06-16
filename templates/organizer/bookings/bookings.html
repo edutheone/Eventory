@@ -1,0 +1,417 @@
+{% extends "organizer/base.html" %}
+{% block title %}Bookings - EventHub{% endblock %}
+{% block nav_bookings %}active{% endblock %}
+{% block content_title %}Bookings Ledger{% endblock %}
+{% block content_subtitle %}Monitor transactions, check-in status, and order details for all ticket sales.{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Clean, premium dark background */
+    body {
+        background-color: #000000 !important;
+    }
+
+    .ledger-card {
+        background: #080808 !important; /* Softer solid black for cards */
+        border: 1px solid #141414 !important; /* Subtle divider-like borders */
+        border-radius: 16px;
+        padding: 2rem !important; /* Generous breathing space */
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    /* Minimal table styling */
+    .table {
+        background-color: transparent !important;
+        border-collapse: collapse !important;
+        margin-bottom: 0 !important;
+        width: 100% !important;
+    }
+
+    .table thead th {
+        background-color: #000000 !important;
+        color: #ffffff !important; /* Bold white */
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        border-bottom: 2px solid #1a1a1a !important;
+        padding: 18px 16px !important;
+        text-align: left;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #111111 !important; /* Subtle dividers */
+        background: transparent !important;
+        transition: background-color 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(255, 106, 0, 0.02) !important;
+    }
+
+    .table tbody td {
+        padding: 16px 16px !important; /* Cell padding 12-16px */
+        color: #ffffff !important; /* Regular white text */
+        background: transparent !important;
+        border: none !important;
+        vertical-align: middle;
+        text-align: left;
+    }
+
+    /* Search & Filter inputs in minimal dark theme */
+    .form-control, .form-select {
+        background-color: #000000 !important;
+        border: 1px solid #222222 !important;
+        color: #ffffff !important;
+        border-radius: 10px !important;
+        padding: 10px 14px !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #ff6a00 !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 106, 0, 0.15) !important;
+        background-color: #000000 !important;
+        color: #ffffff !important;
+    }
+
+    .form-control::placeholder {
+        color: #64748b !important;
+    }
+
+    .form-select option {
+        background-color: #080808;
+        color: #ffffff;
+    }
+
+    .input-group-text {
+        background-color: #000000 !important;
+        border: 1px solid #222222 !important;
+        color: #64748b !important;
+        border-radius: 10px 0 0 10px !important;
+    }
+
+    .input-group > .form-control {
+        border-radius: 0 10px 10px 0 !important;
+    }
+
+    /* Custom pagination pill buttons */
+    .pagination {
+        gap: 6px;
+    }
+
+    .page-link {
+        background-color: transparent !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 30px !important;
+        padding: 6px 16px !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .page-item.active .page-link {
+        background-color: #ff6a00 !important;
+        border-color: #ff6a00 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 12px rgba(255, 106, 0, 0.35) !important;
+    }
+
+    .page-link:hover {
+        border-color: #ff6a00 !important;
+        color: #ff6a00 !important;
+        box-shadow: 0 0 8px rgba(255, 106, 0, 0.15) !important;
+    }
+
+    /* Modal styling */
+    .modal-content {
+        background-color: #080808 !important;
+        border: 1px solid #1a1a1a !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+    }
+
+    /* Status badges */
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    .status-valid {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .status-checked_in {
+        background: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    
+    .status-cancelled {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Filter bar -->
+    <div class="ledger-card mb-4">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-secondary text-muted">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="bookingSearch" class="form-control border-secondary" placeholder="Search by customer name, email, or ticket #...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select id="eventFilter" class="form-select border-secondary">
+                    <option value="">All Events</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="statusFilter" class="form-select border-secondary">
+                    <option value="">All Statuses</option>
+                    <option value="valid">Valid / Active</option>
+                    <option value="checked_in">Checked In</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="ledger-card">
+        <div class="table-container">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Ticket Number</th>
+                        <th>Event</th>
+                        <th>Customer</th>
+                        <th>Qty</th>
+                        <th>Amount Paid</th>
+                        <th>Purchase Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsList">
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <div class="spinner-border text-warning" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav class="d-flex justify-content-between align-items-center mt-4">
+            <div class="text-muted small" id="paginationMeta">Showing 0 of 0 entries</div>
+            <ul class="pagination pagination-warning mb-0" id="bookingPagination">
+                <!-- Dynamically populated -->
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Booking Detail Modal -->
+<div class="modal fade" id="bookingDetailModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-white font-weight-bold"><i class="fa-solid fa-receipt me-2 text-warning"></i>Booking Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="bookingDetailContent">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let bookingsData = [];
+    let currentPage = 1;
+    const itemsPerPage = 15;
+
+    async function loadEvents() {
+        try {
+            const res = await OrganizerAPI.events.getAll();
+            const list = Array.isArray(res) ? res : (res.results || []);
+            const sel = document.getElementById('eventFilter');
+            list.forEach(e => {
+                sel.innerHTML += `<option value="${e.id}">${e.name || e.title}</option>`;
+            });
+        } catch (err) {}
+    }
+
+    async function loadBookings() {
+        try {
+            const res = await OrganizerAPI.bookings.getAll(currentPage, 100);
+            bookingsData = Array.isArray(res) ? res : (res.results || []);
+            renderBookings();
+        } catch (err) {
+            window.showToast('Failed to load bookings', 'error');
+            document.getElementById('bookingsList').innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-triangle-exclamation fa-2x mb-2 text-danger"></i>
+                        <p class="m-0 font-weight-bold text-white">Failed to load bookings</p>
+                        <p class="m-0 small">There was a server connection or authentication issue.</p>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    function renderBookings() {
+        const query = document.getElementById('bookingSearch').value.toLowerCase();
+        const eventId = document.getElementById('eventFilter').value;
+        const status = document.getElementById('statusFilter').value;
+
+        const filtered = bookingsData.filter(b => {
+            const tNum = (b.ticket_number || "").toLowerCase();
+            const cName = (b.customer_name || "").toLowerCase();
+            const cEmail = (b.customer_email || "").toLowerCase();
+            const matchQuery = !query || tNum.includes(query) || cName.includes(query) || cEmail.includes(query);
+            const matchEvent = !eventId || String(b.event_id) === eventId;
+            const matchStatus = !status || b.status === status;
+            return matchQuery && matchEvent && matchStatus;
+        });
+
+        // Paginate
+        const totalItems = filtered.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const start = (currentPage - 1) * itemsPerPage;
+        const paginated = filtered.slice(start, start + itemsPerPage);
+
+        const tbody = document.getElementById('bookingsList');
+        if (paginated.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-5">
+                        <i class="fa-solid fa-receipt fa-2x mb-2 text-secondary"></i>
+                        <p class="m-0">No bookings transaction logs found</p>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('paginationMeta').innerText = `Showing 0 of 0 entries`;
+            document.getElementById('bookingPagination').innerHTML = '';
+            return;
+        }
+
+        tbody.innerHTML = paginated.map(b => {
+            let statusClass = 'status-valid';
+            if (b.status === 'checked_in') statusClass = 'status-checked_in';
+            if (b.status === 'cancelled') statusClass = 'status-cancelled';
+
+            const ticketNum = b.ticket_number || "TICK-UNKNOWN";
+            const eventTitle = b.event_title || "Unknown Event";
+            const customerName = b.customer_name || "Unknown Attendee";
+            const customerEmail = b.customer_email || "";
+            const price = b.price || 0;
+            const formattedDate = b.purchase_date ? new Date(b.purchase_date).toLocaleDateString() : "Date TBA";
+
+            return `
+                <tr>
+                    <td class="font-monospace text-warning">${ticketNum}</td>
+                    <td class="text-white fw-bold">${eventTitle}</td>
+                    <td>
+                        <div class="text-white">${customerName}</div>
+                        <div class="text-muted small">${customerEmail}</div>
+                    </td>
+                    <td class="text-white">${b.quantity || 1}</td>
+                    <td class="text-success fw-bold">KSh ${price.toLocaleString()}</td>
+                    <td class="text-muted small">${formattedDate}</td>
+                    <td><span class="status-badge ${statusClass}">${b.status === 'checked_in' ? 'Checked In' : (b.status || 'VALID').toUpperCase()}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-warning view-details" data-id="${ticketNum}">
+                            <i class="fa-solid fa-eye me-1"></i>View
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        document.getElementById('paginationMeta').innerText = `Showing ${start + 1} to ${Math.min(start + itemsPerPage, totalItems)} of ${totalItems} entries`;
+        
+        // Build pagination items
+        let paginationHtml = '';
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHtml += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <button class="page-link" onclick="goToPage(${i})">${i}</button>
+                </li>
+            `;
+        }
+        document.getElementById('bookingPagination').innerHTML = paginationHtml;
+
+        // Details buttons
+        document.querySelectorAll('.view-details').forEach(btn => {
+            btn.onclick = () => {
+                const id = btn.dataset.id;
+                const booking = bookingsData.find(b => b.ticket_number === id);
+                if (booking) {
+                    let statusHtml = `<span class="status-badge status-valid">Valid</span>`;
+                    if (booking.status === 'checked_in') statusHtml = `<span class="status-badge status-checked_in">Checked In</span>`;
+                    if (booking.status === 'cancelled') statusHtml = `<span class="status-badge status-cancelled">Cancelled</span>`;
+
+                    document.getElementById('bookingDetailContent').innerHTML = `
+                        <div class="mb-3 text-center">
+                            <div class="text-muted small">Ticket QR Code Payload</div>
+                            <code class="text-warning font-monospace fs-5">${booking.ticket_number}</code>
+                        </div>
+                        <hr class="border-secondary">
+                        <div class="row g-2 text-muted">
+                            <div class="col-5">Event:</div><div class="col-7 text-white fw-bold">${booking.event_title}</div>
+                            <div class="col-5">Customer Name:</div><div class="col-7 text-white">${booking.customer_name}</div>
+                            <div class="col-5">Customer Email:</div><div class="col-7 text-white font-monospace">${booking.customer_email}</div>
+                            <div class="col-5">Quantity:</div><div class="col-7 text-white">${booking.quantity} ticket(s)</div>
+                            <div class="col-5">Total Paid:</div><div class="col-7 text-success fw-bold">KSh ${booking.price.toLocaleString()}</div>
+                            <div class="col-5">Purchase Date:</div><div class="col-7 text-white">${new Date(booking.purchase_date).toLocaleString()}</div>
+                            <div class="col-5">Ticket Status:</div><div class="col-7">${statusHtml}</div>
+                            <div class="col-5">Checked In At:</div><div class="col-7 text-white">${booking.checked_in_at ? new Date(booking.checked_in_at).toLocaleString() : 'Not checked in'}</div>
+                        </div>
+                    `;
+                    new bootstrap.Modal(document.getElementById('bookingDetailModal')).show();
+                }
+            };
+        });
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        renderBookings();
+    }
+
+    document.getElementById('bookingSearch').oninput = () => { currentPage = 1; renderBookings(); };
+    document.getElementById('eventFilter').onchange = () => { currentPage = 1; renderBookings(); };
+    document.getElementById('statusFilter').onchange = () => { currentPage = 1; renderBookings(); };
+
+    loadEvents();
+    loadBookings();
+</script>
+{% endblock %}

@@ -1,0 +1,366 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Reviews - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/main.css' %}">
+<style>
+.reviews-summary {
+    background: linear-gradient(135deg, #f59e0b, #ec6408);
+    padding: 2rem;
+    border-radius: 1rem;
+    color: white;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.rating-large {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.stars-large {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.review-card {
+    background: var(--np-white);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-normal);
+}
+
+.review-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.reviewer-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #f59e0b, #ec6408);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.reviewer-name {
+    font-weight: 600;
+    color: var(--np-dark);
+}
+
+.review-date {
+    font-size: 0.7rem;
+    color: var(--np-gray);
+}
+
+.review-rating {
+    color: #f59e0b;
+    font-size: 0.9rem;
+}
+
+.review-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--np-dark);
+}
+
+.review-content {
+    color: var(--np-gray);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.review-event {
+    font-size: 0.75rem;
+    color: var(--np-gray);
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+    display: inline-block;
+}
+
+.write-review-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: linear-gradient(135deg, #f59e0b, #ec6408);
+    color: white;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-normal);
+    z-index: 100;
+}
+
+.write-review-btn:hover {
+    transform: scale(1.1);
+}
+
+.write-review-btn i {
+    font-size: 1.5rem;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 1rem;
+    max-width: 500px;
+    width: 90%;
+    padding: 2rem;
+    position: relative;
+    animation: fadeInUp 0.3s ease;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--np-gray);
+}
+
+.modal-close:hover {
+    color: var(--np-dark);
+}
+
+@media (max-width: 768px) {
+    .write-review-btn {
+        bottom: 1rem;
+        right: 1rem;
+        width: 48px;
+        height: 48px;
+    }
+    
+    .review-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="reviews-summary">
+        <div class="rating-large">4.8</div>
+        <div class="stars-large">★★★★★</div>
+        <div>Based on 1,248 reviews</div>
+    </div>
+    
+    <div id="reviewsList">
+        <div class="review-card">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <div class="reviewer-avatar">JM</div>
+                    <div>
+                        <div class="reviewer-name">John Mwangi</div>
+                        <div class="review-date">December 15, 2024</div>
+                    </div>
+                </div>
+                <div class="review-rating">★★★★★</div>
+            </div>
+            <div class="review-title">Amazing experience!</div>
+            <div class="review-content">The Summer Music Festival was incredible! Great organization, amazing artists, and seamless check-in with the QR code. Highly recommend EventHub!</div>
+            <div class="review-event">Summer Music Festival 2024</div>
+        </div>
+        
+        <div class="review-card">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <div class="reviewer-avatar">SW</div>
+                    <div>
+                        <div class="reviewer-name">Sarah Wanjiku</div>
+                        <div class="review-date">January 20, 2025</div>
+                    </div>
+                </div>
+                <div class="review-rating">★★★★★</div>
+            </div>
+            <div class="review-title">Best platform for events</div>
+            <div class="review-content">I've attended over 20 events through EventHub. The platform is reliable, customer support is exceptional, and the ticket booking process is very smooth.</div>
+            <div class="review-event">Tech Innovation Summit 2025</div>
+        </div>
+        
+        <div class="review-card">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <div class="reviewer-avatar">MO</div>
+                    <div>
+                        <div class="reviewer-name">Michael Otieno</div>
+                        <div class="review-date">February 10, 2025</div>
+                    </div>
+                </div>
+                <div class="review-rating">★★★★★</div>
+            </div>
+            <div class="review-title">Highly recommended!</div>
+            <div class="review-content">The best event discovery platform in Kenya! Easy to use, great selection of events, and fantastic customer service.</div>
+            <div class="review-event">Food & Wine Expo 2025</div>
+        </div>
+    </div>
+</div>
+
+<div class="write-review-btn" id="writeReviewBtn">
+    <i class="fas fa-pen"></i>
+</div>
+
+<div class="modal" id="reviewModal">
+    <div class="modal-content">
+        <div class="modal-close" id="closeModal">&times;</div>
+        <h3 style="margin-bottom: 1rem;">Write a Review</h3>
+        <form id="reviewForm">
+            <div class="form-group">
+                <label>Rating</label>
+                <div class="rating-select" style="display: flex; gap: 0.5rem; font-size: 1.5rem; color: #cbd5e1;">
+                    <i class="fas fa-star" data-rating="1"></i>
+                    <i class="fas fa-star" data-rating="2"></i>
+                    <i class="fas fa-star" data-rating="3"></i>
+                    <i class="fas fa-star" data-rating="4"></i>
+                    <i class="fas fa-star" data-rating="5"></i>
+                </div>
+                <input type="hidden" id="reviewRating" value="5">
+            </div>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="reviewTitle" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Your Review</label>
+                <textarea id="reviewText" rows="4" class="form-control" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Event</label>
+                <select id="reviewEvent" class="form-control">
+                    <option value="Summer Music Festival">Summer Music Festival</option>
+                    <option value="Tech Innovation Summit">Tech Innovation Summit</option>
+                    <option value="Food & Wine Expo">Food & Wine Expo</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%;">Submit Review</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Rating stars
+const stars = document.querySelectorAll('.rating-select i');
+const ratingInput = document.getElementById('reviewRating');
+
+stars.forEach(star => {
+    star.addEventListener('mouseenter', function() {
+        const rating = parseInt(this.dataset.rating);
+        stars.forEach((s, i) => {
+            if (i < rating) {
+                s.style.color = '#f59e0b';
+            } else {
+                s.style.color = '#cbd5e1';
+            }
+        });
+    });
+    
+    star.addEventListener('click', function() {
+        const rating = parseInt(this.dataset.rating);
+        ratingInput.value = rating;
+        stars.forEach((s, i) => {
+            if (i < rating) {
+                s.style.color = '#f59e0b';
+            } else {
+                s.style.color = '#cbd5e1';
+            }
+        });
+    });
+});
+
+document.querySelector('.rating-select').addEventListener('mouseleave', function() {
+    const currentRating = parseInt(ratingInput.value);
+    stars.forEach((s, i) => {
+        if (i < currentRating) {
+            s.style.color = '#f59e0b';
+        } else {
+            s.style.color = '#cbd5e1';
+        }
+    });
+});
+
+// Modal handling
+const writeBtn = document.getElementById('writeReviewBtn');
+const modal = document.getElementById('reviewModal');
+const closeModal = document.getElementById('closeModal');
+
+writeBtn.addEventListener('click', () => {
+    modal.classList.add('active');
+});
+
+closeModal.addEventListener('click', () => {
+    modal.classList.remove('active');
+});
+
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        modal.classList.remove('active');
+    }
+});
+
+// Form submission
+document.getElementById('reviewForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    showToast('Thank you for your review!', 'success');
+    modal.classList.remove('active');
+    document.getElementById('reviewForm').reset();
+    ratingInput.value = 5;
+});
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+</script>
+{% endblock %}

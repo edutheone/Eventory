@@ -1,0 +1,94 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/pages/contact.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contact-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Contact Us</h1>
+            <p>We respond within hours not days</p>
+        </div>
+        
+        <!-- Contact Info Cards -->
+        <div class="contact-info-grid">
+            <div class="info-card">
+                <div class="info-card-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>Email Us</h3>
+                <p><a href="mailto:support@eventhub.com" style="color: inherit; text-decoration: none;">support@eventhub.com</a></p>
+                <span class="info-note">Response within 24 hours</span>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-card-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <h3>Call Us</h3>
+                <p>+254743042018</p>
+                <span class="info-note">Mon-Fri, 9am-5pm</span>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-card-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3>Visit Us</h3>
+                <p>Nairobi, Kenya</p>
+                <span class="info-note">Kenyatta Avenue, telposta towers</span>
+            </div>
+        </div>
+        
+        <!-- Contact Form -->
+        <div class="contact-form-wrapper">
+            <h3>Send us a Message</h3>
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <label for="contactName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="contactName" name="name" placeholder="Enter your full name" autocomplete="off">
+                    <div class="error-message" id="nameError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactEmail">Email Address <span class="required">*</span></label>
+                    <input type="email" id="contactEmail" name="email" placeholder="Enter your email address" autocomplete="off">
+                    <div class="error-message" id="emailError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactSubject">Subject <span class="required">*</span></label>
+                    <select id="contactSubject" name="subject">
+                        <option value="general">General Inquiry</option>
+                        <option value="support">Technical Support</option>
+                        <option value="partnership">Partnership Opportunity</option>
+                        <option value="event">Event Organization</option>
+                        <option value="feedback">Feedback</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactMessage">Message <span class="required">*</span></label>
+                    <textarea id="contactMessage" name="message" rows="5" placeholder="Tell us how we can help..."></textarea>
+                    <div class="error-message" id="messageError"></div>
+                </div>
+                
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Send Message</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/pages/contact.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% load static %}
+<footer class="attendee-footer" role="contentinfo" aria-label="Site footer">
+    <div class="footer-container">
+        <div class="footer-grid">
+            <!-- Branding Section -->
+            <div class="footer-brand">
+                <a href="/" class="footer-logo" aria-label="EventHub home">
+                    <div class="footer-logo-icon" aria-hidden="true">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="footer-logo-text">
+                        <span>EventHub</span>
+                        <small>Discover Events</small>
+                    </div>
+                </a>
+                <p class="footer-tagline">Discover, book, and manage events across Kenya with confidence.</p>
+                <div class="footer-social" aria-label="Social media links">
+                    <a href="https://www.instagram.com/" class="footer-social-link" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                        <i class="fab fa-instagram" aria-hidden="true"></i>
+                    </a>
+                    <a href="https://x.com/" class="footer-social-link" target="_blank" rel="noopener noreferrer" aria-label="X">
+                        <i class="fab fa-x-twitter" aria-hidden="true"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/" class="footer-social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+                    </a>
+                    <a href="https://wa.me/254743042018" class="footer-social-link" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Navigation Section - Icons removed -->
+            <nav class="footer-nav" aria-label="Footer navigation">
+                <div class="footer-link-group">
+                    <h3 class="footer-heading">Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-link-group">
+                    <h3 class="footer-heading">Events</h3>
+                    <ul class="footer-links">
+                        <li><a href="/events/">Browse Events</a></li>
+                        <li><a href="/my-tickets/">My Tickets</a></li>
+                    </ul>
+                </div>
+                <div class="footer-link-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="/help-center/">Help Center</a></li>
+                        <li><a href="/faq/">FAQs</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Contact Section - Icons KEPT -->
+            <div class="footer-contact">
+                <h3 class="footer-heading">Contact Us</h3>
+                <ul class="footer-contact-list">
+                    <li>
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        <a href="mailto:info@ICTA.co.ke">info@ICTA.co.ke</a>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone" aria-hidden="true"></i>
+                        <a href="tel:+254743042018">+254 743 042 018</a>
+                    </li>
+                    <li>
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                        <a href="https://maps.google.com/?q=Nairobi,Kenya" target="_blank" rel="noopener noreferrer">
+                            Nairobi HQ, Kenya
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Newsletter Section - Icons removed from heading -->
+            <div class="footer-cta">
+                <h3 class="footer-heading">Stay in the Loop</h3>
+                <p class="footer-cta-text">Get event updates and exclusive offers delivered to your inbox.</p>
+                <form class="footer-newsletter-form" id="footerNewsletterForm" novalidate>
+                    {% csrf_token %}
+                    <label class="visually-hidden" for="footerNewsletterEmail">Email address</label>
+                    <div class="footer-newsletter-input-group">
+                        <input
+                            type="email"
+                            id="footerNewsletterEmail"
+                            name="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                            aria-describedby="footerNewsletterMessage"
+                        >
+                        <button type="submit" class="footer-btn-subscribe">Subscribe</button>
+                    </div>
+                    <p id="footerNewsletterMessage" class="footer-form-message" role="status" aria-live="polite"></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <nav class="footer-legal" aria-label="Legal links">
+                <a href="/privacy/">Privacy Policy</a>
+                <a href="/terms/">Terms of Service</a>
+                <a href="/privacy/#section-5">Cookie Policy</a>
+            </nav>
+            <p class="footer-copyright">&copy; 2026 Events System Sable. All rights reserved.</p>
+        </div>
+    </div>
+</footer>

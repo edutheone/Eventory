@@ -1,0 +1,183 @@
+{% extends "shared/auth_base.html" %}
+{% load static %}
+
+{% block title %}Verify Email - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shared/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-background email-bg"></div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-card-inner">
+            <a href="/login/" class="auth-back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="auth-logo">
+                <div class="auth-logo-wrapper">
+                    <div class="auth-logo-glow"></div>
+                    <div class="auth-logo-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+            </div>
+            <h2 class="auth-title">Verify Your Email</h2>
+            <p class="auth-subtitle">Enter the 6-digit code sent to your email</p>
+
+            <div id="emailDisplay" class="email-display"></div>
+
+            <div class="otp-container">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="0" id="digit-0">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="1" id="digit-1">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="2" id="digit-2">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="3" id="digit-3">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="4" id="digit-4">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="5" id="digit-5">
+            </div>
+            <div id="otpError" class="error-message hidden"></div>
+
+            <button onclick="verifyOTP()" id="verifyBtn" class="auth-btn">Verify Email</button>
+
+            <div class="resend-container">
+                <span id="resendText" class="resend-text">Resend code in <span id="timer">60</span>s</span>
+                <button id="resendBtn" onclick="resendOTP()" class="auth-link resend-btn hidden">Didn't receive the code? Resend</button>
+            </div>
+
+            <div class="auth-info-banner">
+                <i class="fas fa-shield-alt"></i>
+                <span>Never share your verification code with anyone</span>
+            </div>
+            
+            <div class="auth-footer" style="margin-top: 15px;">
+                <a href="/login/">Back to Sign In</a>
+            </div>
+            
+            <div class="auth-footer" style="margin-top: 10px;">
+                <a href="/organizer/login/">Login as Organizer</a> | 
+                <a href="/attendee/login/">Login as Attendee</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const userEmail = urlParams.get('email') || 'your email';
+    document.getElementById('emailDisplay').innerHTML = `<i class="fas fa-envelope"></i> ${userEmail}`;
+    
+    const inputs = document.querySelectorAll('.digit-input');
+    const otpError = document.getElementById('otpError');
+    
+    // Only allow numbers
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            if (e.target.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+        });
+        
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && index > 0 && !e.target.value) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+    
+    inputs[0].focus();
+    
+    let timer = 60;
+    let timerInterval;
+    
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timer--;
+            document.getElementById('timer').textContent = timer;
+            if (timer <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('resendText').classList.add('hidden');
+                document.getElementById('resendBtn').classList.remove('hidden');
+            }
+        }, 1000);
+    }
+    
+    function getOTP() {
+        let otp = '';
+        inputs.forEach(input => { otp += input.value; });
+        return otp;
+    }
+    
+    function validateOTP(otp) {
+        if (!otp) return 'Please enter the verification code';
+        if (otp.length !== 6) return 'Please enter a valid 6-digit code';
+        if (!/^\d+$/.test(otp)) return 'Code must contain only numbers';
+        return '';
+    }
+    
+    function verifyOTP() {
+        const otp = getOTP();
+        const validationError = validateOTP(otp);
+        
+        if (validationError) {
+            otpError.textContent = validationError;
+            otpError.classList.remove('hidden');
+            return;
+        }
+        
+        otpError.classList.add('hidden');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const originalText = verifyBtn.innerHTML;
+        verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+        verifyBtn.disabled = true;
+        
+        setTimeout(() => {
+            if (otp.length === 6) {
+                showToast('Email verified successfully! Redirecting...', 'success');
+                const userRole = localStorage.getItem('pending_user_role') || 'attendee';
+                setTimeout(() => {
+                    if (userRole === 'organizer') {
+                        window.location.href = '/organizer/dashboard/';
+                    } else {
+                        window.location.href = '/attendee/dashboard/';
+                    }
+                }, 1500);
+            } else {
+                otpError.textContent = 'Invalid verification code. Please try again.';
+                otpError.classList.remove('hidden');
+                verifyBtn.innerHTML = originalText;
+                verifyBtn.disabled = false;
+            }
+        }, 1500);
+    }
+    
+    function resendOTP() {
+        const resendBtn = document.getElementById('resendBtn');
+        resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        resendBtn.disabled = true;
+        
+        setTimeout(() => {
+            timer = 60;
+            document.getElementById('resendText').classList.remove('hidden');
+            resendBtn.classList.add('hidden');
+            resendBtn.innerHTML = 'Didn\'t receive the code? Resend';
+            resendBtn.disabled = false;
+            startTimer();
+            showToast('Verification code resent to your email!', 'success');
+        }, 1000);
+    }
+    
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    startTimer();
+</script>
+{% endblock %}

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}Admin Panel - EventHub{% endblock %}</title>
+    
+    {% load static %}
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'css/admin/admin.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <h2>EventHub</h2>
+                <span class="logo-badge">Admin</span>
+                <button class="sidebar-close" id="sidebarClose">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-top">
+                    <!-- Events Dropdown -->
+                    <div class="nav-dropdown">
+                        <div class="nav-dropdown-toggle">
+                            <span>Events</span>
+                            <i class="ri-arrow-down-s-line dropdown-arrow"></i>
+                        </div>
+                        <div class="nav-dropdown-menu">
+                            <a href="/admin-portal/events/pending/" class="dropdown-item">
+                                <i class="ri-time-line"></i> Pending Approvals
+                                <span class="badge-warning" id="pendingBadge" style="display: none;">0</span>
+                            </a>
+                            <a href="/admin-portal/events/all/" class="dropdown-item">
+                                <i class="ri-list-check-2"></i> All Events
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Bookings Dropdown -->
+                    <div class="nav-dropdown">
+                        <div class="nav-dropdown-toggle">
+                            <span>Bookings</span>
+                            <i class="ri-arrow-down-s-line dropdown-arrow"></i>
+                        </div>
+                        <div class="nav-dropdown-menu">
+                            <a href="/admin-portal/bookings/" class="dropdown-item">
+                                <i class="ri-list-unordered"></i> All Bookings
+                            </a>
+                            <a href="/admin-portal/bookings/refunds/" class="dropdown-item">
+                                <i class="ri-refund-2-line"></i> Refunds
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Users Dropdown -->
+                    <div class="nav-dropdown">
+                        <div class="nav-dropdown-toggle">
+                            <span>Users</span>
+                            <i class="ri-arrow-down-s-line dropdown-arrow"></i>
+                        </div>
+                        <div class="nav-dropdown-menu">
+                            <a href="/admin-portal/users/" class="dropdown-item">
+                                <i class="ri-user-line"></i> All Users
+                            </a>
+                            <a href="/admin-portal/users/organizers/" class="dropdown-item">
+                                <i class="ri-building-line"></i> Organizers
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Tickets Dropdown -->
+                    <div class="nav-dropdown">
+                        <div class="nav-dropdown-toggle">
+                            <span>Tickets</span>
+                            <i class="ri-arrow-down-s-line dropdown-arrow"></i>
+                        </div>
+                        <div class="nav-dropdown-menu">
+                            <a href="/admin-portal/tickets/" class="dropdown-item">
+                                <i class="ri-ticket-line"></i> All Tickets
+                            </a>
+                            <a href="/admin-portal/tickets/scanner/" class="dropdown-item">
+                                <i class="ri-camera-line"></i> QR Scanner
+                            </a>
+                            <a href="/admin-portal/tickets/checkin-history/" class="dropdown-item">
+                                <i class="ri-history-line"></i> Check-in History
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Payments Dropdown -->
+                    <div class="nav-dropdown">
+                        <div class="nav-dropdown-toggle">
+                            <span>Payments</span>
+                            <i class="ri-arrow-down-s-line dropdown-arrow"></i>
+                        </div>
+                        <div class="nav-dropdown-menu">
+                            <a href="/admin-portal/payments/" class="dropdown-item">
+                                <i class="ri-exchange-line"></i> Transactions
+                            </a>
+                            <a href="/admin-portal/payments/payouts/" class="dropdown-item">
+                                <i class="ri-money-bill-line"></i> Payouts
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Reports Dropdown -->
+                    <div class="nav-dropdown">
+                        <div class="nav-dropdown-toggle">
+                            <span>Reports</span>
+                            <i class="ri-arrow-down-s-line dropdown-arrow"></i>
+                        </div>
+                        <div class="nav-dropdown-menu">
+                            <a href="/admin-portal/reports/" class="dropdown-item">
+                                <i class="ri-pie-chart-2-line"></i> Analytics
+                            </a>
+                            <a href="/admin-portal/reports/sales/" class="dropdown-item">
+                                <i class="ri-line-chart-line"></i> Sales Report
+                            </a>
+                            <a href="/admin-portal/reports/events/" class="dropdown-item">
+                                <i class="ri-calendar-event-line"></i> Events Report
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nav-bottom">
+                    <div class="nav-divider"></div>
+                    
+                    <!-- Support -->
+                    <a href="/admin-portal/support/" class="nav-item">
+                        <span>Support</span>
+                    </a>
+                    
+                    <!-- Profile -->
+                    <a href="/admin-portal/profile/" class="nav-item">
+                        <span>Profile</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Overlay for mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i class="ri-menu-line"></i>
+                    </button>
+                    <div class="page-title">{% block page_title %}Dashboard{% endblock %}</div>
+                </div>
+                <div class="topbar-right">
+                    <!-- Notifications Dropdown -->
+                    <div class="notifications-dropdown">
+                        <button class="notification-btn" id="notificationsBtn">
+                            <i class="ri-notification-3-line"></i>
+                            <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                        </button>
+                        <div class="notifications-panel" id="notificationsPanel">
+                            <div class="notifications-header">
+                                <h4>Notifications</h4>
+                                <button onclick="markAllAsRead()">Mark all as read</button>
+                            </div>
+                            <div class="notifications-list" id="notificationsList">
+                                <div class="loading-state">
+                                    <div class="loading-spinner"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin Profile -->
+                    <div class="admin-profile">
+                        <div class="profile-avatar">
+                            <span>A</span>
+                        </div>
+                        <div class="profile-info">
+                            <span class="profile-name">Admin User</span>
+                            <span class="profile-role">Administrator</span>
+                        </div>
+                        <i class="ri-arrow-down-s-line"></i>
+                        <div class="profile-dropdown">
+                            <a href="/admin-portal/dashboard/">
+                                <i class="ri-dashboard-line"></i> Dashboard
+                            </a>
+                            <hr>
+                            <a href="/admin-portal/settings/general/">
+                                <i class="ri-settings-3-line"></i> Settings
+                            </a>
+                            <hr>
+                            <a href="/admin/logout/">
+                                <i class="ri-logout-box-r-line"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    
+    <script src="{% static 'js/attendee/errors/error-handler.js' %}"></script>
+    <script src="{% static 'js/admin/admin.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

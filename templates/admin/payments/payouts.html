@@ -1,0 +1,148 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Organizer Payouts - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/payments/payments.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="payments-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-money-bill-wave"></i> Organizer Payouts</h1>
+            <p class="text-muted">Manage organizer payout requests</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-primary" id="processAllBtn">
+                <i class="fas fa-check-circle"></i> Process All Pending
+            </button>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+                <h3 id="pendingPayouts">0</h3>
+                <span>Pending Payouts</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-info">
+                <h3 id="totalPendingAmount">Kes 0</h3>
+                <span>Total Pending</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-history"></i></div>
+            <div class="stat-info">
+                <h3 id="totalPaid">Kes 0</h3>
+                <span>Total Paid</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar"></i></div>
+            <div class="stat-info">
+                <h3 id="paidThisMonth">Kes 0</h3>
+                <span>Paid This Month</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group search-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchPayouts" placeholder="Search organizer...">
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="statusFilter">
+                    <option value="">All</option>
+                    <option value="pending">Pending</option>
+                    <option value="processing">Processing</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>From Date</label>
+                <input type="date" id="dateFrom">
+            </div>
+            <div class="filter-group">
+                <label>To Date</label>
+                <input type="date" id="dateTo">
+            </div>
+            <button class="btn-secondary" id="applyFiltersBtn">
+                <i class="fas fa-filter"></i> Apply
+            </button>
+            <button class="btn-outline" id="resetFiltersBtn">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-list-ul"></i> Payout Requests</h3>
+            <div class="table-info">
+                <span id="recordsCount">0 records</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Organizer</th>
+                            <th>Period</th>
+                            <th>Events</th>
+                            <th>Ticket Sales</th>
+                            <th>Platform Fee</th>
+                            <th>Payout Amount</th>
+                            <th>Status</th>
+                            <th>Requested</th>
+                            <th>Actions</th>
+                        </thead>
+                        <tbody id="payoutsList">
+                            <tr><td colspan="9" class="text-center">Loading payouts...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<div id="payoutModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-exchange-alt"></i> Process Payout</h3>
+            <button class="modal-close" id="closeModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="payoutInfo" class="payout-info"></div>
+            <div class="form-group">
+                <label>Reference Number</label>
+                <input type="text" id="transactionRef" class="form-control" placeholder="Enter reference number" required>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="payoutNotes" rows="2" class="form-control" placeholder="Internal notes..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="cancelModalBtn">Cancel</button>
+            <button class="btn-success" id="confirmPayoutBtn">
+                <i class="fas fa-check-circle"></i> Confirm
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/payments/payouts.js' %}"></script>
+{% endblock %}

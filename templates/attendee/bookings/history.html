@@ -1,0 +1,87 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}My Bookings - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/typography.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/bookings/bookings.css' %}">
+{% endblock %}
+
+{% block attendee_content %}
+<div class="bookings-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-receipt"></i> My Bookings</h1>
+            <p class="text-muted">View and manage all your event bookings</p>
+        </div>
+        <div class="action-buttons">
+            <button class="btn-outline" onclick="exportBookings()">
+                <i class="fas fa-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+        <button class="tab-btn active" data-tab="all" onclick="switchTab('all')">All Bookings</button>
+        <button class="tab-btn" data-tab="upcoming" onclick="switchTab('upcoming')">Upcoming</button>
+        <button class="tab-btn" data-tab="past" onclick="switchTab('past')">Past</button>
+        <button class="tab-btn" data-tab="cancelled" onclick="switchTab('cancelled')">Cancelled</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group search-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchBookings" placeholder="Search by event or booking ID...">
+            </div>
+            <div class="filter-group">
+                <label>Date Range</label>
+                <select id="dateRange">
+                    <option value="all">All Time</option>
+                    <option value="30">Last 30 Days</option>
+                    <option value="90">Last 90 Days</option>
+                    <option value="365">Last Year</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bookings List -->
+    <div id="bookingsList" class="bookings-list">
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading your bookings...</p>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="pagination"></div>
+</div>
+
+<!-- Booking Detail Modal -->
+<div id="bookingModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-receipt"></i> Booking Details</h3>
+            <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="bookingModalBody">
+            <div class="loading-state">Loading details...</div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeBookingModal()">Close</button>
+            <button class="btn-primary" id="printBookingBtn" onclick="printBooking()" style="display: none;">
+                <i class="fas fa-print"></i> Print
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/bookings/bookings.js' %}"></script>
+{% endblock %}

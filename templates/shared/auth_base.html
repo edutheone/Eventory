@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EventHub - Authentication{% endblock %}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'js/shared/events-prefetch.service.js' %}"></script>
+    <script src="{% static 'js/shared/auth-login-hooks.js' %}"></script>
+    <script>
+        // Get role from URL to determine redirect
+        function getRoleFromUrl() {
+            const path = window.location.pathname;
+            if (path.includes('/attendee/')) return 'attendee';
+            if (path.includes('/organizer/')) return 'organizer';
+            return null;
+        }
+        
+        // Set redirect URL based on role
+        window.redirectAfterLogin = getRoleFromUrl() === 'attendee' 
+            ? '/attendee/dashboard/' 
+            : '/organizer/dashboard/';
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

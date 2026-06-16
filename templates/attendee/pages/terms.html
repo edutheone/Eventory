@@ -1,0 +1,193 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Terms of Service - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/pages/terms.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="terms-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Terms of Service</h1>
+            <p>Please read these terms carefully before using EventHub</p>
+        </div>
+        
+        <!-- Last Updated -->
+        <div class="last-updated-banner">
+            <i class="fas fa-clock"></i>
+            <span>Last Updated: January 1, 2024</span>
+        </div>
+        
+        <!-- Terms Content -->
+        <div class="terms-content">
+            <!-- Introduction -->
+            <div class="terms-section">
+                <h2>1. Introduction</h2>
+                <p>Welcome to EventHub ("we," "our," or "us"). By accessing or using our platform, website, mobile application, or services (collectively, the "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use our Service.</p>
+                <p>EventHub is a platform that connects event organizers with attendees. We provide ticket discovery, booking, and management services for events across Kenya and beyond.</p>
+            </div>
+            
+            <!-- Account Registration -->
+            <div class="terms-section">
+                <h2>2. Account Registration</h2>
+                <h3>2.1 Eligibility</h3>
+                <p>You must be at least 18 years old to create an account on EventHub. By creating an account, you represent and warrant that you meet this age requirement.</p>
+                
+                <h3>2.2 Account Responsibility</h3>
+                <p>You are solely responsible for maintaining the confidentiality of your account credentials, including your password. You agree to notify us immediately of any unauthorized use of your account or any other breach of security.</p>
+                
+                <h3>2.3 Account Information</h3>
+                <p>You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete.</p>
+                
+                <h3>2.4 Account Termination</h3>
+                <p>We reserve the right to suspend or terminate your account at any time, with or without notice, for conduct that we believe violates these Terms or is harmful to other users of the Service.</p>
+            </div>
+            
+            <!-- Ticket Purchases -->
+            <div class="terms-section">
+                <h2>3. Ticket Purchases</h2>
+                <h3>3.1 Ticket Availability</h3>
+                <p>All ticket sales are subject to availability. We do not guarantee that tickets will be available for any event listed on our platform.</p>
+                
+                <h3>3.2 Pricing</h3>
+                <p>Ticket prices are set by event organizers and are displayed at the time of purchase. Prices may include service fees, processing fees, and taxes. All prices are in the currency specified at checkout.</p>
+                
+                <h3>3.3 Payment</h3>
+                <p>You agree to pay all charges incurred by you or any users of your account at the prices in effect when such charges are incurred. We accept various payment methods, including M-Pesa, credit cards, and other payment options as indicated.</p>
+                
+                <h3>3.4 Order Confirmation</h3>
+                <p>After you complete your purchase, you will receive a confirmation email with your ticket details. Please review this confirmation carefully and contact us immediately if there are any errors.</p>
+                
+                <h3>3.5 Ticket Delivery</h3>
+                <p>Tickets are delivered electronically via email and are also available in your account dashboard. You are responsible for ensuring you have access to your tickets at the time of the event.</p>
+            </div>
+            
+            <!-- Refunds and Cancellations -->
+            <div class="terms-section">
+                <h2>4. Refunds and Cancellations</h2>
+                <h3>4.1 Event Cancellations</h3>
+                <p>If an event is canceled by the organizer, you will be eligible for a full refund of the ticket price. We will notify you via email and process your refund automatically within 5-7 business days.</p>
+                
+                <h3>4.2 Event Rescheduling</h3>
+                <p>If an event is rescheduled, your tickets will be valid for the new date. If you cannot attend the rescheduled date, you may request a refund within 14 days of the reschedule notice.</p>
+                
+                <h3>4.3 Changes to Events</h3>
+                <p>Event organizers may make changes to event details, including lineup, venue, or schedule. In such cases, refunds are subject to the event organizer's policy.</p>
+                
+                <h3>4.4 Customer-Initiated Cancellations</h3>
+                <p>All ticket sales are final unless otherwise specified by the event organizer. We do not offer refunds for customer-initiated cancellations or changes of mind.</p>
+                
+                <h3>4.5 Refund Processing</h3>
+                <p>Refunds will be processed using the original payment method. Please allow 5-10 business days for the refund to appear in your account.</p>
+            </div>
+            
+            <!-- User Conduct -->
+            <div class="terms-section">
+                <h2>5. User Conduct</h2>
+                <h3>5.1 Prohibited Activities</h3>
+                <p>You agree not to engage in any of the following prohibited activities:</p>
+                <ul>
+                    <li>Using the Service for any illegal purpose or in violation of any laws</li>
+                    <li>Attempting to interfere with, compromise, or disrupt the Service's systems</li>
+                    <li>Creating multiple accounts or using bots to purchase tickets</li>
+                    <li>Reselling tickets for profit without authorization</li>
+                    <li>Posting false, misleading, or fraudulent information</li>
+                    <li>Harassing, abusing, or harming another person</li>
+                    <li>Impersonating another person or entity</li>
+                </ul>
+                
+                <h3>5.2 Content Standards</h3>
+                <p>Any content you post or submit to the Service must not be defamatory, obscene, offensive, or otherwise objectionable. We reserve the right to remove any content that violates these standards.</p>
+                
+                <h3>5.3 Event Attendance</h3>
+                <p>When attending events, you agree to follow the rules and guidelines set by the event organizer and venue. Failure to do so may result in removal from the event without refund.</p>
+            </div>
+            
+            <!-- Ticket Transferability -->
+            <div class="terms-section">
+                <h2>6. Ticket Transferability</h2>
+                <h3>6.1 General Policy</h3>
+                <p>Most tickets on EventHub are non-transferable unless specifically stated by the event organizer. If transfers are allowed, you may transfer your ticket through your account dashboard.</p>
+                
+                <h3>6.2 Transfer Process</h3>
+                <p>To transfer a ticket, navigate to "My Tickets" in your account, select the ticket, and click "Transfer Ticket." Enter the recipient's email address, and they will receive instructions to accept the transfer.</p>
+                
+                <h3>6.3 Transfer Fees</h3>
+                <p>Some events may charge a transfer fee. Any applicable fees will be displayed during the transfer process and are the responsibility of the ticket holder.</p>
+            </div>
+            
+            <!-- Intellectual Property -->
+            <div class="terms-section">
+                <h2>7. Intellectual Property</h2>
+                <h3>7.1 Our Content</h3>
+                <p>All content on the Service, including text, graphics, logos, icons, images, and software, is the property of EventHub or our licensors and is protected by copyright, trademark, and other intellectual property laws.</p>
+                
+                <h3>7.2 Limited License</h3>
+                <p>We grant you a limited, non-exclusive, non-transferable license to access and use the Service for personal, non-commercial purposes. You may not copy, modify, distribute, sell, or lease any part of the Service.</p>
+                
+                <h3>7.3 User Content</h3>
+                <p>By submitting content to the Service (reviews, comments, etc.), you grant us a worldwide, royalty-free license to use, reproduce, modify, and distribute that content in connection with the Service.</p>
+            </div>
+            
+            <!-- Limitation of Liability -->
+            <div class="terms-section">
+                <h2>8. Limitation of Liability</h2>
+                <p>To the maximum extent permitted by law, EventHub shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, or goodwill, arising from your use of the Service.</p>
+                <p>Our total liability to you for any claims arising from your use of the Service shall not exceed the amount you paid for tickets through our platform in the past 12 months.</p>
+                <p>We are not responsible for the conduct of event organizers, venues, or other attendees. We act as a platform only and do not operate or control events.</p>
+            </div>
+            
+            <!-- Indemnification -->
+            <div class="terms-section">
+                <h2>9. Indemnification</h2>
+                <p>You agree to indemnify, defend, and hold harmless EventHub, its officers, directors, employees, and agents from any claims, damages, losses, or expenses arising from your use of the Service, your violation of these Terms, or your violation of any rights of another party.</p>
+            </div>
+            
+            <!-- Modifications to Terms -->
+            <div class="terms-section">
+                <h2>10. Modifications to Terms</h2>
+                <p>We reserve the right to modify these Terms at any time. If we make material changes, we will notify you by email or through a notice on our platform. Your continued use of the Service after the effective date constitutes your acceptance of the modified Terms.</p>
+            </div>
+            
+            <!-- Governing Law -->
+            <div class="terms-section">
+                <h2>11. Governing Law</h2>
+                <p>These Terms shall be governed by and construed in accordance with the laws of Kenya, without regard to its conflict of law principles. Any disputes arising under these Terms shall be resolved exclusively in the courts of Nairobi, Kenya.</p>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="terms-section">
+                <h2>12. Contact Us</h2>
+                <p>If you have any questions about these Terms, please contact us at:</p>
+                <ul>
+                    <li><strong>Email:</strong> <a href="mailto:legal@eventhub.com" style="color: inherit; text-decoration: none;">legal@eventhub.com</a></li>
+                    <li><strong>Address:</strong> EventHub, Westlands, Nairobi, Kenya</li>
+                    <li><strong>Phone:</strong> +254 700 000 000</li>
+                </ul>
+            </div>
+            
+            <!-- Acceptance -->
+            <div class="terms-acceptance">
+                <i class="fas fa-check-circle"></i>
+                <p>By using EventHub, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.</p>
+            </div>
+        </div>
+        
+        <!-- Download Button -->
+        <div class="download-section">
+            <button class="btn-download" id="downloadTerms">
+                <i class="fas fa-download"></i>
+                Download Terms of Service (PDF)
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/pages/terms.js' %}"></script>
+{% endblock %}

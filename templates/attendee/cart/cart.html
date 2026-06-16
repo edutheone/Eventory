@@ -1,0 +1,147 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}My Bookings - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/cart/cart.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/event/event-detail.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/event/events.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="booking-page">
+    <div class="container">
+        <div class="booking-header">
+            <h1>My Bookings</h1>
+            <p>Review your selected events and complete your booking</p>
+        </div>
+
+        <!-- Empty Booking State -->
+        <div id="emptyCart" class="empty-booking" style="display: none;">
+            <i class="fas fa-ticket-alt"></i>
+            <h3>No events booked yet</h3>
+            <p>You haven't added any events to your booking list.</p>
+            <a href="/events/" class="btn-primary">Browse Events</a>
+        </div>
+
+        <!-- Booking Content -->
+        <div id="cartContent" style="display: none;">
+            <div class="booking-layout">
+                <!-- Booking Items Section -->
+                <div class="booking-items-section">
+                    <div class="booking-items-header">
+                        <h3>Events to Book (<span id="cartItemCount">0</span>)</h3>
+                        <button class="clear-booking-btn" onclick="clearCart()">Clear All</button>
+                    </div>
+                    <div id="cartItems" class="booking-items-list"></div>
+                </div>
+
+                <!-- Booking Summary Section -->
+                <div class="booking-summary-card">
+                    <h3>Booking Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">KES 0</span>
+                    </div>
+                    <div id="discountRow" class="summary-row discount" style="display: none;">
+                        <span>Discount:</span>
+                        <span id="discountAmount">-KES 0</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total Amount:</span>
+                        <span id="totalAmount">KES 0</span>
+                    </div>
+
+                    <!-- Promo Code -->
+                    <div class="promo-section">
+                        <div id="appliedPromo" class="applied-promo" style="display: none;">
+                            <span>Promo code <strong id="promoCodeDisplay"></strong> applied</span>
+                            <button onclick="removePromoCode()">Remove</button>
+                        </div>
+                        <form id="promoForm" class="promo-form">
+                            <input type="text" id="promoCode" placeholder="Enter promo code">
+                            <button type="submit">Apply</button>
+                        </form>
+                    </div>
+
+                    <button class="checkout-btn" onclick="proceedToCheckout()">
+                        Proceed to Payment
+                    </button>
+                    <button class="browse-events-btn" onclick="window.location.href='/events/'">
+                        Browse More Events
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout View -->
+        <div id="checkoutView" class="checkout-view" style="display: none;">
+            <div class="checkout-layout">
+                <!-- Billing Information -->
+                <div class="billing-section">
+                    <div class="section-header">
+                        <button class="back-btn" onclick="backToCart()">
+                            <i class="fas fa-arrow-left"></i> Back to Bookings
+                        </button>
+                        <h2>Billing Information</h2>
+                    </div>
+                    
+                    <form id="checkoutForm">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="billingName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address *</label>
+                            <input type="email" id="billingEmail" class="form-control" required>
+                        </div>
+
+                        <h3>Payment Method</h3>
+                        <div class="payment-method-info">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div>
+                                <strong>M-Pesa</strong>
+                                <p>Pay manually via M-Pesa, then upload your confirmation screenshot</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <i class="fas fa-info-circle"></i>
+                            <p>After clicking Complete Booking, you will see the organizer's M-Pesa payment details. Send the exact amount from your M-Pesa app, then upload your payment screenshot for verification.</p>
+                        </div>
+
+                        <button type="submit" class="complete-booking-btn">Complete Booking</button>
+                    </form>
+                </div>
+
+                <!-- Booking Summary Sidebar -->
+                <div class="checkout-summary">
+                    <h3>Booking Summary</h3>
+                    <div id="checkoutOrderSummary"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Processing View -->
+        <div id="paymentView" class="payment-view" style="display: none;">
+            <div class="payment-container">
+                <div id="paymentStatus" class="payment-status">
+                    <div class="payment-loading">
+                        <div class="payment-spinner"></div>
+                        <p>Processing payment...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'attendee/events/checkout_modal.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/shared/cart-storage.js' %}"></script>
+<script src="{% static 'js/attendee/payments/checkout.js' %}"></script>
+<script src="{% static 'js/attendee/cart/cart.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Maintenance - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/error-pages.css' %}">
+{% endblock %}
+
+{% block attendee_content %}
+<div class="error-container error-503">
+    <div class="error-content">
+        <div class="error-code">503</div>
+        <h1>Under Maintenance</h1>
+        <p>We're currently updating our systems to serve you better. Please check back soon!</p>
+        
+        <div class="error-illustration">
+            <img src="{% static 'images/maintenance.svg' %}" alt="Under Maintenance">
+        </div>
+        
+        <div class="error-actions">
+            <a href="/attendee/" class="btn-primary">
+                <i class="fas fa-home"></i> Go Home
+            </a>
+            <button class="btn-outline" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i> Check Again
+            </button>
+        </div>
+        
+        <div class="error-help-links">
+            <a href="https://twitter.com/eventhubke" target="_blank">
+                <i class="fab fa-twitter"></i> Follow for Updates
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

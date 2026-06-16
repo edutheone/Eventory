@@ -1,0 +1,134 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Support Tickets - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/typography.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/support/support.css' %}">
+{% endblock %}
+
+{% block attendee_content %}
+<div class="support-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-headset"></i> Support Tickets</h1>
+            <p class="text-muted">Get help with your issues</p>
+        </div>
+        <button class="btn-primary" onclick="showCreateTicketModal()">
+            <i class="fas fa-plus"></i> New Ticket
+        </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+        <button class="tab-btn active" data-tab="tickets" onclick="switchTab('tickets')">My Tickets</button>
+        <button class="tab-btn" data-tab="faq" onclick="switchTab('faq')">FAQ</button>
+    </div>
+
+    <!-- Tickets Tab -->
+    <div id="ticketsTab" class="tab-content active">
+        <!-- Filters -->
+        <div class="filters-card">
+            <div class="filters-row">
+                <div class="filter-group search-group">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchTickets" placeholder="Search tickets...">
+                </div>
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select id="statusFilter">
+                        <option value="all">All</option>
+                        <option value="open">Open</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tickets List -->
+        <div id="ticketsList" class="tickets-list">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading tickets...</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="pagination"></div>
+        <div id="ticketsCount" class="tickets-count"></div>
+    </div>
+
+    <!-- FAQ Tab -->
+    <div id="faqTab" class="tab-content" style="display: none;">
+        <div class="faq-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="faqSearch" placeholder="Search FAQs...">
+        </div>
+        <div id="faqList" class="faq-list">
+            <div class="loading-state">Loading FAQs...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Ticket Modal -->
+<div id="createTicketModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-plus"></i> Create Support Ticket</h3>
+            <button class="modal-close" onclick="closeCreateTicketModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="createTicketForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" id="ticketSubject" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="ticketCategory" class="form-control">
+                        <option value="booking">Booking Issue</option>
+                        <option value="payment">Payment Problem</option>
+                        <option value="ticket">Ticket Issue</option>
+                        <option value="event">Event Related</option>
+                        <option value="account">Account Issue</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="ticketMessage" rows="5" class="form-control" required></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeCreateTicketModal()">Cancel</button>
+            <button class="btn-primary" onclick="createTicket()">Submit Ticket</button>
+        </div>
+    </div>
+</div>
+
+<!-- Ticket Detail Modal -->
+<div id="ticketDetailModal" class="modal" style="display: none;">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3><i class="fas fa-ticket-alt"></i> Ticket Details</h3>
+            <button class="modal-close" onclick="closeTicketDetailModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="ticketDetailBody">
+            <div class="loading-state">Loading...</div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeTicketDetailModal()">Close</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/support/support.js' %}"></script>
+{% endblock %}

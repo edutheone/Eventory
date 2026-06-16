@@ -1,0 +1,533 @@
+{% load static %}
+<section class="featured-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Featured Events</h2>
+            <p>Hand-picked events you don't want to miss</p>
+        </div>
+        
+        <div class="featured-carousel-wrapper">
+            <div class="featured-carousel" id="featuredCarousel">
+                <!-- Featured events will be loaded dynamically -->
+                <div class="loading-state">Loading featured events...</div>
+            </div>
+            
+            <!-- Navigation Dots (visual indicators only - not clickable) -->
+            <div class="featured-dots" id="featuredDots"></div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Carousel wrapper */
+.featured-carousel-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Carousel container - auto-rotate only, no manual scroll */
+.featured-carousel {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: hidden !important;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0.5rem 0;
+    cursor: default;
+}
+
+.featured-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+/* Prevent user from manually scrolling the carousel */
+.featured-carousel {
+    -webkit-overflow-scrolling: auto;
+    pointer-events: none;
+}
+
+/* Cards themselves are not clickable for navigation */
+.premium-card {
+    pointer-events: none;
+}
+
+/* Buttons inside cards ARE clickable - ONLY these act as navigation */
+.premium-card button,
+.premium-card .card-action-btn,
+.premium-card .wishlist-btn,
+.premium-card .view-details-btn,
+.premium-card .book-ticket-btn {
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+
+/* Card content text - not clickable */
+.card-content,
+.card-title,
+.card-category,
+.card-meta,
+.card-price {
+    pointer-events: none;
+}
+
+/* Featured item */
+.featured-item {
+    flex: 0 0 calc(33.333% - 1rem);
+    min-width: calc(33.333% - 1rem);
+}
+
+/* Remove any card-level click cursor */
+.premium-card {
+    cursor: default;
+}
+
+/* REMOVED: Progress bar and hover indicator styles */
+
+/* Responsive breakpoints */
+@media (max-width: 1024px) {
+    .featured-item {
+        flex: 0 0 calc(50% - 0.75rem);
+        min-width: calc(50% - 0.75rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .featured-item {
+        flex: 0 0 100%;
+        min-width: 100%;
+    }
+}
+</style>
+
+<script>
+let featuredEvents = [];
+let currentIndex = 0;
+let autoScrollInterval;
+let isPaused = false;
+let isHovering = false;
+const timePerSlide = 3000; // 3 seconds
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadFeaturedEvents();
+    setupAutoScroll();
+    setupVisibilityChange();
+    
+    // Listen for wishlist and cart updates from other pages
+    window.addEventListener('wishlist-updated', function() {
+        updateAllWishlistButtons();
+    });
+    
+    window.addEventListener('storage', function() {
+        updateAllWishlistButtons();
+    });
+});
+
+async function loadFeaturedEvents() {
+    const carousel = document.getElementById('featuredCarousel');
+    const dotsContainer = document.getElementById('featuredDots');
+    
+    try {
+        const response = await fetch('/api/attendee/events/featured/');
+        const data = await response.json();
+        
+        featuredEvents = data.events || [];
+        
+        if (featuredEvents.length === 0) {
+            carousel.innerHTML = '<div class="empty-state">No featured events available</div>';
+            return;
+        }
+        
+        // Render events - NO click on card area, only buttons
+        carousel.innerHTML = featuredEvents.map((event, index) => `
+            <div class="featured-item" data-event-id="${event.id}" data-index="${index}">
+                <div class="premium-card">
+                    <div class="card-image-container">
+                        <img src="${event.banner_image || event.image || '/static/images/placeholder.jpg'}" alt="${escapeHtml(event.title)}" class="card-bg-image" loading="lazy" onerror="this.src='/static/images/placeholder.jpg'">
+                        <div class="card-gradient-overlay"></div>
+                        ${event.is_featured ? '<span class="featured-badge"><i class="fas fa-star"></i> Featured</span>' : ''}
+                        <button class="wishlist-btn" data-id="${event.id}" data-title="${escapeHtml(event.title)}">
+                            <i class="far fa-heart"></i> Wishlist
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-category">${escapeHtml(event.category_name || event.category || 'Event')}</span>
+                        <h3 class="card-title">${escapeHtml(event.title)}</h3>
+                        <div class="card-meta">
+                            <span><i class="fas fa-calendar"></i> ${formatDate(event.start_date || event.date)}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(event.location ? event.location.split(',')[0] : 'TBD')}</span>
+                        </div>
+                        <div class="card-price">
+                            KES ${formatPrice(event.price)}
+                            ${event.original_price ? `<span class="original-price">KES ${formatPrice(event.original_price)}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-action-btn view-details-btn" data-id="${event.id}">
+                            <i class="fas fa-info-circle"></i> Details
+                        </button>
+                        <button class="card-action-btn book-ticket-btn" data-id="${event.id}" data-title="${escapeHtml(event.title)}" data-price="${event.price}">
+                            <i class="fas fa-ticket-alt"></i> Book Ticket
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        // Create dots (visual indicators only - not clickable)
+        dotsContainer.innerHTML = '';
+        featuredEvents.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('featured-dot');
+            if (index === 0) dot.classList.add('active');
+            dotsContainer.appendChild(dot);
+        });
+        
+        // Attach event listeners to buttons
+        attachButtonEventListeners();
+        
+        // Update wishlist button states
+        updateAllWishlistButtons();
+        
+        // Start the carousel after loading
+        startAutoScroll();
+        
+    } catch (error) {
+        console.error('Error loading featured events:', error);
+        carousel.innerHTML = '<div class="error-state">Failed to load featured events. Please refresh.</div>';
+    }
+}
+
+function attachButtonEventListeners() {
+    // Wishlist buttons
+    document.querySelectorAll('.featured-item .wishlist-btn').forEach(btn => {
+        btn.removeEventListener('click', handleWishlistClick);
+        btn.addEventListener('click', handleWishlistClick);
+    });
+    
+    // Details buttons
+    document.querySelectorAll('.featured-item .view-details-btn').forEach(btn => {
+        btn.removeEventListener('click', handleViewDetailsClick);
+        btn.addEventListener('click', handleViewDetailsClick);
+    });
+    
+    // Book ticket buttons
+    document.querySelectorAll('.featured-item .book-ticket-btn').forEach(btn => {
+        btn.removeEventListener('click', handleBookTicketClick);
+        btn.addEventListener('click', handleBookTicketClick);
+    });
+}
+
+function handleWishlistClick(e) {
+    e.stopPropagation();
+    const btn = this;
+    const eventId = parseInt(btn.dataset.id);
+    const eventTitle = btn.dataset.title || 'Event';
+    toggleWishlist(eventId, btn, eventTitle);
+}
+
+function handleViewDetailsClick(e) {
+    e.stopPropagation();
+    const btn = this;
+    const eventId = parseInt(btn.dataset.id);
+    viewEventDetails(eventId);
+}
+
+function handleBookTicketClick(e) {
+    e.stopPropagation();
+    const btn = this;
+    const eventId = parseInt(btn.dataset.id);
+    const eventTitle = btn.dataset.title;
+    const eventPrice = parseFloat(btn.dataset.price);
+    bookTicket(eventId, eventTitle, eventPrice);
+}
+
+function updateAllWishlistButtons() {
+    const wishlist = JSON.parse(localStorage.getItem('event_wishlist') || '[]');
+    const wishlistSet = new Set(wishlist);
+    
+    document.querySelectorAll('.featured-item .wishlist-btn').forEach(btn => {
+        const eventId = parseInt(btn.dataset.id);
+        const isInWishlist = wishlistSet.has(eventId);
+        
+        if (isInWishlist) {
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="fas fa-heart"></i> Remove';
+        } else {
+            btn.classList.remove('active');
+            btn.innerHTML = '<i class="far fa-heart"></i> Wishlist';
+        }
+    });
+}
+
+function scrollToIndex(index) {
+    const carousel = document.getElementById('featuredCarousel');
+    const items = document.querySelectorAll('.featured-item');
+    
+    if (carousel && items[index]) {
+        currentIndex = index;
+        const itemWidth = items[0].offsetWidth;
+        const gap = 24;
+        const scrollPosition = index * (itemWidth + gap);
+        
+        carousel.scrollTo({
+            left: scrollPosition,
+            behavior: 'smooth'
+        });
+        
+        updateDots();
+    }
+}
+
+function updateDots() {
+    const dots = document.querySelectorAll('.featured-dot');
+    if (!dots.length) return;
+    
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentIndex);
+    });
+}
+
+function nextSlide() {
+    if (featuredEvents.length === 0 || isPaused) return;
+    const nextIndex = (currentIndex + 1) % featuredEvents.length;
+    scrollToIndex(nextIndex);
+}
+
+function prevSlide() {
+    if (featuredEvents.length === 0 || isPaused) return;
+    const prevIndex = (currentIndex - 1 + featuredEvents.length) % featuredEvents.length;
+    scrollToIndex(prevIndex);
+}
+
+function autoScroll() {
+    if (!isPaused && !isHovering && featuredEvents.length > 0) {
+        nextSlide();
+    }
+}
+
+function setupAutoScroll() {
+    const wrapper = document.querySelector('.featured-carousel-wrapper');
+    
+    // Silent hover pause - no visual indicators
+    wrapper.addEventListener('mouseenter', () => {
+        isHovering = true;
+        isPaused = true;
+    });
+    
+    wrapper.addEventListener('mouseleave', () => {
+        isHovering = false;
+        isPaused = false;
+    });
+    
+    startAutoScroll();
+}
+
+function startAutoScroll() {
+    if (autoScrollInterval) clearInterval(autoScrollInterval);
+    // Auto-rotate every 3 seconds (3000 milliseconds)
+    autoScrollInterval = setInterval(() => {
+        autoScroll();
+    }, timePerSlide);
+}
+
+function stopAutoScroll() {
+    if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+    }
+}
+
+function setupVisibilityChange() {
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAutoScroll();
+        } else {
+            startAutoScroll();
+        }
+    });
+}
+
+async function toggleWishlist(eventId, btnElement, eventTitle) {
+    const token = localStorage.getItem('attendee_access_token');
+    if (!token) {
+        showToast('🔐 Please login to save to wishlist', 'info');
+        setTimeout(() => window.location.href = '/login/', 1500);
+        return;
+    }
+    
+    const isActive = btnElement.classList.contains('active');
+    
+    // Optimistic UI update
+    if (isActive) {
+        btnElement.classList.remove('active');
+        btnElement.innerHTML = '<i class="far fa-heart"></i> Wishlist';
+    } else {
+        btnElement.classList.add('active');
+        btnElement.innerHTML = '<i class="fas fa-heart"></i> Remove';
+    }
+    
+    try {
+        if (!isActive) {
+            const response = await fetch('/api/attendee/wishlist/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ event_id: eventId })
+            });
+            
+            if (response.ok) {
+                showToast(`❤️ "${eventTitle}" has been saved to your wishlist`, 'success');
+                updateWishlistBadge(1);
+                updateAllWishlistButtons();
+                window.dispatchEvent(new Event('wishlist-updated'));
+                window.dispatchEvent(new Event('storage'));
+            } else {
+                btnElement.classList.add('active');
+                btnElement.innerHTML = '<i class="fas fa-heart"></i> Remove';
+                showToast('Failed to add to wishlist', 'error');
+            }
+        } else {
+            const response = await fetch(`/api/attendee/wishlist/${eventId}/`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                showToast(`🗑️ "${eventTitle}" has been removed from your wishlist`, 'info');
+                updateWishlistBadge(-1);
+                updateAllWishlistButtons();
+                window.dispatchEvent(new Event('wishlist-updated'));
+                window.dispatchEvent(new Event('storage'));
+            } else {
+                btnElement.classList.remove('active');
+                btnElement.innerHTML = '<i class="far fa-heart"></i> Wishlist';
+                showToast('Failed to remove from wishlist', 'error');
+            }
+        }
+    } catch (error) {
+        console.error('Wishlist error:', error);
+        if (isActive) {
+            btnElement.classList.add('active');
+            btnElement.innerHTML = '<i class="fas fa-heart"></i> Remove';
+        } else {
+            btnElement.classList.remove('active');
+            btnElement.innerHTML = '<i class="far fa-heart"></i> Wishlist';
+        }
+        showToast('Network error. Please try again.', 'error');
+    }
+}
+
+function updateWishlistBadge(delta) {
+    const badge = document.getElementById('wishlistBadgeDropdown');
+    if (badge) {
+        let currentCount = parseInt(badge.textContent) || 0;
+        let newCount = Math.max(0, currentCount + delta);
+        badge.textContent = newCount;
+        badge.style.display = newCount > 0 ? 'inline-block' : 'none';
+    }
+}
+
+function bookTicket(eventId, title, price) {
+    const token = localStorage.getItem('attendee_access_token');
+    if (!token) {
+        showToast('🔐 Please login to book tickets', 'info');
+        setTimeout(() => window.location.href = '/login/', 1500);
+        return;
+    }
+    
+    const event = featuredEvents.find(e => e.id === eventId);
+    if (!event) {
+        showToast('❌ Event details not found', 'error');
+        return;
+    }
+    
+    if (event.available_tickets <= 0) {
+        showToast('🎫 Sorry, this event is sold out!', 'error');
+        return;
+    }
+    
+    let cart = JSON.parse(localStorage.getItem('eventhub_cart') || '{"items":[]}');
+    const existingItem = cart.items.find(i => i.id === eventId);
+    
+    if (existingItem) {
+        showToast(`⚠️ "${title}" is already in your cart. Proceed to checkout.`, 'info');
+        return;
+    }
+    
+    cart.items.push({
+        id: event.id,
+        title: event.title,
+        price: event.price,
+        quantity: 1,
+        image: event.banner_image || event.image,
+        location: event.location,
+        date: event.start_date || event.date,
+        category: event.category_name || event.category
+    });
+    
+    cart.subtotal = cart.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    cart.total = cart.subtotal;
+    
+    localStorage.setItem('eventhub_cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cart-updated'));
+    window.dispatchEvent(new Event('storage'));
+    
+    showToast(`✅ "${title}" has been added to your cart. Total: KES ${price.toLocaleString()}`, 'success');
+}
+
+function viewEventDetails(eventId) {
+    const token = localStorage.getItem('attendee_access_token');
+    
+    if (!token) {
+        showToast('🔐 Please login to view event details and book tickets', 'info');
+        setTimeout(() => {
+            localStorage.setItem('redirect_after_login', window.location.pathname);
+            window.location.href = '/login/';
+        }, 1500);
+        return;
+    }
+    
+    window.location.href = `/events/detail/?id=${eventId}`;
+}
+
+function showToast(message, type) {
+    const existingToast = document.querySelector('.custom-toast');
+    if (existingToast) existingToast.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = `custom-toast toast-${type}`;
+    const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+    toast.innerHTML = `<i class="fas ${icon}"></i> <span>${escapeHtml(message)}</span>`;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentNode) toast.remove();
+    }, 3000);
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'TBD';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatPrice(price) {
+    return Number(price).toLocaleString();
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Make functions global
+window.viewEventDetails = viewEventDetails;
+window.toggleWishlist = toggleWishlist;
+window.bookTicket = bookTicket;
+window.showToast = showToast;
+</script>

@@ -1,0 +1,55 @@
+{% extends "organizer/base.html" %}
+{% load static %}
+{% block title %}Settings | EventHub Organizer{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/organizers/settings.css">
+{% endblock %}
+{% block content %}
+<div>
+    <h1 class="h2">Settings</h1>
+    <ul class="nav nav-tabs mb-4" id="settingsTab" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#general">General</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#payment">Payment</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#team">Team</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#api">API Keys</button></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="general">
+            <div class="chart-card"><form id="generalForm"><div class="row"><div class="col-md-6 mb-3"><label>Organization Name</label><input type="text" id="orgName" class="form-control"></div><div class="col-md-6 mb-3"><label>Email</label><input type="email" id="orgEmail" class="form-control"></div><div class="col-md-6 mb-3"><label>Phone</label><input type="text" id="orgPhone" class="form-control"></div><div class="col-md-6 mb-3"><label>Website</label><input type="url" id="orgWebsite" class="form-control"></div><div class="col-12 mb-3"><label>Bio</label><textarea id="orgBio" class="form-control" rows="3"></textarea></div></div><button type="submit" class="btn btn-primary">Save Changes</button></form></div>
+        </div>
+        <div class="tab-pane fade" id="payment">
+            <div class="chart-card">
+                <h5 class="mb-3">M-Pesa Payment Details</h5>
+                <p class="text-muted small">Attendees will pay you directly via M-Pesa. At least one payment number is required.</p>
+                <form id="mpesaForm">
+                    <div class="mb-3"><label>M-Pesa Display Name</label><input type="text" id="mpesaDisplayName" class="form-control" placeholder="e.g. EventHub Digital"></div>
+                    <div class="mb-3"><label>Paybill Number</label><input type="text" id="mpesaPaybill" class="form-control" placeholder="Optional"></div>
+                    <div class="mb-3"><label>Till Number</label><input type="text" id="mpesaTill" class="form-control" placeholder="Optional"></div>
+                    <div class="mb-3"><label>Pochi la Biashara Number</label><input type="text" id="mpesaPochi" class="form-control" placeholder="Optional"></div>
+                    <div class="mb-3"><label>Send Money Number</label><input type="text" id="mpesaSendMoney" class="form-control" placeholder="Optional"></div>
+                    <button type="submit" class="btn btn-primary">Save M-Pesa Settings</button>
+                </form>
+                <hr class="my-4">
+                <h5 class="mb-3">Bank Settlement (Optional)</h5>
+                <form id="paymentForm">
+                    <div class="mb-3"><label>Bank Account Number</label><input type="text" id="bankAccount" class="form-control"></div>
+                    <div class="mb-3"><label>Bank Name</label><input type="text" id="bankNameSetting" class="form-control"></div>
+                    <div class="mb-3"><label>Account Holder Name</label><input type="text" id="accountHolderSetting" class="form-control"></div>
+                    <div class="mb-3"><label>Routing Number</label><input type="text" id="routingNumber" class="form-control"></div>
+                    <button type="submit" class="btn btn-outline-primary">Save Bank Info</button>
+                </form>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="team">
+            <div class="chart-card"><div class="d-flex justify-content-between"><h5>Team Members</h5><button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addTeamModal">Add Member</button></div><div id="teamList"></div></div>
+        </div>
+        <div class="tab-pane fade" id="api">
+            <div class="chart-card"><div class="d-flex justify-content-between"><h5>API Keys</h5><button class="btn btn-sm btn-primary" id="createApiKeyBtn">Generate Key</button></div><div id="apiKeysList"></div></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addTeamModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5>Add Team Member</h5></div><div class="modal-body"><input type="email" id="teamEmail" class="form-control mb-2" placeholder="Email"><select id="teamRole" class="form-select"><option value="viewer">Viewer</option><option value="editor">Editor</option><option value="admin">Admin</option></select></div><div class="modal-footer"><button class="btn btn-primary" id="addTeamBtn">Add</button></div></div></div></div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/organizer/settings.js"></script>
+{% endblock %}

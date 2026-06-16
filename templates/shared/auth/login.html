@@ -1,0 +1,404 @@
+{% extends "shared/auth_base.html" %}
+{% load static %}
+
+{% block title %}Login - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shared/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-background login-bg"></div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-card-inner">
+            <a href="/" class="auth-back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="auth-logo">
+                <div class="auth-logo-wrapper">
+                    <div class="auth-logo-glow"></div>
+                    <div class="auth-logo-icon">
+                        <span>E</span>
+                    </div>
+                </div>
+            </div>
+            <h2 class="auth-title">Welcome Back</h2>
+            <p class="auth-subtitle">Sign in to continue to your account</p>
+
+            <!-- Role Selection -->
+            <div class="auth-role-group">
+                <label class="auth-role-label">Login as:</label>
+                <div class="auth-role-options">
+                    <label class="auth-role-option">
+                        <input type="radio" name="role_select" value="attendee" checked>
+                        <span>🎟️ Attendee</span>
+                    </label>
+                    <label class="auth-role-option">
+                        <input type="radio" name="role_select" value="organizer">
+                        <span>📅 Organizer</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Google Sign In -->
+            <div style="position: relative; width: 100%; margin-bottom: 0.875rem;">
+                <button class="social-login-btn" id="googleSignInBtn" style="margin-bottom: 0; pointer-events: none;">
+                    <i class="fab fa-google social-login-icon"></i>
+                    Continue with Google
+                </button>
+                <div id="googleSignInBtnContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; z-index: 10; cursor: pointer;"></div>
+            </div>
+
+            <div class="auth-divider">
+                <div class="auth-divider-line"><span></span></div>
+                <div class="auth-divider-text"><span>OR</span></div>
+            </div>
+
+            <form method="POST" action="/api/auth/login/" id="loginForm" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="role" id="roleInput" value="attendee">
+                
+                <div class="auth-input-wrapper">
+                    <i class="fas fa-envelope auth-input-icon"></i>
+                    <input type="email" name="email" id="loginEmail" placeholder="Email address" class="auth-input" required>
+                </div>
+                <div id="emailError" class="error-message hidden"></div>
+
+                <div class="auth-input-wrapper">
+                    <i class="fas fa-lock auth-input-icon"></i>
+                    <input type="password" name="password" id="password" placeholder="Password" class="auth-input" required>
+                    <button type="button" onclick="togglePassword()" class="auth-password-toggle">
+                        <i class="fas fa-eye-slash" id="toggleIcon"></i>
+                    </button>
+                </div>
+                <div id="passwordError" class="error-message hidden"></div>
+
+                <div class="checkbox-container">
+                    <label class="auth-checkbox">
+                        <input type="checkbox" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="/forgot-password/" class="auth-link">Forgot password?</a>
+                </div>
+                <button type="submit" class="auth-btn">Sign In</button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an account?
+                <a href="/register/">Sign Up</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+    function resolvePostLoginRedirect(defaultPath) {
+        const saved = localStorage.getItem('redirect_after_login');
+        if (saved && saved.startsWith('/')) {
+            localStorage.removeItem('redirect_after_login');
+            return saved;
+        }
+        return defaultPath;
+    }
+
+    const roleRadios = document.querySelectorAll('input[name="role_select"]');
+    const roleInput = document.getElementById('roleInput');
+    const authTitle = document.querySelector('.auth-title');
+    const authSubtitle = document.querySelector('.auth-subtitle');
+    const loginForm = document.getElementById('loginForm');
+    
+    // Organizer logins go through the organizer-scoped endpoint so the server
+    // enforces that only organizer accounts can access the organizer portal.
+    function applyRole(role) {
+        roleInput.value = role;
+        loginForm.setAttribute('action', role === 'organizer' ? '/api/organizer/auth/login/' : '/api/auth/login/');
+        if (role === 'organizer') {
+            authTitle.textContent = 'Organizer Login';
+            authSubtitle.textContent = 'Sign in to manage your events';
+        } else {
+            authTitle.textContent = 'Welcome Back';
+            authSubtitle.textContent = 'Sign in to continue to your account';
+        }
+    }
+    
+    roleRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            applyRole(this.value);
+        });
+    });
+    
+    // Google Sign In Callback
+    function handleCredentialResponse(response) {
+        const selectedRole = roleInput.value;
+        const googleBtn = document.getElementById('googleSignInBtn');
+        if (googleBtn) {
+            googleBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+        }
+        
+        fetch('/api/auth/google/', {
+            method: 'POST',
+            body: JSON.stringify({
+                credential: response.credential,
+                role: selectedRole
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.text().then(text => {
+            let body = null;
+            try { body = JSON.parse(text); } catch (e) { /* non-JSON response */ }
+            return {status: res.status, body};
+        }))
+        .then(({status, body}) => {
+            if (body === null) {
+                showToast(`Unexpected server response (HTTP ${status}) during Google Sign-in.`, 'error');
+                googleBtn.innerHTML = '<i class="fab fa-google social-login-icon"></i> Continue with Google';
+                return;
+            }
+            if (status === 200 || status === 201) {
+                const userRole = body.user.role;
+                const prefix = userRole === 'organizer' ? 'organizer' : (userRole === 'admin' ? 'admin' : 'attendee');
+                
+                localStorage.setItem(`${prefix}_access_token`, body.access);
+                localStorage.setItem(`${prefix}_refresh_token`, body.refresh);
+                localStorage.setItem(`${prefix}_user`, JSON.stringify(body.user));
+
+                if (window.EventhubAuthLoginHooks) {
+                    EventhubAuthLoginHooks.onLoginSuccess(prefix, body.user);
+                }
+                
+                if (userRole === 'admin') {
+                    showToast('Welcome back Admin! Redirecting to admin portal...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/admin-portal/dashboard/';
+                    }, 1000);
+                } else if (selectedRole === 'organizer' && userRole === 'attendee') {
+                    showToast('You are not an organizer and cannot login as one. Redirecting...', 'error');
+                    setTimeout(() => {
+                        window.location.href = resolvePostLoginRedirect('/dashboard/');
+                    }, 3000);
+                } else if (selectedRole === 'attendee' && userRole === 'organizer') {
+                    showToast('You are an organizer. Redirecting to organizer dashboard...', 'info');
+                    setTimeout(() => {
+                        window.location.href = '/organizer/dashboard/';
+                    }, 2000);
+                } else {
+                    showToast('Welcome back! Redirecting...', 'success');
+                    setTimeout(() => {
+                        if (userRole === 'organizer') {
+                            window.location.href = '/organizer/dashboard/';
+                        } else {
+                            window.location.href = resolvePostLoginRedirect('/dashboard/');
+                        }
+                    }, 1000);
+                }
+            } else {
+                showToast(body.error || body.message || 'Google Sign-in failed', 'error');
+                googleBtn.innerHTML = '<i class="fab fa-google social-login-icon"></i> Continue with Google';
+            }
+        })
+        .catch(error => {
+            console.error('Google Sign-in request failed:', error);
+            showToast('Could not reach the server during Google Sign-in. Please try again.', 'error');
+            googleBtn.innerHTML = '<i class="fab fa-google social-login-icon"></i> Continue with Google';
+        });
+    }
+
+    // Initialize GIS Client
+    function initGoogleSignIn() {
+        if (typeof google !== 'undefined') {
+            google.accounts.id.initialize({
+                client_id: '{{ GOOGLE_OAUTH_CLIENT_ID }}',
+                callback: handleCredentialResponse
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("googleSignInBtnContainer"),
+                { theme: "outline", size: "large", width: "360" }
+            );
+        } else {
+            setTimeout(initGoogleSignIn, 100);
+        }
+    }
+
+    initGoogleSignIn();
+    
+    // Pre-select role based on URL path
+    (function preselectRole() {
+        if (typeof getRoleFromUrl === 'function') {
+            const urlRole = getRoleFromUrl();
+            if (urlRole) {
+                const radio = document.querySelector(`input[name="role_select"][value="${urlRole}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    applyRole(urlRole);
+                }
+            }
+        }
+    })();
+    
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) return 'Email is required';
+        if (!emailRegex.test(email)) return 'Please enter a valid email address';
+        return '';
+    }
+    
+    function validatePassword(password) {
+        if (!password) return 'Password is required';
+        if (password.length < 6) return 'Password must be at least 6 characters';
+        return '';
+    }
+    
+    const emailInput = document.getElementById('loginEmail');
+    const passwordInput = document.getElementById('password');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    
+    emailInput.addEventListener('input', function() {
+        const error = validateEmail(this.value);
+        if (error) {
+            emailError.textContent = error;
+            emailError.classList.remove('hidden');
+        } else {
+            emailError.classList.add('hidden');
+        }
+    });
+    
+    passwordInput.addEventListener('input', function() {
+        const error = validatePassword(this.value);
+        if (error) {
+            passwordError.textContent = error;
+            passwordError.classList.remove('hidden');
+        } else {
+            passwordError.classList.add('hidden');
+        }
+    });
+    
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+        toggleIcon.classList.toggle('fa-eye');
+        toggleIcon.classList.toggle('fa-eye-slash');
+    }
+    
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        
+        const emailValidation = validateEmail(email);
+        const passwordValidation = validatePassword(password);
+        
+        if (emailValidation || passwordValidation) {
+            if (emailValidation) {
+                emailError.textContent = emailValidation;
+                emailError.classList.remove('hidden');
+            }
+            if (passwordValidation) {
+                passwordError.textContent = passwordValidation;
+                passwordError.classList.remove('hidden');
+            }
+            return;
+        }
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+        submitBtn.disabled = true;
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text().then(text => {
+            // Parse defensively: a missing route or server error returns an HTML
+            // page, which previously crashed response.json() and surfaced as a
+            // misleading "Network error" toast.
+            let body = null;
+            try { body = JSON.parse(text); } catch (e) { /* non-JSON response */ }
+            return {status: response.status, body};
+        }))
+        .then(({status, body}) => {
+            if (body === null) {
+                showToast(`Unexpected server response (HTTP ${status}). Please try again or contact support.`, 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+            if (status === 200 || status === 201) {
+                const userRole = body.user.role;
+                const selectedRole = data.role;
+                const prefix = userRole === 'organizer' ? 'organizer' : (userRole === 'admin' ? 'admin' : 'attendee');
+                
+                localStorage.setItem(`${prefix}_access_token`, body.access);
+                localStorage.setItem(`${prefix}_refresh_token`, body.refresh);
+                localStorage.setItem(`${prefix}_user`, JSON.stringify(body.user));
+
+                if (window.EventhubAuthLoginHooks) {
+                    EventhubAuthLoginHooks.onLoginSuccess(prefix, body.user);
+                }
+                
+                if (userRole === 'admin') {
+                    showToast('Welcome back Admin! Redirecting to admin portal...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/admin-portal/dashboard/';
+                    }, 1000);
+                } else if (selectedRole === 'organizer' && userRole === 'attendee') {
+                    showToast('You are not an organizer and cannot login as one. Redirecting...', 'error');
+                    setTimeout(() => {
+                        window.location.href = resolvePostLoginRedirect('/dashboard/');
+                    }, 3000);
+                } else if (selectedRole === 'attendee' && userRole === 'organizer') {
+                    showToast('You are an organizer. Redirecting to organizer dashboard...', 'info');
+                    setTimeout(() => {
+                        window.location.href = '/organizer/dashboard/';
+                    }, 2000);
+                } else {
+                    showToast('Welcome back! Redirecting...', 'success');
+                    setTimeout(() => {
+                        if (userRole === 'organizer') {
+                            window.location.href = '/organizer/dashboard/';
+                        } else {
+                            window.location.href = resolvePostLoginRedirect('/dashboard/');
+                        }
+                    }, 1000);
+                }
+            } else {
+                showToast(body.error || body.message || 'Invalid email or password', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Login request failed:', error);
+            showToast('Could not reach the server. Please check that it is running and try again.', 'error');
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    });
+    
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+</script>
+{% endblock %}

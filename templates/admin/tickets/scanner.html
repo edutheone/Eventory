@@ -1,0 +1,125 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}QR Ticket Scanner - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/tickets/tickets.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-qrcode"></i> QR Ticket Scanner</h1>
+            <p class="text-muted">Scan QR codes to check in attendees</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-secondary" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i> Reset Scanner
+            </button>
+        </div>
+    </div>
+
+    <!-- Scanner Layout -->
+    <div class="scanner-layout">
+        <!-- Scanner Box -->
+        <div class="scanner-box">
+            <div class="scanner-header">
+                <h3><i class="fas fa-camera"></i> Scan QR Code</h3>
+            </div>
+            <div class="scanner-viewport">
+                <div id="scannerViewport"></div>
+                <div class="scanner-overlay">
+                    <div class="scanner-frame"></div>
+                </div>
+            </div>
+            <div class="scanner-controls">
+                <button class="btn-primary" id="startScannerBtn">
+                    <i class="fas fa-play"></i> Start Scanner
+                </button>
+                <button class="btn-danger" id="stopScannerBtn" style="display: none;">
+                    <i class="fas fa-stop"></i> Stop Scanner
+                </button>
+            </div>
+        </div>
+
+        <!-- Manual Input -->
+        <div class="manual-input">
+            <h4><i class="fas fa-keyboard"></i> Manual Entry</h4>
+            <div class="input-group">
+                <input type="text" id="manualTicketCode" placeholder="Enter ticket number manually...">
+                <button class="btn-primary" onclick="manualCheckIn()">
+                    <i class="fas fa-check"></i> Check In
+                </button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="scanner-sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-calendar-alt"></i> Event & Stats</h3>
+            </div>
+            
+            <!-- Event Selector -->
+            <div class="event-selector">
+                <select id="eventSelect" onchange="loadEventStats()">
+                    <option value="">Select Event</option>
+                </select>
+            </div>
+            
+            <!-- Stats Summary -->
+            <div class="stats-summary" id="statsSummary" style="display: none;">
+                <div class="stat-row">
+                    <span class="stat-label">Total Tickets:</span>
+                    <span class="stat-value" id="totalTickets">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Checked In:</span>
+                    <span class="stat-value checked-in" id="checkedInCount">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Remaining:</span>
+                    <span class="stat-value remaining" id="remainingCount">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Check-in Rate:</span>
+                    <span class="stat-value" id="checkinRate">0%</span>
+                </div>
+            </div>
+            
+            <!-- Recent Check-ins -->
+            <div class="sidebar-header">
+                <h3><i class="fas fa-clock"></i> Recent Check-ins</h3>
+            </div>
+            <div id="recentCheckins" class="checkins-list">
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No check-ins yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scan Result Modal -->
+<div id="scanResultModal" class="scan-result-modal" style="display: none;">
+    <div class="scan-result-content" id="scanResultContent">
+        <div class="scan-icon" id="scanIcon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h3 id="scanTitle">Success!</h3>
+        <p id="scanMessage">Ticket has been checked in successfully.</p>
+        <div id="ticketDetails" class="ticket-details" style="display: none;"></div>
+        <button class="btn-primary" onclick="closeScanResult()">
+            <i class="fas fa-check"></i> Continue
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="{% static 'js/admin/tickets/scanner.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "organizer/base.html" %}
+{% load static %}
+{% block title %}Attendees | EventHub Organizer{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/organizers/attendees.css">
+{% endblock %}
+{% block content %}
+<div>
+    <div class="d-flex justify-content-between mb-4"><h1>Attendee Management</h1><div><select id="eventFilter" class="filter-select"><option value="">All Events</option></select><input type="text" id="searchInput" class="form-control w-auto d-inline-block ms-2" placeholder="Search"><button id="exportBtn" class="btn btn-outline ms-2">Export</button><button id="bulkMessageBtn" class="btn btn-outline ms-2">Bulk Message</button></div></div>
+    <div class="row g-4 mb-4">
+        <div class="col-md-3"><div class="metric-card text-center"><h3 id="totalAttendeesStat">--</h3><small>Total Attendees</small></div></div>
+        <div class="col-md-3"><div class="metric-card text-center"><h3 id="checkedInAttendeesStat">--</h3><small>Checked In</small></div></div>
+        <div class="col-md-3"><div class="metric-card text-center"><h3 id="checkinRateAttendeeStat">--%</h3><small>Check-in Rate</small></div></div>
+        <div class="col-md-3"><div class="metric-card text-center"><h3 id="eventsCountStat">--</h3><small>Events</small></div></div>
+    </div>
+    <div class="table-section"><table class="table"><thead><tr><th><input type="checkbox" id="selectAll"></th><th>Name</th><th>Email</th><th>Event</th><th>Status</th><th>Action</th></tr></thead><tbody id="attendeesTableBody"></tbody></table><nav><ul class="pagination" id="attendeesPagination"></ul></nav></div>
+</div>
+<div class="modal fade" id="bulkMessageModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5>Send Bulk Message</h5></div><div class="modal-body"><input type="text" id="bulkSubject" class="form-control mb-2" placeholder="Subject"><textarea id="bulkMessageText" class="form-control" rows="4" placeholder="Message"></textarea></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" id="sendBulkBtn">Send</button></div></div></div></div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/organizer/attendees.js"></script>
+{% endblock %}

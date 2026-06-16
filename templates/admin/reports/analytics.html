@@ -1,0 +1,148 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Analytics Dashboard - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/reports/reports.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-chart-line"></i> Analytics Dashboard</h1>
+            <p class="text-muted">Platform performance metrics and insights</p>
+        </div>
+        <div class="header-actions">
+            <select id="dateRange" class="period-select">
+                <option value="7">Last 7 Days</option>
+                <option value="30" selected>Last 30 Days</option>
+                <option value="90">Last 90 Days</option>
+                <option value="365">Last 12 Months</option>
+            </select>
+            <button class="btn-primary" onclick="exportReport()">
+                <i class="fas fa-download"></i> Export PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-label">Total Revenue</span>
+                <h3 class="kpi-value" id="totalRevenue">Kes 0</h3>
+                <span class="kpi-trend up" id="revenueTrend"><i class="fas fa-arrow-up"></i> +0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-ticket-alt"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-label">Tickets Sold</span>
+                <h3 class="kpi-value" id="totalTickets">0</h3>
+                <span class="kpi-trend up" id="ticketsTrend"><i class="fas fa-arrow-up"></i> +0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-label">Active Users</span>
+                <h3 class="kpi-value" id="activeUsers">0</h3>
+                <span class="kpi-trend up" id="usersTrend"><i class="fas fa-arrow-up"></i> +0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-label">Events Completed</span>
+                <h3 class="kpi-value" id="completedEvents">0</h3>
+                <span class="kpi-trend up" id="eventsTrend"><i class="fas fa-arrow-up"></i> +0%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-line"></i> Revenue Trend</h3>
+                <div class="chart-legend">
+                    <span><i class="fas fa-circle"></i> Platform Revenue</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="280"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-pie"></i> Sales by Category</h3>
+                <div class="chart-legend">
+                    <span><i class="fas fa-circle"></i> Distribution</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" height="280"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-trophy"></i> Top Performing Events</h3>
+                <button class="btn-sm btn-outline" onclick="viewAllEvents()">View All</button>
+            </div>
+            <div class="card-body">
+                <div id="topEventsList" class="top-events-list"></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-user-plus"></i> User Growth</h3>
+                <div class="chart-legend">
+                    <span><i class="fas fa-circle"></i> New Registrations</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="userGrowthChart" height="280"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="summary-grid">
+        <div class="summary-item">
+            <span class="summary-label">Total Events</span>
+            <strong class="summary-value" id="summaryEvents">0</strong>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Total Bookings</span>
+            <strong class="summary-value" id="summaryBookings">0</strong>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Total Organizers</span>
+            <strong class="summary-value" id="summaryOrganizers">0</strong>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Conversion Rate</span>
+            <strong class="summary-value" id="conversionRate">0%</strong>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Avg Order Value</span>
+            <strong class="summary-value" id="avgOrderValue">Kes 0</strong>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Fill Rate</span>
+            <strong class="summary-value" id="fillRate">0%</strong>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script src="{% static 'js/admin/reports/analytics.js' %}"></script>
+{% endblock %}

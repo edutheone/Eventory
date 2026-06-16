@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Admin Login - EventHub</title>
+    
+    {% load static %}
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/admin/login.css' %}">
+</head>
+<body>
+    <div class="admin-auth-background admin-login-bg"></div>
+    <div class="admin-auth-container">
+        <div class="admin-auth-card">
+            <div class="admin-auth-card-inner">
+                <div class="admin-auth-logo">
+                    <div class="admin-auth-logo-wrapper">
+                        <div class="admin-auth-logo-glow"></div>
+                        <div class="admin-auth-logo-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                <h2 class="admin-auth-title">Admin Portal</h2>
+                <p class="admin-auth-subtitle">Sign in to access admin dashboard</p>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="admin-alert admin-alert-{{ message.tags }}">
+                            <i class="fas fa-info-circle"></i> {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form id="adminLoginForm" method="POST" action="/api/auth/login/">
+                    {% csrf_token %}
+                    <div class="admin-auth-input-wrapper">
+                        <i class="fas fa-user admin-auth-input-icon"></i>
+                        <input type="text" name="username" id="adminUsername" class="admin-auth-input" placeholder="Username or email" required>
+                    </div>
+                    <div class="admin-auth-input-wrapper">
+                        <i class="fas fa-lock admin-auth-input-icon"></i>
+                        <input type="password" name="password" id="password" class="admin-auth-input" placeholder="Password" required>
+                        <button type="button" onclick="togglePassword()" class="admin-auth-password-toggle">
+                            <i class="fas fa-eye-slash" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="admin-auth-btn" id="adminLoginBtn">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                
+                <div class="admin-auth-footer">
+                    <i class="fas fa-lock"></i> Secure admin access only
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            toggleIcon.classList.toggle('fa-eye');
+            toggleIcon.classList.toggle('fa-eye-slash');
+        }
+
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('adminLoginBtn');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+            btn.disabled = true;
+
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('password').value;
+
+            fetch('/api/auth/login/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.text().then(text => {
+                let body = null;
+                try { body = JSON.parse(text); } catch (err) { /* non-JSON */ }
+                return { status: res.status, body };
+            }))
+            .then(({ status, body }) => {
+                if (status === 200 && body && body.user) {
+                    const user = body.user;
+                    if (!user.is_staff && !user.is_superuser && user.role !== 'admin') {
+                        throw new Error('You do not have admin access.');
+                    }
+                    localStorage.setItem('admin_access_token', body.access);
+                    localStorage.setItem('admin_refresh_token', body.refresh);
+                    localStorage.setItem('admin_user', JSON.stringify(user));
+                    window.location.href = '/admin-portal/dashboard/';
+                    return;
+                }
+                const message = (body && (body.error || body.message)) || 'Invalid credentials or you do not have admin access.';
+                throw new Error(message);
+            })
+            .catch(err => {
+                alert(err.message || 'Login failed. Please try again.');
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>

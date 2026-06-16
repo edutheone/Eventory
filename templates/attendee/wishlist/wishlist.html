@@ -1,0 +1,104 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist - EventHub{% endblock %}
+
+{% block extra_css %}
+<!-- Shared CSS files from base.html are already included -->
+<!-- Additional wishlist-specific styles -->
+<link rel="stylesheet" href="{% static 'css/attendee/wishlist/wishlist.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="wishlist-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1>My Wishlist</h1>
+            <p class="text-muted">Events you've saved for later</p>
+        </div>
+        <button id="clearAllBtn" class="btn-clear-all">
+            <i class="fas fa-trash-alt"></i> Clear All
+        </button>
+    </div>
+
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchWishlist" placeholder="Search saved events..." autocomplete="off">
+        </div>
+        <div class="filter-wrapper">
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="music">🎵 Music</option>
+                <option value="technology">💻 Technology</option>
+                <option value="sports">⚽ Sports</option>
+                <option value="business">💼 Business</option>
+                <option value="arts">🎨 Arts</option>
+                <option value="food">🍔 Food & Drink</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Wishlist Info -->
+    <div class="wishlist-info" id="wishlistInfo" style="display: none;">
+        <span id="wishlistCount">0</span> events in your wishlist
+    </div>
+
+    <!-- Wishlist Grid -->
+    <div class="wishlist-grid" id="wishlistGrid">
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading your wishlist...</p>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyWishlist" style="display: none;">
+        <i class="fas fa-heart"></i>
+        <h3>Your wishlist is empty</h3>
+        <p>Save events you love and they'll appear here</p>
+        <a href="/events/" class="btn-browse">Browse Events</a>
+    </div>
+</div>
+
+<!-- Share Modal -->
+<div id="shareModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <div class="modal-header">
+            <i class="fas fa-share-alt"></i>
+            <h3>Share this event</h3>
+        </div>
+        <div class="share-link-container">
+            <input type="text" id="shareLink" readonly>
+            <button onclick="copyShareLink()" class="copy-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
+        <div class="share-buttons">
+            <button onclick="shareOnFacebook()" class="share-btn facebook">
+                <i class="fab fa-facebook-f"></i> Facebook
+            </button>
+            <button onclick="shareOnTwitter()" class="share-btn twitter">
+                <i class="fab fa-twitter"></i> Twitter
+            </button>
+            <button onclick="shareOnWhatsApp()" class="share-btn whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </button>
+            <button onclick="shareViaEmail()" class="share-btn email">
+                <i class="fas fa-envelope"></i> Email
+            </button>
+        </div>
+    </div>
+</div>
+
+{% include 'attendee/events/checkout_modal.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/shared/cart-storage.js' %}"></script>
+<script src="{% static 'js/attendee/payments/checkout.js' %}"></script>
+<script src="{% static 'js/attendee/wishlist/wishlist.js' %}"></script>
+{% endblock %}

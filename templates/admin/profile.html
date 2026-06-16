@@ -1,0 +1,153 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}My Profile - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+    </div>
+    
+    <!-- Profile Information Card -->
+    <div class="profile-card">
+        <div class="profile-card-header">
+            <h3><i class="fas fa-id-card"></i> Profile Information</h3>
+            <span class="role-badge"><i class="fas fa-shield-alt"></i> Administrator</span>
+        </div>
+        <div class="profile-card-body">
+            <div class="profile-avatar-section">
+                <div class="profile-avatar-wrapper">
+                    <div class="profile-avatar-large">
+                        <span id="userInitial">{{ user.username|make_list|first|upper }}</span>
+                    </div>
+                    <div class="avatar-overlay">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <input type="file" id="avatarInput" class="avatar-input" accept="image/*">
+                </div>
+                <div class="profile-info">
+                    <h2 id="userFullName">{{ user.get_full_name|default:user.username }}</h2>
+                    <p><i class="fas fa-envelope"></i> {{ user.email }}</p>
+                    <button class="edit-btn" onclick="toggleEditMode()">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                </div>
+            </div>
+            
+            <!-- View Mode -->
+            <div id="viewMode">
+                <div class="info-row">
+                    <span class="info-label">Username</span>
+                    <span class="info-value" id="viewUsername">{{ user.username }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Full Name</span>
+                    <span class="info-value" id="viewFullName">{{ user.get_full_name|default:"Not set" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email Address</span>
+                    <span class="info-value" id="viewEmail">{{ user.email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Phone Number</span>
+                    <span class="info-value" id="viewPhone">{{ user.phone|default:"Not set" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Date Joined</span>
+                    <span class="info-value">{{ user.date_joined|date:"F j, Y" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Last Login</span>
+                    <span class="info-value">{{ user.last_login|date:"F j, Y H:i"|default:"Never" }}</span>
+                </div>
+            </div>
+            
+            <!-- Edit Mode -->
+            <div id="editMode" style="display: none;">
+                <form id="profileForm">
+                    {% csrf_token %}
+                    <div class="info-row">
+                        <span class="info-label">Username</span>
+                        <input type="text" id="editUsername" class="form-control" value="{{ user.username }}" readonly>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Full Name</span>
+                        <input type="text" id="editFullName" class="form-control" value="{{ user.get_full_name|default:'' }}" placeholder="Enter your full name">
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email Address</span>
+                        <input type="email" id="editEmail" class="form-control" value="{{ user.email }}" placeholder="Enter your email" required>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Phone Number</span>
+                        <input type="tel" id="editPhone" class="form-control" value="{{ user.phone|default:'' }}" placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="toggleEditMode()">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Account Statistics Card -->
+    <div class="profile-card">
+        <div class="profile-card-header">
+            <h3><i class="fas fa-chart-line"></i> Account Statistics</h3>
+        </div>
+        <div class="profile-card-body">
+            <div class="stats-grid-profile">
+                <div class="stat-card-profile">
+                    <div class="stat-value" id="totalEvents">0</div>
+                    <div class="stat-label">Events Managed</div>
+                </div>
+                <div class="stat-card-profile">
+                    <div class="stat-value" id="totalBookings">0</div>
+                    <div class="stat-label">Total Bookings</div>
+                </div>
+                <div class="stat-card-profile">
+                    <div class="stat-value" id="totalSpent">Kes 0</div>
+                    <div class="stat-label">Revenue Generated</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Change Password Card -->
+    <div class="profile-card">
+        <div class="profile-card-header">
+            <h3><i class="fas fa-lock"></i> Change Password</h3>
+        </div>
+        <div class="profile-card-body">
+            <form id="passwordForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Current Password</label>
+                    <input type="password" id="currentPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="newPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="confirmPassword" class="form-control" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/profile.js' %}"></script>
+{% endblock %}

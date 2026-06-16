@@ -1,0 +1,359 @@
+{% extends "organizer/base.html" %}
+{% block title %}Attendees - EventHub{% endblock %}
+{% block nav_attendees %}active{% endblock %}
+{% block content_title %}Attendees Directory{% endblock %}
+{% block content_subtitle %}Manage customer contacts, ticket purchase frequencies, and contact details.{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Clean, premium dark background */
+    body {
+        background-color: #000000 !important;
+    }
+    
+    .directory-card {
+        background: #080808 !important; /* Softer solid black for cards */
+        border: 1px solid #141414 !important; /* Subtle divider-like borders */
+        border-radius: 16px;
+        padding: 2rem !important; /* Generous breathing space */
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7) !important;
+    }
+    
+    /* Search & Filter inputs in minimal dark theme */
+    .search-group, .select-dark {
+        background-color: #000000 !important;
+        border: 1px solid #222222 !important;
+        border-radius: 10px !important;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .search-group:focus-within, .select-dark:focus {
+        border-color: #ff6a00 !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 106, 0, 0.15) !important;
+    }
+    
+    .search-group input {
+        color: #ffffff !important;
+    }
+    
+    .search-group input::placeholder {
+        color: #64748b !important;
+    }
+    
+    .select-dark {
+        color: #ffffff !important;
+        padding: 10px 14px !important;
+        cursor: pointer;
+    }
+    
+    .select-dark option {
+        background-color: #080808;
+        color: #ffffff;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    /* Minimal table styling */
+    .table {
+        background-color: transparent !important;
+        border-collapse: collapse !important;
+        margin-bottom: 0 !important;
+        width: 100% !important;
+    }
+    
+    .table thead th {
+        background-color: #000000 !important;
+        color: #ffffff !important; /* Bold white */
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        border-bottom: 2px solid #1a1a1a !important;
+        padding: 18px 16px !important;
+        text-align: left;
+    }
+    
+    .table tbody tr {
+        border-bottom: 1px solid #111111 !important; /* Subtle dividers */
+        background: transparent !important;
+        transition: background-color 0.2s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(255, 106, 0, 0.02) !important;
+    }
+    
+    .table tbody td {
+        padding: 16px 16px !important; /* Cell padding 12-16px */
+        color: #ffffff !important; /* Regular white text */
+        background: transparent !important;
+        border: none !important;
+        vertical-align: middle;
+        text-align: left;
+    }
+    
+    /* Sleek initials avatar */
+    .attendee-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid #ff6a00; /* Orange outline */
+        background-color: rgba(255, 106, 0, 0.06); /* Subtle orange highlight background */
+        color: #ff6a00 !important; /* Orange text initials */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 14px;
+        flex-shrink: 0;
+        box-shadow: 0 0 10px rgba(255, 106, 0, 0.1);
+    }
+    
+    /* Typography customization */
+    .email-text, .phone-text {
+        color: #aaaaaa !important; /* Light grey for secondary text */
+        font-family: inherit !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .date-text {
+        color: #888888 !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .highlight-val {
+        color: #ff6a00 !important; /* Orange highlight */
+        font-weight: 700 !important;
+    }
+    
+    /* Custom pagination pill buttons */
+    .pagination {
+        gap: 6px;
+    }
+    
+    .pagination-pill {
+        border-radius: 30px !important; /* Pill shape */
+        padding: 6px 16px !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        transition: all 0.2s ease !important;
+        background: transparent !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    .pagination-pill.active-pill {
+        background: #ff6a00 !important; /* Orange pill */
+        border-color: #ff6a00 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 12px rgba(255, 106, 0, 0.35) !important;
+    }
+    
+    .pagination-pill.inactive-pill:hover {
+        border-color: #ff6a00 !important;
+        color: #ff6a00 !important;
+        box-shadow: 0 0 8px rgba(255, 106, 0, 0.15) !important;
+    }
+    
+    .page-item.active {
+        z-index: 3;
+    }
+    
+    .page-link:focus {
+        box-shadow: none !important;
+    }
+    
+    .text-light-grey {
+        color: #aaaaaa !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Filter bar -->
+    <div class="directory-card mb-4" role="search" aria-label="Attendee Filters">
+        <div class="row g-3">
+            <div class="col-md-8">
+                <div class="input-group search-group">
+                    <span class="input-group-text bg-transparent border-0 text-muted">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="attendeeSearch" class="form-control border-0 bg-transparent text-white" placeholder="Search attendees by name, email, or phone number..." aria-label="Search attendees by name, email, or phone number">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select id="eventFilter" class="form-select border-0 select-dark" aria-label="Filter by Event Purchased">
+                    <option value="">Filter by Event Purchased</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendees Table -->
+    <div class="directory-card">
+        <div class="table-container">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Attendee Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Events Booked</th>
+                        <th scope="col">Total Tickets Bought</th>
+                        <th scope="col">Total Value Contributed</th>
+                        <th scope="col">Last Activity</th>
+                    </tr>
+                </thead>
+                <tbody id="attendeesList">
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <div class="spinner-border text-warning" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav class="d-flex justify-content-between align-items-center mt-4" aria-label="Table Navigation">
+            <div class="text-light-grey small" id="paginationMeta">Showing 0 of 0 entries</div>
+            <ul class="pagination pagination-warning mb-0" id="attendeePagination">
+                <!-- Dynamically populated -->
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let attendeesData = [];
+    let currentPage = 1;
+    const itemsPerPage = 15;
+
+    async function loadEvents() {
+        try {
+            const res = await OrganizerAPI.events.getAll();
+            const list = Array.isArray(res) ? res : (res.results || []);
+            const sel = document.getElementById('eventFilter');
+            list.forEach(e => {
+                sel.innerHTML += `<option value="${e.id}">${e.name || e.title}</option>`;
+            });
+        } catch (err) {}
+    }
+
+    async function loadAttendees() {
+        try {
+            const res = await OrganizerAPI.attendees.getAll(currentPage, 100);
+            attendeesData = Array.isArray(res) ? res : (res.results || []);
+            renderAttendees();
+        } catch (err) {
+            window.showToast('Failed to load attendees', 'error');
+            document.getElementById('attendeesList').innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-triangle-exclamation fa-2x mb-2 text-danger"></i>
+                        <p class="m-0 font-weight-bold text-white">Failed to load attendees</p>
+                        <p class="m-0 small">There was a server connection or authentication issue.</p>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    function renderAttendees() {
+        const query = document.getElementById('attendeeSearch').value.toLowerCase();
+        const eventId = document.getElementById('eventFilter').value;
+
+        const filtered = attendeesData.filter(a => {
+            const attName = (a.name || "").toLowerCase();
+            const attEmail = (a.email || "").toLowerCase();
+            const attPhone = a.phone || "";
+            const matchQuery = !query || attName.includes(query) || 
+                               attEmail.includes(query) || 
+                               attPhone.includes(query);
+            
+            const purchasedIds = Array.isArray(a.purchased_event_ids) ? a.purchased_event_ids : [];
+            const matchEvent = !eventId || purchasedIds.includes(parseInt(eventId));
+            
+            return matchQuery && matchEvent;
+        });
+
+        const totalItems = filtered.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const start = (currentPage - 1) * itemsPerPage;
+        const paginated = filtered.slice(start, start + itemsPerPage);
+
+        const tbody = document.getElementById('attendeesList');
+        if (paginated.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-5">
+                        <i class="fa-solid fa-users fa-2x mb-2 text-secondary"></i>
+                        <p class="m-0">No unique attendees found in your directories</p>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('paginationMeta').innerText = `Showing 0 of 0 entries`;
+            document.getElementById('attendeePagination').innerHTML = '';
+            return;
+        }
+
+        tbody.innerHTML = paginated.map(a => {
+            const attName = a.name || "Anonymous Attendee";
+            const attEmail = a.email || "No Email";
+            const attPhone = a.phone || "--";
+            const eventsCount = a.events_count || 0;
+            const ticketsCount = a.tickets_count || 0;
+            const totalSpent = (a.total_spent || 0).toLocaleString();
+            const lastPurchaseDate = a.last_purchase_date ? new Date(a.last_purchase_date).toLocaleDateString() : "Never";
+
+            return `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <span class="text-white fw-bold">${attName}</span>
+                        </div>
+                    </td>
+                    <td><span class="email-text">${attEmail}</span></td>
+                    <td><span class="phone-text">${attPhone}</span></td>
+                    <td><span class="highlight-val">${eventsCount}</span></td>
+                    <td><span class="highlight-val">${ticketsCount}</span></td>
+                    <td><span class="highlight-val">KSh ${totalSpent}</span></td>
+                    <td><span class="date-text">${lastPurchaseDate}</span></td>
+                </tr>
+            `;
+        }).join('');
+
+        document.getElementById('paginationMeta').innerText = `Showing ${start + 1} to ${Math.min(start + itemsPerPage, totalItems)} of ${totalItems} entries`;
+        
+        let paginationHtml = '';
+        for (let i = 1; i <= totalPages; i++) {
+            const isAct = i === currentPage;
+            paginationHtml += `
+                <li class="page-item ${isAct ? 'active' : ''}">
+                    <button class="page-link pagination-pill ${isAct ? 'active-pill' : 'inactive-pill'}" onclick="goToPage(${i})" aria-label="Go to page ${i}" ${isAct ? 'aria-current="page"' : ''}>${i}</button>
+                </li>
+            `;
+        }
+        document.getElementById('attendeePagination').innerHTML = paginationHtml;
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        renderAttendees();
+    }
+
+    document.getElementById('attendeeSearch').oninput = () => { currentPage = 1; renderAttendees(); };
+    document.getElementById('eventFilter').onchange = () => { currentPage = 1; renderAttendees(); };
+
+    loadEvents();
+    loadAttendees();
+</script>
+{% endblock %}

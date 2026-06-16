@@ -1,0 +1,132 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Help Center - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/pages/help-center.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="help-center-page">
+    <div class="help-container">
+        <div class="help-search">
+            <h2>How can we help you?</h2>
+            <p>Search for answers or browse our help topics</p>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="helpSearch" placeholder="Search for help articles...">
+                <button id="clearSearch" class="clear-search-btn" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="category-grid">
+            <div class="help-card" data-category="booking">
+                <i class="fas fa-ticket-alt"></i>
+                <h4>Booking & Tickets</h4>
+                <p>How to book, cancel, or transfer tickets</p>
+            </div>
+            <div class="help-card" data-category="payment">
+                <i class="fas fa-credit-card"></i>
+                <h4>Payments & Refunds</h4>
+                <p>Payment methods, refunds, and disputes</p>
+            </div>
+            <div class="help-card" data-category="account">
+                <i class="fas fa-user"></i>
+                <h4>Account & Profile</h4>
+                <p>Managing your account settings</p>
+            </div>
+            <div class="help-card" data-category="event">
+                <i class="fas fa-calendar-alt"></i>
+                <h4>Events & Organizers</h4>
+                <p>Event details and organizer contact</p>
+            </div>
+        </div>
+        
+        <div class="faq-section" id="faqSection">
+            <h3>Frequently Asked Questions</h3>
+            
+            <div class="faq-item" data-category="booking">
+                <div class="faq-question">
+                    <span>How do I book tickets?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Simply browse events, select your preferred event, choose ticket quantity, and proceed to checkout. You'll receive a confirmation email with your tickets.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="booking">
+                <div class="faq-question">
+                    <span>How do I get my tickets?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    After successful payment, you'll receive a QR code via email and in your account dashboard. Simply show the QR code at the venue for entry.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="payment">
+                <div class="faq-question">
+                    <span>Can I get a refund?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Refund policies vary by event. Please check the event details page or contact the event organizer directly for their refund policy.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="payment">
+                <div class="faq-question">
+                    <span>What payment methods are accepted?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    We accept M-Pesa, Visa, Mastercard, and other major credit cards. All payments are processed securely.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="account">
+                <div class="faq-question">
+                    <span>How do I reset my password?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Click on "Forgot Password" on the login page, enter your email, and we'll send you a link to reset your password.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="account">
+                <div class="faq-question">
+                    <span>How do I update my profile?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Go to your Profile page from the Account dropdown menu, then click Edit to update your personal information.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="event">
+                <div class="faq-question">
+                    <span>How do I contact the organizer?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Each event page has organizer contact information. You can also reach out to our support team for assistance.
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-footer">
+            <p>Still need help?</p>
+            <a href="/contact/" class="btn-primary">Contact Support</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/pages/help-center.js' %}"></script>
+{% endblock %}

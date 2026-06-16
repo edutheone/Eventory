@@ -1,0 +1,327 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}FAQ - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/pages/faq.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="faq-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Frequently Asked Questions</h1>
+            <p>Find answers to common questions about EventHub</p>
+        </div>
+        
+        <!-- Search Section -->
+        <div class="faq-search-section">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="faqSearch" placeholder="Search for answers..." autocomplete="off">
+                <button id="clearSearch" class="clear-search" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Category Filters -->
+        <div class="faq-categories">
+            <button class="category-btn active" data-category="all">All Questions</button>
+            <button class="category-btn" data-category="booking">Booking & Tickets</button>
+            <button class="category-btn" data-category="payment">Payments</button>
+            <button class="category-btn" data-category="account">Account</button>
+            <button class="category-btn" data-category="events">Events</button>
+        </div>
+        
+        <!-- FAQ Grid -->
+        <div class="faq-grid" id="faqGrid">
+            <!-- Booking & Tickets Category -->
+            <div class="faq-item" data-category="booking">
+                <div class="faq-question">
+                    <span>How do I book tickets for an event?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Booking tickets is easy! Simply follow these steps:</p>
+                    <ul>
+                        <li>Browse or search for events on our homepage</li>
+                        <li>Click on the event you're interested in</li>
+                        <li>Select the number of tickets you want</li>
+                        <li>Choose your preferred ticket type (if available)</li>
+                        <li>Proceed to checkout and complete payment via M-Pesa</li>
+                        <li>You'll receive a confirmation email with your QR code tickets</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="booking">
+                <div class="faq-question">
+                    <span>How do I get my tickets after booking?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>After successful payment, you'll receive your tickets in two ways:</p>
+                    <ul>
+                        <li><strong>Email:</strong> A confirmation email with QR code attachments</li>
+                        <li><strong>Dashboard:</strong> Your tickets are saved in "My Tickets" section</li>
+                        <li><strong>Mobile app:</strong> Access tickets on the go via our mobile app</li>
+                    </ul>
+                    <p>Simply show the QR code at the venue for entry - no printing required!</p>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="booking">
+                <div class="faq-question">
+                    <span>Can I transfer my ticket to someone else?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes, ticket transfers are available for most events. You can transfer tickets by:</p>
+                    <ul>
+                        <li>Going to "My Tickets" in your dashboard</li>
+                        <li>Selecting the ticket you want to transfer</li>
+                        <li>Clicking "Transfer Ticket" and entering the recipient's email</li>
+                        <li>The recipient will receive an email to accept the transfer</li>
+                    </ul>
+                    <p>Note: Some events may have restrictions on ticket transfers. Check the event details page for specific policies.</p>
+                </div>
+            </div>
+            
+            <!-- Payments Category - Updated to M-Pesa only -->
+            <div class="faq-item" data-category="payment">
+                <div class="faq-question">
+                    <span>What payment methods are accepted?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>We accept <strong>M-Pesa</strong> as our primary and only payment method to make booking convenient and accessible for everyone in Kenya.</p>
+                    <div class="payment-info-card">
+                        <i class="fas fa-mobile-alt"></i>
+                        <div>
+                            <strong>How to pay with M-Pesa:</strong>
+                            <ul>
+                                <li>Select M-Pesa as your payment method at checkout</li>
+                                <li>Enter your M-Pesa registered phone number</li>
+                                <li>You'll receive a STK Push prompt on your phone</li>
+                                <li>Enter your M-Pesa PIN to complete the transaction</li>
+                                <li>Payment confirmation is instant</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p>All payments are processed securely through the official M-Pesa API. We never store your M-Pesa details.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="payment">
+                <div class="faq-question">
+                    <span>How do I pay using M-Pesa?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Paying with M-Pesa is simple and secure:</p>
+                    <ul>
+                        <li>At checkout, select "M-Pesa" as your payment method</li>
+                        <li>Enter your M-Pesa registered phone number (e.g., 0712345678)</li>
+                        <li>Click "Pay Now" - you'll receive a STK Push on your phone</li>
+                        <li>Open your phone and enter your M-Pesa PIN</li>
+                        <li>Wait for the confirmation message on both your phone and the website</li>
+                        <li>Your tickets will be available immediately after successful payment</li>
+                    </ul>
+                    <div class="info-note">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Note:</strong> Make sure your phone has sufficient balance or an active M-Pesa account.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="payment">
+                <div class="faq-question">
+                    <span>What if my M-Pesa payment fails?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>If your M-Pesa payment fails, here's what to do:</p>
+                    <ul>
+                        <li>Check your phone for any STK Push message</li>
+                        <li>Ensure you have sufficient balance in your M-Pesa account</li>
+                        <li>Make sure your phone number is correctly entered</li>
+                        <li>Wait 2-3 minutes - sometimes payments take a moment to process</li>
+                        <li>If still unsuccessful, try again with a different phone number or check back later</li>
+                    </ul>
+                    <p>If money is deducted but tickets are not received, contact our support team immediately with the M-Pesa transaction ID.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="payment">
+                <div class="faq-question">
+                    <span>Can I get a refund for my tickets?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Refund policies vary by event and organizer. Generally:</p>
+                    <ul>
+                        <li><strong>Free events:</strong> No refund needed</li>
+                        <li><strong>Paid events:</strong> Check the event's refund policy on its page</li>
+                        <li><strong>Canceled events:</strong> Full automatic refund to your M-Pesa account within 5-7 business days</li>
+                        <li><strong>Rescheduled events:</strong> Tickets remain valid for new date or refund available</li>
+                    </ul>
+                    <p>For refund requests, please contact the event organizer directly or reach out to our support team with your booking reference.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="payment">
+                <div class="faq-question">
+                    <span>Is it safe to pay with M-Pesa on EventHub?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Absolutely! Your security is our top priority:</p>
+                    <ul>
+                        <li><strong>Official M-Pesa API:</strong> We integrate directly with Safaricom's official payment gateway</li>
+                        <li><strong>SSL Encryption:</strong> All data is encrypted using 256-bit SSL</li>
+                        <li><strong>No Storage:</strong> We never store your M-Pesa phone number or PIN</li>
+                        <li><strong>Secure STK Push:</strong> You approve payments directly from your phone</li>
+                        <li><strong>Transaction Records:</strong> You receive SMS confirmation from M-Pesa instantly</li>
+                    </ul>
+                    <p>Your M-Pesa PIN is never shared with us - it's always entered on your own phone.</p>
+                </div>
+            </div>
+            
+            <!-- Account Category -->
+            <div class="faq-item" data-category="account">
+                <div class="faq-question">
+                    <span>How do I create an account?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Creating an account is quick and free! Follow these steps:</p>
+                    <ul>
+                        <li>Click the "Sign Up" button in the top right corner</li>
+                        <li>Fill in your name, email address, and password</li>
+                        <li>Agree to our Terms of Service and Privacy Policy</li>
+                        <li>Click "Create Account"</li>
+                        <li>Verify your email address by clicking the link sent to your inbox</li>
+                    </ul>
+                    <p>Once verified, you can start booking events immediately!</p>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="account">
+                <div class="faq-question">
+                    <span>I forgot my password. How do I reset it?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Resetting your password is easy:</p>
+                    <ul>
+                        <li>Click "Login" in the top right corner</li>
+                        <li>Click "Forgot Password?" below the login form</li>
+                        <li>Enter your registered email address</li>
+                        <li>Check your email for a password reset link</li>
+                        <li>Click the link and create a new password</li>
+                    </ul>
+                    <p>Make sure to check your spam folder if you don't see the email within a few minutes.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="account">
+                <div class="faq-question">
+                    <span>How do I update my profile information?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>You can update your profile anytime:</p>
+                    <ul>
+                        <li>Log into your account</li>
+                        <li>Click on your profile icon in the top right</li>
+                        <li>Select "Profile Settings" from the dropdown</li>
+                        <li>Update your name, phone number, or other details</li>
+                        <li>Click "Save Changes"</li>
+                    </ul>
+                    <p>Some information like your email address may require verification before updating.</p>
+                </div>
+            </div>
+            
+            <!-- Events Category -->
+            <div class="faq-item" data-category="events">
+                <div class="faq-question">
+                    <span>How do I find events near me?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Finding local events is simple:</p>
+                    <ul>
+                        <li>Use the search bar at the top of the page</li>
+                        <li>Enter your city or location in the search field</li>
+                        <li>Filter by date, category, or price range</li>
+                        <li>Browse through the curated list of nearby events</li>
+                        <li>You can also save your location for personalized recommendations</li>
+                    </ul>
+                    <p>Enable location services for automatic local event discovery!</p>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="events">
+                <div class="faq-question">
+                    <span>How do I contact the event organizer?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Each event page includes organizer contact information:</p>
+                    <ul>
+                        <li>Scroll to the "Organizer Information" section on the event page</li>
+                        <li>You'll find the organizer's name, email, and sometimes phone number</li>
+                        <li>Click "Contact Organizer" to send a direct message through our platform</li>
+                        <li>You can also reach out to our support team, and we'll help connect you</li>
+                    </ul>
+                    <p>For urgent issues during an event, check the event page for on-site contact details.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="events">
+                <div class="faq-question">
+                    <span>What happens if an event is canceled or rescheduled?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>We'll notify you immediately if any changes occur:</p>
+                    <ul>
+                        <li><strong>Canceled Events:</strong> Full refund automatically processed to your M-Pesa account within 5-7 business days</li>
+                        <li><strong>Rescheduled Events:</strong> Your tickets remain valid for the new date, or you can request a refund</li>
+                        <li><strong>Venue Changes:</strong> Updated venue information will be sent via email</li>
+                        <li>You'll receive email and in-app notifications about any changes</li>
+                        <li>Check your dashboard's "My Bookings" for the latest status</li>
+                    </ul>
+                    <p>Our support team is available to help with any event changes.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Still Have Questions -->
+        <div class="still-need-help">
+            <div class="help-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h3>Still have questions?</h3>
+            <p>Can't find the answer you're looking for? We're here to help!</p>
+            <div class="help-buttons">
+                <a href="/contact/" class="btn btn-primary">
+                    <i class="fas fa-envelope"></i>
+                    Contact Support
+                </a>
+                <a href="/help-center/" class="btn btn-outline">
+                    <i class="fas fa-book"></i>
+                    Visit Help Center
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/pages/faq.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,234 @@
+{% load static %}
+<section class="hero-section">
+    <!-- Background Image Slideshow -->
+    <div class="hero-bg-image">
+        <div class="hero-slideshow">
+            <div class="slide active" style="background-image: url('{% static 'images/hero/hero1.jpg' %}');"></div>
+            <div class="slide" style="background-image: url('{% static 'images/hero/hero2.jpg' %}');"></div>
+            <div class="slide" style="background-image: url('{% static 'images/hero/hero3.jpg' %}');"></div>
+            <div class="slide" style="background-image: url('{% static 'images/hero/hero4.jpg' %}');"></div>
+            <div class="slide" style="background-image: url('{% static 'images/hero/hero5.jpg' %}');"></div>
+            <div class="slide" style="background-image: url('{% static 'images/hero/hero6.jpg' %}');"></div>
+            <div class="slide" style="background-image: url('{% static 'images/hero/hero7.jpg' %}');"></div>
+            <div class="slide" style="background-image: url('{% static 'images/hero/hero8.jpg' %}');"></div>
+        </div>
+        <div class="hero-gradient-overlay"></div>
+        <div class="hero-overlay"></div>
+    </div>
+    
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1>
+                Discover Amazing 
+                <span class="highlight">
+                    <span class="typed-text" id="typedText"></span>
+                    <span class="cursor"></span>
+                </span>
+            </h1>
+            <p class="hero-description">Find and book tickets for the best concerts, conferences, workshops, and entertainment events in Kenya.</p>
+            <div class="hero-buttons">
+                <a href="/events/" class="hero-btn hero-btn-primary">
+                    Browse Events
+                </a>
+                <a href="/register/" id="heroGetStartedBtn" class="hero-btn hero-btn-secondary">
+                    Get Started
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number counter" data-target="{{ events_count|default:500 }}">0</span><span class="plus-sign">+</span>
+                    <span class="stat-label">Events</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number counter" data-target="{{ attendees_count|default:50000 }}">0</span><span class="plus-sign">+</span>
+                    <span class="stat-label">Happy Attendees</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number counter" data-target="{{ organizers_count|default:200 }}">0</span><span class="plus-sign">+</span>
+                    <span class="stat-label">Organizers</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ========== LOGIN STATE CHECK FOR "GET STARTED" BUTTON ==========
+    const accessToken = localStorage.getItem('attendee_access_token');
+    const user = JSON.parse(localStorage.getItem('attendee_user') || '{}');
+    const isLoggedIn = accessToken && user && Object.keys(user).length > 0;
+    
+    const getStartedBtn = document.getElementById('heroGetStartedBtn');
+    
+    if (getStartedBtn) {
+        if (isLoggedIn) {
+            // Logged in - change to Dashboard button
+            getStartedBtn.href = '/dashboard/';
+            getStartedBtn.innerHTML = 'Go to Dashboard <i class="fas fa-tachometer-alt"></i>';
+            getStartedBtn.classList.add('logged-in-btn');
+        } else {
+            // Not logged in - keep as Get Started
+            getStartedBtn.href = '/register/';
+            getStartedBtn.innerHTML = 'Get Started';
+            getStartedBtn.classList.remove('logged-in-btn');
+        }
+    }
+    
+    // Listen for auth state changes (if user logs in/out from another tab)
+    window.addEventListener('auth-state-changed', function(event) {
+        const isLoggedInEvent = event.detail?.isLoggedIn || false;
+        
+        if (getStartedBtn) {
+            if (isLoggedInEvent) {
+                getStartedBtn.href = '/dashboard/';
+                getStartedBtn.innerHTML = 'Go to Dashboard <i class="fas fa-tachometer-alt"></i>';
+                getStartedBtn.classList.add('logged-in-btn');
+            } else {
+                getStartedBtn.href = '/register/';
+                getStartedBtn.innerHTML = 'Get Started';
+                getStartedBtn.classList.remove('logged-in-btn');
+            }
+        }
+    });
+    
+    // ========== BACKGROUND SLIDESHOW (8 images) ==========
+    const slides = document.querySelectorAll('.hero-slideshow .slide');
+    let currentSlide = 0;
+    const slideInterval = 5000; // 5 seconds
+    
+    if (slides.length > 1) {
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+        
+        setInterval(nextSlide, slideInterval);
+    }
+    
+    // ========== TYPEWRITER EFFECT ==========
+    const words = ['Events', 'Experiences', 'Moments', 'Adventures'];
+    let wordIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    const typedTextElement = document.getElementById('typedText');
+    const cursorElement = document.querySelector('.cursor');
+    
+    if (typedTextElement) {
+        function typeEffect() {
+            const currentWord = words[wordIndex];
+            
+            if (isDeleting) {
+                typedTextElement.textContent = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typedTextElement.textContent = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            if (!isDeleting && charIndex === currentWord.length) {
+                isDeleting = true;
+                setTimeout(typeEffect, 2000);
+                return;
+            }
+            
+            if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                setTimeout(typeEffect, 500);
+                return;
+            }
+            
+            const speed = isDeleting ? 50 : 100;
+            setTimeout(typeEffect, speed);
+        }
+        
+        typeEffect();
+    }
+    
+    if (cursorElement) {
+        setInterval(() => {
+            cursorElement.style.opacity = cursorElement.style.opacity === '0' ? '1' : '0';
+        }, 500);
+    }
+    
+    // ========== COUNTER ANIMATION - Resets every time section is scrolled into view ==========
+    const counters = document.querySelectorAll('.counter');
+    let observer = null;
+    
+    function animateCounter(counter, target) {
+        let current = 0;
+        const duration = 2000;
+        const stepTime = 20;
+        const steps = duration / stepTime;
+        const increment = target / steps;
+        
+        if (counter.interval) {
+            clearInterval(counter.interval);
+            delete counter.interval;
+        }
+        
+        counter.interval = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                counter.textContent = target;
+                clearInterval(counter.interval);
+                delete counter.interval;
+            } else {
+                counter.textContent = Math.floor(current);
+            }
+        }, stepTime);
+    }
+    
+    function resetAndAnimateCounters() {
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            // Reset to 0
+            counter.textContent = '0';
+            // Animate to target
+            animateCounter(counter, target);
+        });
+    }
+    
+    const statsContainer = document.querySelector('.hero-stats');
+    
+    if (statsContainer) {
+        // Disconnect existing observer if any
+        if (observer) {
+            observer.disconnect();
+        }
+        
+        // Create new observer that triggers EVERY time section is scrolled into view
+        observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Reset and animate counters
+                    resetAndAnimateCounters();
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        observer.observe(statsContainer);
+    } else {
+        // Fallback: animate immediately
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            animateCounter(counter, target);
+        });
+    }
+});
+</script>
+
+<style>
+/* Optional: Add a small icon spacing for the logged-in button */
+.hero-btn.logged-in-btn i {
+    margin-left: 8px;
+    font-size: 0.85rem;
+}
+
+.hero-btn.logged-in-btn:hover i {
+    transform: translateX(3px);
+    transition: transform 0.3s ease;
+}
+</style>

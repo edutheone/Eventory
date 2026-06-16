@@ -1,0 +1,72 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Booking Details - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/bookings/bookings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="booking-detail-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-receipt"></i> Booking Details</h1>
+            <p class="text-muted">View complete booking information</p>
+        </div>
+        <div class="action-buttons">
+            <button class="btn-outline" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+        </div>
+    </div>
+
+    <div id="bookingDetailContent">
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading booking details...</p>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal" id="reviewModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+        <div class="modal-content" style="background: white; border-radius: 16px; max-width: 450px; width: 90%; padding: 1.5rem; position: relative; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <span class="modal-close" id="closeReviewModal" style="position: absolute; top: 0.8rem; right: 1rem; font-size: 1.5rem; cursor: pointer; color: #64748b; line-height: 1;">&times;</span>
+            <h3 style="margin: 0 0 1rem; font-size: 1.25rem; font-weight: 700; color: #1e293b;">Write a Review</h3>
+            <form id="reviewForm">
+                <input type="hidden" id="reviewEventId">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.8rem; color: #1e293b;">Rating</label>
+                    <div class="rating-select-modal" style="display: flex; gap: 0.5rem; font-size: 1.5rem; cursor: pointer; color: #cbd5e1;">
+                        <i class="fas fa-star" data-rating="1"></i>
+                        <i class="fas fa-star" data-rating="2"></i>
+                        <i class="fas fa-star" data-rating="3"></i>
+                        <i class="fas fa-star" data-rating="4"></i>
+                        <i class="fas fa-star" data-rating="5"></i>
+                    </div>
+                    <input type="hidden" id="reviewRating" value="5">
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.8rem; color: #1e293b;">Title</label>
+                    <input type="text" id="reviewTitle" class="form-control" required style="width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; transition: border-color 0.2s ease; box-sizing: border-box;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label style="display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.8rem; color: #1e293b;">Your Review</label>
+                    <textarea id="reviewText" rows="4" class="form-control" required style="width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; transition: border-color 0.2s ease; box-sizing: border-box; resize: vertical; min-height: 80px;"></textarea>
+                </div>
+                <button type="submit" class="submit-review-btn" style="width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #f59e0b, #ec6408); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: transform 0.1s ease, box-shadow 0.2s ease; box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2);">Submit Review</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/bookings/bookings.js' %}"></script>
+<script>
+    // Load booking detail when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadBookingDetail();
+    });
+</script>
+{% endblock %}

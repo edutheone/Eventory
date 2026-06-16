@@ -1,0 +1,194 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}All Bookings - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/bookings/bookings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="bookings-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-receipt"></i> All Bookings</h1>
+            <p class="text-muted">View all platform bookings and manage refunds</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-outline" onclick="exportBookings()">
+                <i class="fas fa-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
+            <div class="stat-info">
+                <h3 id="totalBookings">0</h3>
+                <span>Total Bookings</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-info">
+                <h3 id="totalRevenue">Kes 0</h3>
+                <span>Total Revenue</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+                <h3 id="pendingRefunds">0</h3>
+                <span>Pending Refunds</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <h3 id="confirmedBookings">0</h3>
+                <span>Confirmed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group search-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchBookings" placeholder="Search by booking ID, customer name or email...">
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="pending">Pending</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="refunded">Refunded</option>
+                    <option value="attended">Attended</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Payment Method</label>
+                <select id="paymentFilter">
+                    <option value="">All Methods</option>
+                    <option value="mpesa">M-Pesa</option>
+                    <option value="card">Credit Card</option>
+                    <option value="bank">Bank Transfer</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>From Date</label>
+                <input type="date" id="dateFrom">
+            </div>
+            <div class="filter-group">
+                <label>To Date</label>
+                <input type="date" id="dateTo">
+            </div>
+            <button class="btn-secondary" onclick="applyFilters()">
+                <i class="fas fa-filter"></i> Apply
+            </button>
+            <button class="btn-outline" onclick="resetFilters()">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-list-ul"></i> Bookings List</h3>
+            <div class="table-info">
+                <span id="recordsCount">Showing 0 records</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Customer</th>
+                            <th>Event</th>
+                            <th>Event Date</th>
+                            <th>Tickets</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Booked On</th>
+                            <th>Actions</th>
+                        </thead>
+                    <tbody id="bookingsList">
+                        <tr><td colspan="10" class="text-center">Loading bookings...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Refund Modal -->
+<div id="refundModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-undo-alt"></i> Process Refund</h3>
+            <button class="modal-close" onclick="closeRefundModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="refund-info" id="refundInfo"></div>
+            <div class="form-group">
+                <label>Refund Reason</label>
+                <textarea id="refundReason" rows="3" class="form-control" placeholder="Reason for refund..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Admin Notes (Internal)</label>
+                <textarea id="adminNotes" rows="2" class="form-control" placeholder="Internal notes..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeRefundModal()">Cancel</button>
+            <button class="btn-danger" onclick="confirmRefund()">
+                <i class="fas fa-check-circle"></i> Process Refund
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Booking Modal -->
+<div id="cancelModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-ban"></i> Cancel Booking</h3>
+            <button class="modal-close" onclick="closeCancelModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="warning-text">Are you sure you want to cancel this booking?</p>
+            <p>This will:</p>
+            <ul>
+                <li>Cancel the booking permanently</li>
+                <li>Release the tickets</li>
+                <li>Notify the customer</li>
+            </ul>
+            <div class="form-group">
+                <label>Cancellation Reason</label>
+                <textarea id="cancelReason" rows="2" class="form-control" placeholder="Reason for cancellation..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeCancelModal()">No, Go Back</button>
+            <button class="btn-danger" onclick="confirmCancel()">
+                <i class="fas fa-check-circle"></i> Yes, Cancel Booking
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/bookings/bookings.js' %}"></script>
+{% endblock %}

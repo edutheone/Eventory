@@ -1,0 +1,375 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Settings - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/settings/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-cogs"></i> System Settings</h1>
+            <p class="text-muted">Configure your platform settings</p>
+        </div>
+    </div>
+
+    <!-- Settings Tabs -->
+    <div class="settings-tabs">
+        <button class="tab-btn active" onclick="switchTab('general')">
+            <i class="fas fa-globe"></i> General
+        </button>
+        <button class="tab-btn" onclick="switchTab('payment')">
+            <i class="fas fa-mobile-alt"></i> Payment (M-Pesa)
+        </button>
+        <button class="tab-btn" onclick="switchTab('security')">
+            <i class="fas fa-shield-alt"></i> Security
+        </button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- GENERAL SETTINGS TAB -->
+    <!-- ============================================ -->
+    <div id="generalTab" class="tab-content active">
+        <div class="settings-grid">
+            <!-- Site Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-building"></i> Site Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Site Name <span class="required">*</span></label>
+                        <input type="text" id="siteName" class="form-control" value="EventHub">
+                        <small class="helper-text">Your platform's display name</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Site Tagline</label>
+                        <input type="text" id="siteTagline" class="form-control" value="Discover Amazing Events in Kenya">
+                        <small class="helper-text">Short description shown in header</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Logo URL</label>
+                        <input type="url" id="logoUrl" class="form-control" placeholder="https://eventhub.co.ke/logo.png">
+                        <small class="helper-text">URL for your platform logo</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-envelope"></i> Contact Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Support Email <span class="required">*</span></label>
+                        <input type="email" id="supportEmail" class="form-control" value="support@eventhub.co.ke">
+                    </div>
+                    <div class="form-group">
+                        <label>Support Phone</label>
+                        <input type="tel" id="supportPhone" class="form-control" value="+254 700 000000">
+                        <small class="helper-text">Customer support phone number</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Office Address</label>
+                        <textarea id="companyAddress" rows="3" class="form-control" placeholder="Nairobi, Kenya"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regional Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-clock"></i> Regional Settings</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Currency is fixed to <strong>Kenyan Shilling (KES)</strong> for all transactions.</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Time Zone</label>
+                        <select id="timezone" class="form-control">
+                            <option value="Africa/Nairobi" selected>Africa/Nairobi (EAT)</option>
+                            <option value="Africa/Lagos">Africa/Lagos (WAT)</option>
+                            <option value="Africa/Johannesburg">Africa/Johannesburg (SAST)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date Format</label>
+                        <select id="dateFormat" class="form-control">
+                            <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-share-alt"></i> Social Media Links</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label><i class="fab fa-facebook"></i> Facebook</label>
+                        <input type="url" id="facebookUrl" class="form-control" placeholder="https://facebook.com/eventhub">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fab fa-twitter"></i> Twitter</label>
+                        <input type="url" id="twitterUrl" class="form-control" placeholder="https://twitter.com/eventhub">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fab fa-instagram"></i> Instagram</label>
+                        <input type="url" id="instagramUrl" class="form-control" placeholder="https://instagram.com/eventhub">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fab fa-linkedin"></i> LinkedIn</label>
+                        <input type="url" id="linkedinUrl" class="form-control" placeholder="https://linkedin.com/company/eventhub">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions" style="margin-top: 1rem; text-align: right;">
+            <button class="btn-primary" onclick="saveGeneralSettings()">
+                <i class="fas fa-save"></i> Save General Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- PAYMENT SETTINGS TAB - M-Pesa Only -->
+    <!-- ============================================ -->
+    <div id="paymentTab" class="tab-content">
+        <div class="settings-grid">
+            <!-- Platform Fees -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-percent"></i> Platform Fees</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Platform Commission <span class="required">*</span></label>
+                        <div class="input-group">
+                            <input type="number" id="platformFee" class="form-control" value="5" step="0.5" min="0" max="100">
+                            <span class="input-suffix">%</span>
+                        </div>
+                        <small class="helper-text">Percentage deducted from each ticket sale</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Processing Fee</label>
+                        <div class="input-group">
+                            <input type="number" id="processingFee" class="form-control" value="0" step="0.5" min="0">
+                            <span class="input-suffix">%</span>
+                        </div>
+                        <small class="helper-text">M-Pesa transaction fee (usually 0%)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Payout Threshold</label>
+                        <div class="input-group">
+                            <span class="input-prefix">KES</span>
+                            <input type="number" id="minPayout" class="form-control" value="500" step="100" min="100">
+                        </div>
+                        <small class="helper-text">Minimum amount before organizers can request payout</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- M-Pesa Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-mobile-alt"></i> M-Pesa Configuration</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>All payments are processed via M-Pesa. Configure your M-Pesa API credentials below.</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Environment</label>
+                        <select id="mpesaEnv" class="form-control">
+                            <option value="sandbox" selected>Sandbox (Testing)</option>
+                            <option value="production">Production (Live)</option>
+                        </select>
+                        <small class="helper-text">Use Sandbox for testing, Production for live transactions</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Business Shortcode / Till Number</label>
+                        <input type="text" id="mpesaShortcode" class="form-control" placeholder="174379">
+                        <small class="helper-text">Your M-Pesa PayBill or Till Number</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Passkey</label>
+                        <input type="text" id="mpesaPasskey" class="form-control" placeholder="M-Pesa API Passkey">
+                        <small class="helper-text">API Passkey from M-Pesa developer portal</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Consumer Key</label>
+                        <input type="text" id="mpesaConsumerKey" class="form-control">
+                        <small class="helper-text">API Consumer Key from M-Pesa developer portal</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Consumer Secret</label>
+                        <input type="password" id="mpesaConsumerSecret" class="form-control">
+                        <small class="helper-text">API Consumer Secret from M-Pesa developer portal</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Callback URL</label>
+                        <input type="url" id="mpesaCallbackUrl" class="form-control" value="https://eventhub.co.ke/api/mpesa/callback/">
+                        <small class="helper-text">Webhook URL for M-Pesa transaction callbacks</small>
+                    </div>
+                    
+                    <button class="btn-outline" onclick="testMpesaConnection()">
+                        <i class="fas fa-vial"></i> Test M-Pesa Connection
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions" style="margin-top: 1rem; text-align: right;">
+            <button class="btn-primary" onclick="savePaymentSettings()">
+                <i class="fas fa-save"></i> Save Payment Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECURITY SETTINGS TAB -->
+    <!-- ============================================ -->
+    <div id="securityTab" class="tab-content">
+        <div class="settings-grid">
+            <!-- Authentication Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-user-lock"></i> Authentication</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-check">
+                        <input type="checkbox" id="requireEmailVerification" class="form-check-input">
+                        <label class="form-check-label">Require Email Verification for New Users</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="adminTwoFactor" class="form-check-input">
+                        <label class="form-check-label">Require Two-Factor Authentication for Admin Accounts</label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Max Login Attempts</label>
+                        <input type="number" id="maxLoginAttempts" class="form-control" value="5" min="3" max="10">
+                        <small class="helper-text">Number of failed attempts before temporary lockout</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Login Lockout Duration</label>
+                        <div class="input-group">
+                            <input type="number" id="lockoutDuration" class="form-control" value="15" min="5" max="60">
+                            <span class="input-suffix">minutes</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Session Timeout</label>
+                        <div class="input-group">
+                            <input type="number" id="sessionTimeout" class="form-control" value="30" min="5" max="480">
+                            <span class="input-suffix">minutes</span>
+                        </div>
+                        <small class="helper-text">User session timeout duration</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Password Policy -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-key"></i> Password Policy</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Minimum Password Length</label>
+                        <input type="number" id="minPasswordLength" class="form-control" value="8" min="6" max="20">
+                    </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="requireUppercase" class="form-check-input">
+                        <label class="form-check-label">Require Uppercase Letter (A-Z)</label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="requireLowercase" class="form-check-input">
+                        <label class="form-check-label">Require Lowercase Letter (a-z)</label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="requireNumbers" class="form-check-input">
+                        <label class="form-check-label">Require Numbers (0-9)</label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="requireSpecialChar" class="form-check-input">
+                        <label class="form-check-label">Require Special Character (@, #, $, !, etc.)</label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Password Expiry</label>
+                        <div class="input-group">
+                            <input type="number" id="passwordExpiry" class="form-control" value="90" min="0" max="365">
+                            <span class="input-suffix">days</span>
+                        </div>
+                        <small class="helper-text">0 = Never expire</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API & Security -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-shield-alt"></i> API & Security</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <div class="api-key-field">
+                            <input type="text" id="apiKey" class="form-control" readonly>
+                            <button class="btn-secondary btn-sm" onclick="regenerateApiKey()">
+                                <i class="fas fa-sync-alt"></i> Regenerate
+                            </button>
+                        </div>
+                        <small class="helper-text">API key for third-party integrations</small>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="enableAuditLog" class="form-check-input">
+                        <label class="form-check-label">Enable Admin Audit Log</label>
+                    </div>
+                    
+                    <button class="btn-outline" onclick="downloadAuditLog()" style="margin-top: 1rem;">
+                        <i class="fas fa-download"></i> Download Audit Log
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions" style="margin-top: 1rem; text-align: right;">
+            <button class="btn-primary" onclick="saveSecuritySettings()">
+                <i class="fas fa-save"></i> Save Security Settings
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/settings/settings.js' %}"></script>
+{% endblock %}

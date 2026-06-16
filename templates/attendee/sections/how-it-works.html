@@ -1,0 +1,142 @@
+{% load static %}
+<section class="how-it-works-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>Get started in three simple steps</p>
+        </div>
+        <div class="steps-grid">
+            <!-- Step 1: Discover -->
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <div class="step-icon">
+                    <i class="fas fa-compass"></i>
+                </div>
+                <h3>Discover Events</h3>
+                <div class="step-description">
+                    <p>Browse through hundreds of exciting events happening near you.</p>
+                </div>
+                <div class="step-features">
+                    <div class="feature-item">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Smart search with filters</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-star"></i>
+                        <span>Personalized recommendations</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-heart"></i>
+                        <span>Save to wishlist</span>
+                    </div>
+                </div>
+                <div class="step-action">
+                    <a href="/events/" class="step-link">Browse Events <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Step 2: Book Tickets -->
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <div class="step-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Book Tickets</h3>
+                <div class="step-description">
+                    <p>Select your tickets and complete payment securely using M-Pesa.</p>
+                </div>
+                <div class="step-features">
+                    <div class="feature-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Secure M-Pesa payment</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>Instant ticket delivery</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-users"></i>
+                        <span>Group discounts available</span>
+                    </div>
+                </div>
+                <div class="step-action">
+                    <a href="/events/" class="step-link">Start Booking <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Step 3: Attend Event -->
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <div class="step-icon">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <h3>Attend Event</h3>
+                <div class="step-description">
+                    <p>Show your QR code at the venue for quick and easy check-in.</p>
+                </div>
+                <div class="step-features">
+                    <div class="feature-item">
+                        <i class="fas fa-qrcode"></i>
+                        <span>Contactless QR entry</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-share-alt"></i>
+                        <span>Share with friends</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-bell"></i>
+                        <span>Event reminders</span>
+                    </div>
+                </div>
+                <div class="step-action">
+                    <a href="/how-it-works/" class="step-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Call to Action - Changes based on login state -->
+        <div class="steps-cta" id="stepsCta">
+            <p id="ctaMessage">Ready to start your event journey?</p>
+            <a href="/register/" id="ctaButton" class="cta-btn">Create Free Account <i class="fas fa-user-plus"></i></a>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Check login state and update CTA button
+    (function() {
+        const accessToken = localStorage.getItem('attendee_access_token');
+        const user = JSON.parse(localStorage.getItem('attendee_user') || '{}');
+        const isLoggedIn = accessToken && user && Object.keys(user).length > 0;
+        
+        const ctaMessage = document.getElementById('ctaMessage');
+        const ctaButton = document.getElementById('ctaButton');
+        
+        if (isLoggedIn) {
+            // Logged in - show welcome message with inline styles
+            const userName = user.full_name || user.name || user.first_name || user.username || 'there';
+            ctaMessage.innerHTML = `Welcome back, ${userName}! 👋`;
+            ctaMessage.style.cssText = `
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: #1a1a2e;
+                margin-bottom: 0.5rem;
+            `;
+            
+            ctaButton.href = '/dashboard/';
+            ctaButton.innerHTML = 'Go to Dashboard <i class="fas fa-tachometer-alt"></i>';
+        } else {
+            // Not logged in - show original message with inline styles
+            ctaMessage.innerHTML = 'Ready to start your event journey?';
+            ctaMessage.style.cssText = `
+                font-size: 1rem;
+                font-weight: 400;
+                color: #64748b;
+                margin-bottom: 0;
+            `;
+            
+            ctaButton.href = '/register/';
+            ctaButton.innerHTML = 'Create Free Account <i class="fas fa-user-plus"></i>';
+        }
+    })();
+</script>

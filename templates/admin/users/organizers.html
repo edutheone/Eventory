@@ -1,0 +1,241 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Organizer Management - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/users/users.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="organizers-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-building"></i> Organizer Management</h1>
+            <p class="text-muted">View and manage all event organizers</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-primary" onclick="openCreateOrganizerModal()">
+                <i class="fas fa-plus"></i> Create Organizer
+            </button>
+            <button class="btn-outline" onclick="exportOrganizers()">
+                <i class="fas fa-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <h3 id="verifiedCount">0</h3>
+                <span>Verified Organizers</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+                <h3 id="pendingCount">0</h3>
+                <span>Pending Verification</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-info">
+                <h3 id="totalEvents">0</h3>
+                <span>Total Events</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
+            <div class="stat-info">
+                <h3 id="totalTickets">0</h3>
+                <span>Tickets Sold</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="user-tabs">
+        <button class="user-tab active" onclick="switchTab('verified')">
+            <i class="fas fa-check-circle"></i> Verified Organizers
+        </button>
+        <button class="user-tab" onclick="switchTab('pending')">
+            <i class="fas fa-clock"></i> Pending Verification
+        </button>
+        <button class="user-tab" onclick="switchTab('suspended')">
+            <i class="fas fa-ban"></i> Suspended
+        </button>
+    </div>
+
+    <!-- Verified Organizers Tab -->
+    <div id="verifiedTab" class="tab-content active">
+        <div class="filters-card">
+            <div class="filters-row">
+                <div class="filter-group search-group">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchVerified" placeholder="Search by business name or email...">
+                </div>
+                <div class="filter-group">
+                    <select id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                </div>
+                <button class="btn-secondary" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i> Apply
+                </button>
+                <button class="btn-outline" onclick="resetFilters()">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-users"></i> Verified Organizers</h3>
+                <div class="table-info">
+                    <span id="verifiedRecordsCount">Showing 0 records</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Business Name</th>
+                                <th>Contact Person</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Events</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="verifiedOrganizersList">
+                            <tr><td colspan="7" class="text-center">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="verifiedPagination" class="pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Verification Tab -->
+    <div id="pendingTab" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-user-clock"></i> Pending Verification</h3>
+            </div>
+            <div class="card-body">
+                <div id="pendingOrganizersList" class="organizers-grid">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading pending applications...</p>
+                    </div>
+                </div>
+                <div id="pendingPagination" class="pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suspended Tab -->
+    <div id="suspendedTab" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-ban"></i> Suspended Organizers</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Business Name</th>
+                                <th>Email</th>
+                                <th>Suspended On</th>
+                                <th>Reason</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="suspendedOrganizersList">
+                            <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="suspendedPagination" class="pagination"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Verify Modal -->
+<div id="verifyModal" class="modal" style="display: none;">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3><i class="fas fa-id-card"></i> Verify Organizer</h3>
+            <button class="modal-close" onclick="closeVerifyModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="verifyModalBody"></div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeVerifyModal()">Cancel</button>
+            <button class="btn-danger" onclick="rejectOrganizer()">
+                <i class="fas fa-times"></i> Reject
+            </button>
+            <button class="btn-success" onclick="verifyOrganizer()">
+                <i class="fas fa-check"></i> Verify & Approve
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Create Organizer Modal -->
+<div id="createOrganizerModal" class="modal" style="display: none;">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h3><i class="fas fa-plus-circle"></i> Create Organizer</h3>
+            <button class="modal-close" onclick="closeCreateOrganizerModal()">&times;</button>
+        </div>
+        <form id="createOrganizerForm" onsubmit="handleCreateOrganizer(event)">
+            <div class="modal-body" style="padding: 20px;">
+                <div class="filter-group" style="margin-bottom: 15px;">
+                    <label for="orgUsername" style="display: block; margin-bottom: 5px; font-weight: 600;">Username</label>
+                    <input type="text" id="orgUsername" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required placeholder="e.g. organizer_username">
+                </div>
+                <div class="filter-group" style="margin-bottom: 15px;">
+                    <label for="orgEmail" style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
+                    <input type="email" id="orgEmail" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required placeholder="e.g. organizer@example.com">
+                </div>
+                <div class="filter-group" style="margin-bottom: 15px;">
+                    <label for="orgPassword" style="display: block; margin-bottom: 5px; font-weight: 600;">Password</label>
+                    <input type="password" id="orgPassword" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required placeholder="Enter password">
+                </div>
+                <div class="filter-group" style="margin-bottom: 15px;">
+                    <label for="orgBusinessName" style="display: block; margin-bottom: 5px; font-weight: 600;">Business Name</label>
+                    <input type="text" id="orgBusinessName" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required placeholder="e.g. Acme Corporation">
+                </div>
+                <div class="filter-group" style="margin-bottom: 15px;">
+                    <label for="orgContactName" style="display: block; margin-bottom: 5px; font-weight: 600;">Contact Name</label>
+                    <input type="text" id="orgContactName" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required placeholder="e.g. John Doe">
+                </div>
+                <div class="filter-group" style="margin-bottom: 15px;">
+                    <label for="orgPhone" style="display: block; margin-bottom: 5px; font-weight: 600;">Phone Number</label>
+                    <input type="text" id="orgPhone" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="e.g. +254712345678">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeCreateOrganizerModal()">Cancel</button>
+                <button type="submit" class="btn-success">
+                    <i class="fas fa-check"></i> Create Organizer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/users/organizers.js' %}"></script>
+{% endblock %}

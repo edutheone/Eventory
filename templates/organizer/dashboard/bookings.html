@@ -1,0 +1,15 @@
+{% extends "organizer/base.html" %}
+{% load static %}
+{% block title %}Bookings | EventHub Organizer{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/organizers/bookings.css">
+{% endblock %}
+{% block content %}
+<div>
+    <div class="d-flex justify-content-between mb-4"><h1>Bookings</h1><div><select id="eventFilter" class="filter-select"><option value="">All Events</option></select><button id="exportBtn" class="btn btn-outline ms-2">Export</button></div></div>
+    <div class="table-section"><table class="table"><thead><td><th>Booking ID</th><th>Event</th><th>Attendee</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody id="bookingsTableBody"></tbody></tr><nav><ul class="pagination" id="bookingsPagination"></ul></nav></div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/organizer/bookings.js"></script>
+{% endblock %}

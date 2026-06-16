@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventHub | {% block page_title %}Organizer Portal{% endblock %}</title>
+    
+    <!-- Google Fonts & Icon Libraries -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Premium Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/organizer.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-fire-flame-curved"></i>
+            </div>
+            <h2>EventHub</h2>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/organizer/dashboard/" class="menu-item {% block nav_dashboard %}{% endblock %}">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/organizer/events/" class="menu-item {% block nav_events %}{% endblock %}">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>My Events</span>
+            </a>
+            <a href="/organizer/settings/" class="menu-item {% block nav_settings %}{% endblock %}">
+                <i class="fa-solid fa-gears"></i>
+                <span>Settings</span>
+            </a>
+            <a href="/admin/login/" class="menu-item">
+                <i class="fa-solid fa-user-shield"></i>
+                <span>Admin Portal</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="/" class="menu-item back-home">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Site</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN BODY CONTENT -->
+    <main class="main-content">
+        <!-- TOPBAR NAVBAR -->
+        <header class="topbar">
+            <div class="topbar-welcome">
+                <h1>{% block content_title %}Organizer Portal{% endblock %}</h1>
+                <p>{% block content_subtitle %}Welcome back! Here's how your events are performing today.{% endblock %}</p>
+            </div>
+            
+            <div class="topbar-actions">
+                {% block topbar_actions %}{% endblock %}
+                <div class="notification-badge">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="dot"></span>
+                </div>
+                <div class="user-profile">
+                    <img src="{% if user.get_avatar_url %}{{ user.get_avatar_url }}{% else %}https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80{% endif %}" alt="Organizer Profile">
+                    <div class="profile-meta">
+                        <span class="profile-name">{{ user.email }}</span>
+                        <span class="profile-role">Event Organizer</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<!-- TOAST SYSTEM NOTIFICATION -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- API & MODULAR JAVASCRIPT FILES -->
+<script src="{% static 'js/shared/context-framework.js' %}"></script>
+<script src="{% static 'js/attendee/errors/error-handler.js' %}"></script>
+<script src="{% static 'js/organizer/api.config.js' %}"></script>
+<script src="{% static 'js/organizer/api.service.js' %}"></script>
+<script src="{% static 'js/organizer/api.endpoints.js' %}"></script>
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

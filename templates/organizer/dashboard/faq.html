@@ -1,0 +1,445 @@
+{% extends "organizer/base.html" %}
+{% load static %}
+{% block title %}FAQs | EventHub Organizer{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/organizers/faq.css">
+{% endblock %}
+{% block content %}
+<div class="organizer-faq-page">
+    <div class="organizer-faq-header">
+        <h1>FAQs</h1>
+        <p>Answers to common questions about managing events on EventHub</p>
+    </div>
+
+    <div class="organizer-faq-search">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="organizerFaqSearch" placeholder="Search FAQs… (Ctrl+K)" autocomplete="off">
+            <button type="button" id="organizerClearSearch" class="clear-search" style="display: none;" aria-label="Clear search">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="organizer-faq-categories">
+        <button type="button" class="category-btn active" data-category="all">All</button>
+        <button type="button" class="category-btn" data-category="getting-started">Getting Started</button>
+        <button type="button" class="category-btn" data-category="dashboard">Dashboard</button>
+        <button type="button" class="category-btn" data-category="events">Events</button>
+        <button type="button" class="category-btn" data-category="payments">Payments</button>
+        <button type="button" class="category-btn" data-category="bookings">Bookings</button>
+        <button type="button" class="category-btn" data-category="checkin">Check-in</button>
+        <button type="button" class="category-btn" data-category="attendees">Attendees</button>
+        <button type="button" class="category-btn" data-category="promotions">Promotions</button>
+        <button type="button" class="category-btn" data-category="reviews">Reviews</button>
+        <button type="button" class="category-btn" data-category="settings">Settings</button>
+        <button type="button" class="category-btn" data-category="troubleshooting">Troubleshooting</button>
+    </div>
+
+    <div class="organizer-faq-grid" id="organizerFaqGrid">
+
+        <!-- Getting Started -->
+        <div class="faq-item" data-category="getting-started">
+            <div class="faq-question"><span>How do I access the organizer portal?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Go to <strong>/organizer/login/</strong> and sign in with your organizer account. After login you are redirected to the Dashboard. Only users with the organizer role (or superuser access) can use this portal.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="getting-started">
+            <div class="faq-question"><span>What sections are available in the organizer portal?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>The top navigation includes:</p>
+                <ul>
+                    <li><strong>Dashboard</strong> — overview metrics and quick actions</li>
+                    <li><strong>Events</strong> — create and manage events</li>
+                    <li><strong>Attendees</strong> — customer directory</li>
+                    <li><strong>Bookings</strong> — ticket sales ledger</li>
+                    <li><strong>Promotions</strong> — discount codes</li>
+                    <li><strong>Reviews</strong> — attendee feedback</li>
+                    <li><strong>Settings</strong> — profile, payments, team, API keys</li>
+                    <li><strong>FAQs</strong> — this help page</li>
+                </ul>
+                <p>Ticket check-in is available at <strong>/organizer/tickets/</strong> (not shown in the main nav).</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="getting-started">
+            <div class="faq-question"><span>Why was I redirected to the login page?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>You are redirected when your session has expired or you are not signed in as an organizer. Log in again at <strong>/organizer/login/</strong>. If the problem persists, clear your browser cache or try a private window.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="getting-started">
+            <div class="faq-question"><span>What is the difference between organizer and attendee accounts?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p><strong>Attendee accounts</strong> browse events, book tickets, and manage personal bookings. <strong>Organizer accounts</strong> create events, configure payments, approve sales, check in attendees, and track performance on the Dashboard. You need an organizer role to access this portal.</p>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="faq-item" data-category="dashboard">
+            <div class="faq-question"><span>What do the dashboard metric cards show?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>The top row displays:</p>
+                <ul>
+                    <li><strong>Total Events</strong> — number of events you have created</li>
+                    <li><strong>Tickets Sold</strong> — total valid ticket quantities across events</li>
+                    <li><strong>Total Revenue</strong> — gross sales in KES from valid tickets</li>
+                    <li><strong>Attendees</strong> — unique buyers (based on ticket records)</li>
+                </ul>
+                <p>Percentage change badges appear when the API provides comparison data.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="dashboard">
+            <div class="faq-question"><span>How does the Revenue Overview chart work?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>The line chart shows gross revenue over time. Use the period selector to switch between <strong>Last 7 days</strong>, <strong>4 weeks</strong>, <strong>12 months</strong> (default), and <strong>Year to date</strong>. Amounts are shown in Kenyan Shillings (KES).</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="dashboard">
+            <div class="faq-question"><span>What are Pending Payment Approvals?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>When an attendee pays via M-Pesa and the payment requires manual review, the order appears here. You can:</p>
+                <ul>
+                    <li>View the payment screenshot submitted by the attendee</li>
+                    <li><strong>Approve</strong> — issues the ticket to the buyer</li>
+                    <li><strong>Reject</strong> — declines the order</li>
+                </ul>
+                <p>Auto-verified payments are issued without your action.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="dashboard">
+            <div class="faq-question"><span>What is the Performance Score?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>The Performance Score (0–100) summarizes how well your events are doing. It considers factors such as average rating and ticket fulfillment rate. Use it as a quick health check alongside your Dashboard revenue chart and Bookings ledger.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="dashboard">
+            <div class="faq-question"><span>How do notifications work on the dashboard?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>The notifications panel lists recent alerts (new bookings, payment reviews, event updates, etc.). Click an unread notification to mark it read, or use <strong>Mark all read</strong> to clear the unread state.</p>
+            </div>
+        </div>
+
+        <!-- Events -->
+        <div class="faq-item" data-category="events">
+            <div class="faq-question"><span>How do I create a new event?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Go to <strong>Events</strong> and click <strong>Create Event</strong> (or use the Quick Action on the Dashboard). Fill in the title, category, start/end date and time, venue, capacity, and base price. Optionally add VIP/VVIP tiers and a banner image, then save.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="events">
+            <div class="faq-question"><span>Why is my event status "Pending"?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>New events are submitted for <strong>admin approval</strong> before they can go live. Until approved, the status stays <em>pending</em> even if you attempt to publish. You will be notified when an admin approves or rejects your event.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="events">
+            <div class="faq-question"><span>What event categories are available?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>When creating an event you can choose from: <strong>Music</strong>, <strong>Technology</strong>, <strong>Business</strong>, <strong>Sports</strong>, <strong>Arts</strong>, and <strong>Food</strong>. Pick the category that best matches your event for discoverability.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="events">
+            <div class="faq-question"><span>How do VIP and VVIP ticket tiers work?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Beyond the base ticket price, you can enable optional <strong>VIP</strong> and <strong>VVIP</strong> tiers with separate prices. Check the tier checkbox in the event form and set each price. Attendees choose their tier at checkout.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="events">
+            <div class="faq-question"><span>What are the banner image requirements?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Banner images must be <strong>PNG, JPEG, SVG, WEBP, or GIF</strong> and no larger than <strong>5 MB</strong>. A compelling banner improves visibility on the public event listing.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="events">
+            <div class="faq-question"><span>Can I edit an event after it is published?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Yes. Click the event card on the Events page to open the edit modal. Changes to key details may trigger a notification email. Significant changes to a live event should be communicated to existing ticket holders.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="events">
+            <div class="faq-question"><span>How do I see tickets sold for a specific event?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Each event card shows <strong>tickets sold / capacity</strong>. For deeper detail, filter <strong>Bookings</strong> and <strong>Attendees</strong> by that event, or review the Revenue Overview chart on the Dashboard.</p>
+            </div>
+        </div>
+
+        <!-- Payments -->
+        <div class="faq-item" data-category="payments">
+            <div class="faq-question"><span>How do attendees pay for tickets?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Attendees pay via <strong>M-Pesa</strong> at checkout. They receive an STK Push on their phone, enter their PIN, and receive instant confirmation. Some payments may require your manual approval if flagged for review.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="payments">
+            <div class="faq-question"><span>How do I set up my M-Pesa payment details?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Go to <strong>Settings → Payment</strong>. Enter your <strong>display name</strong> (required) and at least one of:</p>
+                <ul>
+                    <li>Paybill number</li>
+                    <li>Till number</li>
+                    <li>Pochi la Biashara</li>
+                    <li>Send Money number</li>
+                </ul>
+                <p>Save your settings before attendees can pay you directly.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="payments">
+            <div class="faq-question"><span>What is bank settlement and do I need it?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Bank settlement is <strong>optional</strong>. It lets EventHub transfer your earnings to a bank account. Provide your bank name, account number, account holder name, and routing/SWIFT code under <strong>Settings → Payment</strong>. M-Pesa details are still required for attendee checkout.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="payments">
+            <div class="faq-question"><span>When do I receive my payouts?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Payouts are typically processed within <strong>3–5 business days</strong> after your event concludes and all pending orders are resolved. Ensure your bank or M-Pesa settlement details are up to date in Settings.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="payments">
+            <div class="faq-question"><span>How do I approve a manual M-Pesa payment?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>On the <strong>Dashboard</strong>, find the order under <strong>Pending Payment Approvals</strong>. Review the attendee details and payment screenshot, then click <strong>Approve</strong> to issue tickets or <strong>Reject</strong> if the payment is invalid.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="payments">
+            <div class="faq-question"><span>What happens if I reject a payment?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Rejecting an order cancels the booking attempt. No ticket is issued. The attendee may need to retry checkout or contact you if they believe the payment was valid.</p>
+            </div>
+        </div>
+
+        <!-- Bookings -->
+        <div class="faq-item" data-category="bookings">
+            <div class="faq-question"><span>Where can I see all ticket sales?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Open <strong>Bookings</strong> from the navigation bar. This ledger lists every ticket purchase with customer name, email, event, amount, purchase date, and status.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="bookings">
+            <div class="faq-question"><span>How do I search for a specific booking?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Use the search box to find bookings by <strong>customer name</strong>, <strong>email</strong>, or <strong>ticket number</strong>. Combine with the event and status filters to narrow results.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="bookings">
+            <div class="faq-question"><span>What do booking statuses mean?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <ul>
+                    <li><strong>Valid</strong> — ticket is active and can be used for entry</li>
+                    <li><strong>Checked In</strong> — attendee has been scanned or manually checked in</li>
+                    <li><strong>Cancelled</strong> — ticket is no longer valid</li>
+                </ul>
+            </div>
+        </div>
+        <div class="faq-item" data-category="bookings">
+            <div class="faq-question"><span>How do I view full booking details?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Click <strong>View</strong> on any booking row. The detail modal shows the ticket QR payload, event name, customer info, quantity, total paid, purchase date, status, and check-in timestamp (if applicable).</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="bookings">
+            <div class="faq-question"><span>Can I export bookings?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Export options are available from the Bookings and Check-in pages depending on your configuration. Use export to download attendee lists for offline use or external reporting.</p>
+            </div>
+        </div>
+
+        <!-- Check-in -->
+        <div class="faq-item" data-category="checkin">
+            <div class="faq-question"><span>How do I access the check-in scanner?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Navigate to <strong>/organizer/tickets/</strong>. This page is dedicated to ticket verification and check-in. It is not linked in the main navigation bar, so bookmark it for event day.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="checkin">
+            <div class="faq-question"><span>How do I scan attendee QR codes?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>On the Tickets page, click <strong>Start Scanner</strong> and allow camera access when prompted. Point the camera at the attendee's QR code. A valid ticket is verified and checked in automatically.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="checkin">
+            <div class="faq-question"><span>Can I check in attendees manually without a QR code?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Yes. Enter the <strong>ticket number</strong> in the Quick Check-in field and click <strong>Verify</strong>. If the ticket is valid, it will be checked in. You can also use the <strong>Check In</strong> button on individual rows in the ticket table.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="checkin">
+            <div class="faq-question"><span>What if a ticket is already checked in?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>The system will show an error indicating the ticket has already been used. Each ticket can only be checked in once. If you believe this is a mistake, search the booking in <strong>Bookings</strong> to confirm the check-in timestamp.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="checkin">
+            <div class="faq-question"><span>Why won't the camera scanner work?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Common fixes:</p>
+                <ul>
+                    <li>Grant camera permission in your browser (Safari: Settings → Safari → Camera)</li>
+                    <li>Use HTTPS — camera access requires a secure connection</li>
+                    <li>Try Chrome or Firefox if Safari blocks the camera</li>
+                    <li>Ensure adequate lighting and hold the QR code steady</li>
+                </ul>
+                <p>As a fallback, use manual ticket number entry.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="checkin">
+            <div class="faq-question"><span>What do the check-in stats show?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>The Tickets page displays <strong>Total Tickets</strong>, <strong>Checked In</strong>, <strong>Check-in Rate %</strong>, and <strong>Recent Check-ins</strong> (last 24 hours). Filter by event to see stats for a single event.</p>
+            </div>
+        </div>
+
+        <!-- Attendees -->
+        <div class="faq-item" data-category="attendees">
+            <div class="faq-question"><span>What is the Attendees page?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>The Attendees directory aggregates everyone who has purchased tickets from you. It shows name, email, phone, events booked, total tickets, lifetime value (KES), and last activity — useful for CRM and follow-up.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="attendees">
+            <div class="faq-question"><span>How is "Total Value" calculated for an attendee?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Total Value is the sum of all valid ticket purchases by that customer (matched by email) across your events, displayed in Kenyan Shillings.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="attendees">
+            <div class="faq-question"><span>Can I filter attendees by event?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Yes. Use the event dropdown filter to show only customers who purchased tickets for a specific event. Combine with the search box to find individuals by name, email, or phone.</p>
+            </div>
+        </div>
+
+        <div class="faq-item" data-category="dashboard">
+            <div class="faq-question"><span>How is revenue calculated on the Dashboard?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Revenue is the gross total from <strong>valid</strong> ticket sales across your events, in KES. Cancelled or refunded tickets are excluded. The Revenue Overview chart lets you view totals over 7 days, 4 weeks, 12 months, or year to date.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="dashboard">
+            <div class="faq-question"><span>What is the difference between tickets sold and attendance?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p><strong>Tickets sold</strong> is the number of valid tickets purchased. <strong>Attendance</strong> (or checked-in count) is how many of those tickets were actually scanned or manually checked in at the venue. Check-in stats are available on the Tickets page.</p>
+            </div>
+        </div>
+
+        <!-- Promotions -->
+        <div class="faq-item" data-category="promotions">
+            <div class="faq-question"><span>How do I create a promo code?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Go to <strong>Promotions</strong> and click <strong>Create Promo</strong>. Enter a code (auto-uppercased), choose <strong>percentage</strong> or <strong>fixed KES</strong> discount, set the value, optional event scope, expiry date, and usage limit.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="promotions">
+            <div class="faq-question"><span>Can a promo code apply to only one event?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Yes. When creating or editing a promo, select a specific event from the dropdown. Leave the event field blank to apply the discount to <strong>all</strong> your events.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="promotions">
+            <div class="faq-question"><span>How do usage limits work?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Set a maximum number of redemptions when creating the promo. The table shows <strong>used / limit</strong>. Once the limit is reached, the code can no longer be applied at checkout.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="promotions">
+            <div class="faq-question"><span>How do I deactivate a promotion?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Open the promo in the Promotions table and toggle <strong>Deactivate</strong>. Deactivated codes are rejected at checkout. You can reactivate them later or delete the promo entirely.</p>
+            </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="faq-item" data-category="reviews">
+            <div class="faq-question"><span>How do I respond to an attendee review?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Go to <strong>Reviews</strong>, find the review, and click <strong>Respond</strong>. Write your reply in the modal and submit. Your response appears publicly alongside the original review.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="reviews">
+            <div class="faq-question"><span>Can I filter reviews by event?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Yes. Use the event filter dropdown at the top of the Reviews page to show feedback for a single event. Summary cards update to reflect the filtered set.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="reviews">
+            <div class="faq-question"><span>What do the review summary cards show?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>The summary shows <strong>Average Rating</strong> (star average), <strong>Total Reviews</strong>, and <strong>Response Rate</strong> — the percentage of reviews you have replied to.</p>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="faq-item" data-category="settings">
+            <div class="faq-question"><span>How do I update my organization profile?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Go to <strong>Settings → General</strong>. Update your organization name, email, phone, website, and bio, then click <strong>Save</strong>. This information may appear on your public organizer profile and event pages.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="settings">
+            <div class="faq-question"><span>How do I invite a team member?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Go to <strong>Settings → Team</strong> and click <strong>Add Member</strong>. Enter their email and assign a role:</p>
+                <ul>
+                    <li><strong>Viewer</strong> — read-only access</li>
+                    <li><strong>Editor</strong> — can manage events and content</li>
+                    <li><strong>Admin</strong> — full access including settings</li>
+                </ul>
+            </div>
+        </div>
+        <div class="faq-item" data-category="settings">
+            <div class="faq-question"><span>How do I remove a team member?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>On the Team tab, click <strong>Remove</strong> next to the member and confirm. They will immediately lose access to your organizer account.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="settings">
+            <div class="faq-question"><span>How do I generate an API key?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Go to <strong>Settings → API Keys</strong> and click <strong>Generate Key</strong>. Give it a descriptive name. The secret key (prefixed <code>eh_live_</code>) is shown <strong>once</strong> — copy and store it securely. Use it to integrate with the EventHub API.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="settings">
+            <div class="faq-question"><span>What happens if I revoke an API key?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Revoked keys stop working immediately. Any integration using that key will receive authentication errors. Generate a new key and update your integration to restore access.</p>
+            </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="faq-item" data-category="troubleshooting">
+            <div class="faq-question"><span>Why does my data look like sample/demo content?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Some features (promotions, reviews, support tickets) may display sample data when the backend API is unavailable and the app falls back to local storage mocks. Live bookings, events, check-in, and payment approvals use real data when the API is connected.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="troubleshooting">
+            <div class="faq-question"><span>I get a 401 error or blank page — what should I do?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Your auth token may have expired. Log out and sign in again at <strong>/organizer/login/</strong>. If using multiple tabs, refresh after logging in. Clear <code>organizer_access_token</code> from local storage only as a last resort.</p>
+            </div>
+        </div>
+        <div class="faq-item" data-category="troubleshooting">
+            <div class="faq-question"><span>My event won't publish — what can I check?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <ul>
+                    <li>Confirm the event status — new events need <strong>admin approval</strong></li>
+                    <li>Ensure required fields (title, date, venue, capacity, price) are filled</li>
+                    <li>Verify M-Pesa payment settings are configured in Settings</li>
+                    <li>Check notifications for approval or rejection messages</li>
+                </ul>
+            </div>
+        </div>
+        <div class="faq-item" data-category="troubleshooting">
+            <div class="faq-question"><span>Attendee says they paid but has no ticket — what do I do?</span><i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">
+                <p>Check <strong>Pending Payment Approvals</strong> on the Dashboard for orders awaiting review. Search their email in <strong>Bookings</strong>. If payment was auto-verified, the ticket should appear with status <em>valid</em>. Approve manual-review orders to issue the ticket.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/organizer/faq.js"></script>
+{% endblock %}

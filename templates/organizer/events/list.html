@@ -1,0 +1,410 @@
+{% extends "organizer/base.html" %}
+{% block title %}My Events - EventHub{% endblock %}
+{% block nav_events %}active{% endblock %}
+{% block content_title %}Event Management{% endblock %}
+{% block content_subtitle %}Create, edit, publish, and monitor your organization's events.{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-warning px-4 py-2 text-dark font-weight-bold" data-bs-toggle="modal" data-bs-target="#createEventModal">
+    <i class="fa-solid fa-plus me-2"></i>Create New Event
+</button>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    body, .container-fluid {
+        background: radial-gradient(circle at top, #090909 0%, #000 55%, #080808 100%);
+        color: #f8fafc;
+    }
+    .event-card {
+        background: #050505;
+        border: 1px solid rgba(255, 107, 0, 0.35);
+        border-radius: 18px;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 18px 40px rgba(255, 107, 0, 0.08);
+    }
+    .event-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 107, 0, 0.75);
+        box-shadow: 0 20px 40px rgba(255, 107, 0, 0.18);
+    }
+    .event-banner {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+    .event-banner::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.85));
+    }
+    .event-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        backdrop-filter: blur(8px);
+        padding: 0.5rem 1rem;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        background: rgba(255, 255, 255, 0.08);
+        color: #f8fafc;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .badge-published {
+        background: rgba(255, 107, 0, 0.18);
+        color: #ffb347;
+        border: 1px solid rgba(255, 107, 0, 0.45);
+    }
+    .badge-draft {
+        background: rgba(255, 255, 255, 0.08);
+        color: #f8fafc;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .badge-cancelled {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fecaca;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .capacity-bar {
+        height: 8px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+    }
+    .capacity-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #ff6b00, #f97316);
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+    .search-filter-bar {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 107, 0, 0.25);
+        border-radius: 16px;
+        padding: 1rem;
+    }
+    .form-control,
+    .form-select {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #f8fafc;
+    }
+    .form-control:focus,
+    .form-select:focus {
+        border-color: rgba(255, 107, 0, 0.6);
+        box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.18);
+    }
+    .modal-content {
+        background: #080808;
+        border: 1px solid rgba(255, 107, 0, 0.2);
+    }
+    .modal-header,
+    .modal-footer {
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+    .btn-outline-secondary {
+        color: #f8fafc;
+        border-color: rgba(255, 255, 255, 0.22);
+    }
+    .btn-outline-secondary:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+    .text-white {
+        color: #f8fafc !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Filters & Search Bar -->
+    <div class="search-filter-bar mb-4">
+        <div class="row g-3">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-secondary text-muted">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="eventSearch" class="form-control border-secondary" placeholder="Search events by title, venue...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select id="statusFilter" class="form-select border-secondary">
+                    <option value="">All Statuses</option>
+                    <option value="published">Published</option>
+                    <option value="draft">Drafts</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select id="categoryFilter" class="form-select border-secondary">
+                    <option value="">All Categories</option>
+                    <option value="Music">Music</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Business">Business</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Arts">Arts</option>
+                    <option value="Food">Food</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Events Grid -->
+    <div class="row g-4" id="eventsContainer">
+        <!-- Rendered dynamically -->
+        <div class="text-center py-5">
+            <div class="spinner-border text-warning" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Event Modal -->
+<div class="modal fade" id="createEventModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bold text-white"><i class="fa-solid fa-calendar-plus me-2 text-warning"></i>Create New Event</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createEventForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label>Event Title *</label>
+                            <input type="text" id="titleInput" class="form-control" placeholder="e.g. Afrobeat Jam Session" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Category *</label>
+                            <select id="categoryInput" class="form-select" required>
+                                <option value="Music">Music</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Business">Business</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Arts">Arts</option>
+                                <option value="Food">Food</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Ticket Price (KSh) *</label>
+                            <input type="number" id="priceInput" class="form-control" placeholder="0 for Free events" required min="0">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Event Date *</label>
+                            <input type="date" id="dateInput" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>Start Time *</label>
+                            <input type="time" id="startTimeInput" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>End Time *</label>
+                            <input type="time" id="endTimeInput" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Venue / Location Name *</label>
+                            <input type="text" id="venueInput" class="form-control" placeholder="e.g. Alchemist Bar" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Physical Address / City *</label>
+                            <input type="text" id="addressInput" class="form-control" placeholder="e.g. Westlands, Nairobi" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Max Attendance Capacity *</label>
+                            <input type="number" id="capacityInput" class="form-control" placeholder="Seats count" required min="1">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Banner Image URL</label>
+                            <input type="url" id="imageInput" class="form-control" placeholder="https://images.unsplash.com/... (optional)">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Event Description</label>
+                            <textarea id="descInput" class="form-control" rows="4" placeholder="Describe what makes this event unique..."></textarea>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" id="publishSwitch">
+                                <label class="form-check-label text-white" for="publishSwitch">Publish immediately (Draft otherwise)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning text-dark font-weight-bold">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let eventsData = [];
+    const eventsContainer = document.getElementById('eventsContainer');
+
+    function notify(message, type = 'info') {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+            return;
+        }
+        if (type === 'error') {
+            console.error(message);
+        } else {
+            console.log(message);
+        }
+    }
+
+    async function loadEvents() {
+        try {
+            const res = await OrganizerAPI.events.getAll();
+            eventsData = Array.isArray(res) ? res : (res?.results || []);
+            renderEvents();
+        } catch (err) {
+            notify('Failed to load events', 'error');
+            eventsContainer.innerHTML = `
+                <div class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-triangle-exclamation fa-3x mb-3 text-danger"></i>
+                    <h5>Failed to load events</h5>
+                    <p>There was a connection or server authorization issue. Please refresh or try again.</p>
+                </div>
+            `;
+        }
+    }
+
+    function renderEvents() {
+        const query = document.getElementById('eventSearch').value.toLowerCase();
+        const status = document.getElementById('statusFilter').value;
+        const category = document.getElementById('categoryFilter').value;
+
+        const filtered = eventsData.filter(e => {
+            const eventName = (e.name || e.title || "").toLowerCase();
+            const eventLocation = (e.location || e.venue || "").toLowerCase();
+            const matchQuery = !query || eventName.includes(query) || eventLocation.includes(query);
+            const matchStatus = !status || e.status === status;
+            const matchCat = !category || e.category === category;
+            return matchQuery && matchStatus && matchCat;
+        });
+
+        if (filtered.length === 0) {
+            eventsContainer.innerHTML = `
+                <div class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-calendar-xmark fa-3x mb-3 text-secondary"></i>
+                    <h5>No events found</h5>
+                    <p>Try resetting filters or create a new event to get started.</p>
+                </div>
+            `;
+            return;
+        }
+
+        eventsContainer.innerHTML = filtered.map(e => {
+            const isPub = e.status === 'published';
+            const badgeClass = isPub ? 'badge-published' : (e.status === 'cancelled' ? 'badge-cancelled' : 'badge-draft');
+            const percent = e.capacity > 0 ? Math.min(100, ((e.sold || 0) / e.capacity) * 100) : 0;
+            const defaultImage = "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80";
+            const imageUrl = e.image_url || e.image || defaultImage;
+            const eventName = e.name || e.title || "Untitled Event";
+
+            return `
+                <div class="col-md-6 col-lg-4">
+                    <div class="event-card">
+                        <div class="event-banner" style="background-image: url('${imageUrl}')">
+                            <span class="event-badge ${badgeClass}">${isPub ? 'Published' : (e.status || 'DRAFT').toUpperCase()}</span>
+                        </div>
+                        <div class="p-4">
+                            <span class="text-warning font-weight-bold" style="font-size: 0.8rem; text-transform: uppercase;">${e.category || 'General'}</span>
+                            <h4 class="text-white mt-1 mb-2 text-truncate" title="${eventName}">${eventName}</h4>
+                            <div class="text-muted small mb-3">
+                                <div class="mb-1"><i class="fa-regular fa-clock me-2"></i>${e.date ? new Date(e.date).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}) : 'Date TBA'}</div>
+                                <div><i class="fa-solid fa-map-pin me-2"></i>${e.location || 'Location TBA'}</div>
+                            </div>
+
+                            <!-- Capacity meter -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between text-muted small mb-1">
+                                    <span>Tickets Sold</span>
+                                    <span class="text-white font-weight-bold">${e.sold || 0} / ${e.capacity || 0}</span>
+                                </div>
+                                <div class="capacity-bar">
+                                    <div class="capacity-fill" style="width: ${percent}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+                                <div>
+                                    <div class="text-muted small">Revenue</div>
+                                    <strong class="text-success" style="font-size: 1.1rem;">KSh ${(e.revenue || 0).toLocaleString()}</strong>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">Actions</button>
+                                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                                        <li><a class="dropdown-item text-danger delete-btn" href="#" data-id="${e.id}"><i class="fa-solid fa-trash me-2"></i>Delete Event</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Attach event listeners for delete
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.onclick = async (ev) => {
+                ev.preventDefault();
+                const id = btn.dataset.id;
+                if (confirm("Are you sure you want to permanently delete this event? This action cannot be undone.")) {
+                    try {
+                        await OrganizerAPI.events.delete(id);
+                        notify("Event deleted successfully", "success");
+                        loadEvents();
+                    } catch (err) {
+                        notify("Failed to delete event", "error");
+                    }
+                }
+            };
+        });
+    }
+
+    document.getElementById('eventSearch').oninput = renderEvents;
+    document.getElementById('statusFilter').onchange = renderEvents;
+    document.getElementById('categoryFilter').onchange = renderEvents;
+
+    document.getElementById('createEventForm').onsubmit = async (ev) => {
+        ev.preventDefault();
+        const data = {
+            name: document.getElementById('titleInput').value.trim(),
+            category: document.getElementById('categoryInput').value,
+            price: parseFloat(document.getElementById('priceInput').value),
+            date: document.getElementById('dateInput').value,
+            startTime: document.getElementById('startTimeInput').value,
+            endTime: document.getElementById('endTimeInput').value,
+            venue: document.getElementById('venueInput').value.trim(),
+            address: document.getElementById('addressInput').value.trim(),
+            capacity: parseInt(document.getElementById('capacityInput').value),
+            image: document.getElementById('imageInput').value.trim(),
+            description: document.getElementById('descInput').value.trim(),
+            status: document.getElementById('publishSwitch').checked ? 'active' : 'draft'
+        };
+
+        try {
+            await OrganizerAPI.events.create(data);
+            notify("Event created successfully!", "success");
+            bootstrap.Modal.getInstance(document.getElementById('createEventModal')).hide();
+            document.getElementById('createEventForm').reset();
+            loadEvents();
+        } catch (err) {
+            notify(err.message || "Failed to create event", "error");
+        }
+    };
+
+    loadEvents();
+</script>
+{% endblock %}

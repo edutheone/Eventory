@@ -1,0 +1,64 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}EventHub - Discover Amazing Events in Kenya{% endblock %}
+
+{% block meta_description %}EventHub is Kenya's premier event discovery and ticket booking platform. Find music concerts, business summits, tech workshops, art festivals, and more near you.{% endblock %}
+{% block meta_keywords %}events, ticket booking, concerts Kenya, tech conferences, business networking, art exhibitions, EventHub Nairobi, buy tickets online{% endblock %}
+
+{% block og_title %}EventHub - Discover and Book Tickets for Kenyan Events{% endblock %}
+{% block og_description %}Discover music, tech, business, and cultural experiences in Nairobi, Mombasa, and beyond. Easy ticket checkout.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/sections/hero.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/sections/categories.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/sections/featured-events.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/sections/how-it-works.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/sections/stats.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/sections/testimonials.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/sections/sponsors.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/sections/newsletter.css' %}">
+{% endblock %}
+
+{% block content %}
+{% include 'attendee/sections/hero.html' %}
+{% include 'attendee/sections/categories.html' %}
+{% include 'attendee/sections/featured_events.html' %}
+{% include 'attendee/sections/how-it-works.html' %}
+{% include 'attendee/sections/stats.html' %}
+{% include 'attendee/sections/testimonials.html' %}
+{% include 'attendee/sections/sponsors.html' %}
+{% include 'attendee/sections/newsletter.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<!-- Load mock data FIRST before any section that uses it -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Categories carousel
+    const catCarousel = document.getElementById('categoryCarousel');
+    const catPrev = document.getElementById('catPrevBtn');
+    const catNext = document.getElementById('catNextBtn');
+    if (catPrev && catNext && catCarousel) {
+        catPrev.onclick = () => catCarousel.scrollBy({ left: -200, behavior: 'smooth' });
+        catNext.onclick = () => catCarousel.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+    
+    // Testimonials carousel
+    const testimonialCarousel = document.getElementById('testimonialCarousel');
+    const dots = document.querySelectorAll('.testimonial-dot');
+    if (testimonialCarousel && dots.length) {
+        const updateDots = () => {
+            const index = Math.round(testimonialCarousel.scrollLeft / testimonialCarousel.offsetWidth);
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+        };
+        testimonialCarousel.onscroll = updateDots;
+        dots.forEach((dot, i) => {
+            dot.onclick = () => testimonialCarousel.scrollTo({ left: i * testimonialCarousel.offsetWidth, behavior: 'smooth' });
+        });
+        updateDots();
+    }
+});
+</script>
+{% endblock %}

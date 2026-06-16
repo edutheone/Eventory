@@ -1,0 +1,175 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Privacy Policy - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/pages/privacy.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="privacy-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Privacy Policy</h1>
+            <p>How EventHub collects, uses, and protects your personal information</p>
+        </div>
+
+        <div class="last-updated-banner">
+            <span><i class="fas fa-clock"></i> Last updated: June 10, 2026</span>
+        </div>
+
+        <div class="toc-card">
+            <h3><i class="fas fa-list-ol"></i> Table of Contents</h3>
+            <ul class="toc-list">
+                <li><a href="#section-1">1. What Information Do We Collect?</a></li>
+                <li><a href="#section-2">2. How Do We Process Your Information?</a></li>
+                <li><a href="#section-3">3. When and With Whom Do We Share Your Personal Information?</a></li>
+                <li><a href="#section-4">4. What Is Our Stance on Third-Party Websites?</a></li>
+                <li><a href="#section-5">5. Do We Use Cookies and Other Tracking Technologies?</a></li>
+                <li><a href="#section-6">6. How Do We Handle Your Social Logins?</a></li>
+                <li><a href="#section-7">7. How Long Do We Keep Your Information?</a></li>
+                <li><a href="#section-8">8. How Do We Keep Your Information Safe?</a></li>
+                <li><a href="#section-9">9. Do We Collect Information From Minors?</a></li>
+                <li><a href="#section-10">10. What Are Your Privacy Rights?</a></li>
+                <li><a href="#section-11">11. Controls for Do-Not-Track Features</a></li>
+                <li><a href="#section-12">12. Do We Make Updates to This Notice?</a></li>
+                <li><a href="#section-13">13. How Can You Contact Us About This Notice?</a></li>
+                <li><a href="#section-14">14. How Can You Review, Update, or Delete Your Data?</a></li>
+            </ul>
+        </div>
+
+        <div class="privacy-content">
+            <div class="privacy-section">
+                <p>This Privacy Notice for <strong>EventHub</strong> ("we", "us", or "our") describes how and why we might access, collect, store, use, and/or share ("process") your personal information when you use our services ("Services"), including when you visit our website at <a href="https://events-system-sable.vercel.app/">https://events-system-sable.vercel.app/</a>, download our digital tickets, or engage with us in other related ways, including sales, marketing, or events.</p>
+                <p><strong>Questions or concerns?</strong> Reading this Privacy Notice will help you understand your privacy rights and choices. If you do not agree with our policies and practices, please do not use our Services. If you still have any questions or concerns, please contact us at <a href="mailto:info@ICTA.co.ke">info@ICTA.co.ke</a>.</p>
+            </div>
+
+            <div class="privacy-section" id="section-1">
+                <h2>1. What Information Do We Collect?</h2>
+                <h3>Personal Information You Disclose to Us</h3>
+                <p>We collect personal information that you voluntarily provide to us when you register on our platform, purchase tickets, express interest in obtaining information about our products or services, or otherwise when you contact us.</p>
+                <p>The personal information we collect depends on the context of your interactions with us, the choices you make, and the features you use. This may include:</p>
+                <ul>
+                    <li><strong>Names:</strong> Provided during account registration or ticket checkout.</li>
+                    <li><strong>Phone numbers:</strong> Used for ticket purchase processing and M-Pesa STK Push operations.</li>
+                    <li><strong>Email addresses:</strong> For account verification, ticket deliveries, and platform announcements.</li>
+                    <li><strong>Passwords:</strong> Securely hashed and stored credentials for user authentication.</li>
+                    <li><strong>Contact or authentication data:</strong> Details related to session tokens and authorization headers.</li>
+                </ul>
+                <h3>Social Media Login Data</h3>
+                <p>Our Services provide you the option to authenticate using Google OAuth. If you choose to log in this way, we collect authentication tokens, name, email address, profile image, and your unique Google account identifier.</p>
+            </div>
+
+            <div class="privacy-section" id="section-2">
+                <h2>2. How Do We Process Your Information?</h2>
+                <p>We process your personal information for a variety of reasons, depending on how you interact with our Services, including:</p>
+                <ul>
+                    <li><strong>To facilitate account creation and authentication:</strong> Managing your user account, login sessions, and secure authorization gates.</li>
+                    <li><strong>To deliver and facilitate delivery of services to the user:</strong> Processing ticket bookings, reserving seats, sending digital ticket references and QR codes.</li>
+                    <li><strong>To respond to user inquiries and offer support:</strong> Directing queries to our support ticket queue and providing admin feedback.</li>
+                    <li><strong>To send administrative information:</strong> Providing billing updates, safety notifications, platform updates, or alerts.</li>
+                    <li><strong>To request feedback:</strong> Reaching out to gather ratings and review comments on past events.</li>
+                    <li><strong>To deliver targeted advertising:</strong> Showcasing relevant event recommendations matching user preferences.</li>
+                    <li><strong>To ensure platform security:</strong> Implementing fraud detection checks, protecting account data, and tracking audit logs.</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section" id="section-3">
+                <h2>3. When and With Whom Do We Share Your Personal Information?</h2>
+                <p>We may share your personal information in specific situations and with specific third parties, including:</p>
+                <ul>
+                    <li><strong>Payment Processors:</strong> We share phone and billing details with Safaricom's M-Pesa API gateways to trigger STK prompts and process checkouts.</li>
+                    <li><strong>Event Organizers:</strong> We share ticket lists (attendee names, email, ticket reference numbers) with organizers hosting the events you book to facilitate gate check-ins and check-in audits.</li>
+                    <li><strong>Business Transfers:</strong> We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business.</li>
+                    <li><strong>Legal Obligations:</strong> We may disclose your information to comply with applicable laws, court orders, or regulations (including the Kenya Data Protection Act, 2019).</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section" id="section-4">
+                <h2>4. What Is Our Stance on Third-Party Websites?</h2>
+                <p>Our Services link to or scrape public events from third-party websites (including Ticketsasa, AllEvents.in, and Eventbrite). This Privacy Notice only applies to data collected directly by EventHub.</p>
+                <p>We are not responsible for the privacy practices, content, or safety of third-party sites. We advise you to read the privacy statements of any website you visit from our recommendations.</p>
+            </div>
+
+            <div class="privacy-section" id="section-5">
+                <h2>5. Do We Use Cookies and Other Tracking Technologies?</h2>
+                <p>Yes. We use standard browser cookies and local storage tokens to provide a reliable platform experience:</p>
+                <ul>
+                    <li><strong>Authentication:</strong> Keeping you logged into your portal sessions.</li>
+                    <li><strong>Shopping Cart:</strong> Retaining your selected event tickets before completing checkout.</li>
+                    <li><strong>Autofill Data:</strong> Storing local billing metadata securely in the browser to pre-fill checkout prompts.</li>
+                    <li><strong>Geolocation Resolution:</strong> Resolving coordinates or IP addresses into county names via Nominatim and ip-api.com to filter nearby events.</li>
+                </ul>
+                <p>You can manage your cookie preferences through your web browser settings at any time.</p>
+            </div>
+
+            <div class="privacy-section" id="section-6">
+                <h2>6. How Do We Handle Your Social Logins?</h2>
+                <p>If you choose to authenticate using Google OAuth, we only request access to basic email and profile identifiers. We protect social sign-in credentials using Django session mechanisms and enforce security barriers.</p>
+                <p>If you decide to unlink your Google account, you can do so from your profile settings or by contacting our support team.</p>
+            </div>
+
+            <div class="privacy-section" id="section-7">
+                <h2>7. How Long Do We Keep Your Information?</h2>
+                <p>We retain your personal information only for as long as it is necessary for the purposes set out in this Privacy Notice, unless a longer retention period is required by law (e.g., for accounting, audit, taxation, or legal compliance).</p>
+                <p>When we have no ongoing legitimate business need to process your personal information, we will either delete or anonymize it in our relational databases and Dynamic JSON stores.</p>
+            </div>
+
+            <div class="privacy-section" id="section-8">
+                <h2>8. How Do We Keep Your Information Safe?</h2>
+                <p>We implement a range of technical and organizational security measures designed to safeguard your data, including:</p>
+                <ul>
+                    <li>Password hashing using PBKDF2 with SHA-256.</li>
+                    <li>Secure cross-origin policies (COOP) and CSRF protection on API calls.</li>
+                    <li>Global exception handling to mask database leakages.</li>
+                    <li>SSL encryption on all network requests.</li>
+                </ul>
+                <p>While we strive to protect your data, no internet transmission is 100% secure. You are responsible for keeping your login credentials confidential.</p>
+            </div>
+
+            <div class="privacy-section" id="section-9">
+                <h2>9. Do We Collect Information From Minors?</h2>
+                <p>We do not knowingly solicit data from or market to children under 18 years of age. By using the Services, you represent that you are at least 18 years of age or that you are the parent or guardian of such a minor and consent to their use of the Services.</p>
+            </div>
+
+            <div class="privacy-section" id="section-10">
+                <h2>10. What Are Your Privacy Rights?</h2>
+                <p>Depending on your jurisdiction, you have specific rights under data protection laws. In Kenya, under the Data Protection Act, 2019, you have the right to:</p>
+                <ul>
+                    <li>Request access to your personal data.</li>
+                    <li>Request correction of inaccurate or incomplete personal data.</li>
+                    <li>Object to the processing of your personal data.</li>
+                    <li>Request erasure of your personal data ("right to be forgotten").</li>
+                    <li>Withdraw consent at any time.</li>
+                </ul>
+                <p>You can exercise these rights directly by editing your data in the attendee profile portal, submitting a support ticket, or emailing us at <a href="mailto:info@ICTA.co.ke">info@ICTA.co.ke</a>.</p>
+            </div>
+
+            <div class="privacy-section" id="section-11">
+                <h2>11. Controls for Do-Not-Track Features</h2>
+                <p>Most web browsers include a Do-Not-Track ("DNT") setting. Because there is no uniform industry standard for DNT signal recognition, our platform does not currently respond to automated DNT browser protocols.</p>
+            </div>
+
+            <div class="privacy-section" id="section-12">
+                <h2>12. Do We Make Updates to This Notice?</h2>
+                <p>Yes, we may update this Privacy Notice from time to time. The updated version will be indicated by an updated "Last Updated" date and will be effective as soon as it is accessible. We encourage you to review this page periodically to stay informed.</p>
+            </div>
+
+            <div class="privacy-section" id="section-13">
+                <h2>13. How Can You Contact Us About This Notice?</h2>
+                <p>If you have questions, comments, or complaints about this notice or our data practices, you can contact us at:</p>
+                <p>
+                    <strong>Email:</strong> <a href="mailto:info@ICTA.co.ke">info@ICTA.co.ke</a><br>
+                    <strong>Host Platform:</strong> EventHub Support Division
+                </p>
+            </div>
+
+            <div class="privacy-section" id="section-14">
+                <h2>14. How Can You Review, Update, or Delete Your Data?</h2>
+                <p>To request deletion of your account or review the specific personal data stored by EventHub, please log into your account and submit a support ticket via the Support Portal, or send a deletion request to <a href="mailto:info@ICTA.co.ke">info@ICTA.co.ke</a>. We will process and respond to all requests within 30 days.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

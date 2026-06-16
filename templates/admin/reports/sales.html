@@ -1,0 +1,162 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Sales Report - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/reports/reports.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="sales-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-chart-line"></i> Sales Report</h1>
+            <p class="text-muted">Track platform sales and revenue trends</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-primary" onclick="exportSalesReport()">
+                <i class="fas fa-download"></i> Download PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group">
+                <label>Period</label>
+                <select id="period">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly" selected>Monthly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>From Date</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="filter-group">
+                <label>To Date</label>
+                <input type="date" id="endDate">
+            </div>
+            <button class="btn-primary" onclick="loadSalesReport()">
+                <i class="fas fa-search"></i> Apply
+            </button>
+            <button class="btn-outline" onclick="resetSalesFilters()">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-label">Total Sales</span>
+                <h3 class="kpi-value" id="totalSales">Kes 0</h3>
+                <span class="kpi-trend up" id="salesTrend"><i class="fas fa-arrow-up"></i> +0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-ticket-alt"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-label">Tickets Sold</span>
+                <h3 class="kpi-value" id="totalTicketsSold">0</h3>
+                <span class="kpi-trend up" id="ticketsTrend"><i class="fas fa-arrow-up"></i> +0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-shopping-cart"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-label">Avg Order Value</span>
+                <h3 class="kpi-value" id="avgOrderValue">Kes 0</h3>
+                <span class="kpi-trend up" id="avgOrderTrend"><i class="fas fa-arrow-up"></i> +0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-chart-simple"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-label">Growth Rate</span>
+                <h3 class="kpi-value" id="growthRate">0%</h3>
+                <span class="kpi-trend up" id="growthTrend"><i class="fas fa-arrow-up"></i> vs last period</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Chart -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-chart-line"></i> Sales Trend Analysis</h3>
+            <div class="chart-controls">
+                <button class="chart-btn active" data-type="revenue" onclick="switchChartType('revenue')">Revenue</button>
+                <button class="chart-btn" data-type="tickets" onclick="switchChartType('tickets')">Tickets</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <canvas id="salesChart" height="300"></canvas>
+        </div>
+    </div>
+
+    <!-- Top Events & Categories -->
+    <div class="charts-grid">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-trophy"></i> Top Selling Events</h3>
+                <span class="badge">By Revenue</span>
+            </div>
+            <div class="card-body">
+                <div id="topEventsList" class="top-events-list"></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-pie"></i> Sales by Category</h3>
+                <span class="badge">Distribution</span>
+            </div>
+            <div class="card-body">
+                <canvas id="categorySalesChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Sales Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-table-list"></i> Daily Sales Breakdown</h3>
+            <div class="table-info">
+                <span id="recordsCount">Showing 0 records</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Orders</th>
+                            <th>Tickets Sold</th>
+                            <th>Revenue</th>
+                            <th>Avg Order Value</th>
+                            <th>Top Event</th>
+                        </thead>
+                        <tbody id="dailySalesList">
+                            <tr><td colspan="6" class="text-center">Loading data...</td</tr>
+                        </tbody>
+                    </table>
+                </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script src="{% static 'js/admin/reports/sales.js' %}"></script>
+{% endblock %}

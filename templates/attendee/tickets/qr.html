@@ -1,0 +1,43 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Ticket QR Code - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/tickets/ticket-qr.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="qr-container">
+    <div class="qr-card">
+        <div class="qr-header">
+            <h2><i class="fas fa-qrcode"></i> Your Ticket QR Code</h2>
+            <p>Show this QR code at the venue entrance</p>
+        </div>
+        <div class="qr-body">
+            <div id="qrCodeDisplay" class="qr-code-wrapper">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading QR code...</p>
+                </div>
+            </div>
+            <div id="ticketInfo" class="ticket-info"></div>
+        </div>
+        <div class="qr-footer">
+            <button class="btn-export" id="downloadTicketBtn">
+                <i class="fas fa-download"></i> Export PDF
+            </button>
+            <button class="btn-back" onclick="window.location.href='/tickets/'">
+                <i class="fas fa-arrow-left"></i> Back to Tickets
+            </button>
+            <button class="btn-events" onclick="window.location.href='/events/'">
+                <i class="fas fa-calendar-alt"></i> Browse Events
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/tickets/tickets.js' %}"></script>
+{% endblock %}

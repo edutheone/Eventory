@@ -1,0 +1,155 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Notifications - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/notifications/notifications.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="notifications-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-bell"></i> Notifications</h1>
+            <p class="text-muted">Manage system notifications and broadcast messages</p>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="notification-tabs">
+        <button class="tab-btn active" onclick="switchTab('broadcast')">
+            <i class="fas fa-bullhorn"></i> Send Broadcast
+        </button>
+        <button class="tab-btn" onclick="switchTab('templates')">
+            <i class="fas fa-file-alt"></i> Email Templates
+        </button>
+        <button class="tab-btn" onclick="switchTab('history')">
+            <i class="fas fa-history"></i> Notification History
+        </button>
+    </div>
+
+    <!-- Broadcast Tab -->
+    <div id="broadcastTab" class="tab-content active">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-bullhorn"></i> Send Broadcast Message</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Message Title</label>
+                    <input type="text" id="broadcastTitle" class="form-control" placeholder="e.g., New Feature Announcement">
+                </div>
+                <div class="form-group">
+                    <label>Message Content</label>
+                    <textarea id="broadcastMessage" rows="5" class="form-control" placeholder="Type your message here..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Audience</label>
+                    <div class="audience-selector">
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="audience" value="all" checked> All Users
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="audience" value="attendees"> Only Attendees
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="audience" value="organizers"> Only Organizers
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Send Method</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="sendMethod" value="inapp" checked> In-App Only
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="sendMethod" value="email"> Email Only
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="sendMethod" value="both"> Both
+                        </label>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="sendBroadcast()">
+                    <i class="fas fa-paper-plane"></i> Send Broadcast
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates Tab -->
+    <div id="templatesTab" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-file-alt"></i> Email Templates</h3>
+                <button class="btn-secondary btn-sm" onclick="addTemplate()">
+                    <i class="fas fa-plus"></i> Add Template
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="templatesList" class="templates-list">
+                    <div class="loading-state">Loading templates...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Tab -->
+    <div id="historyTab" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-history"></i> Notification History</h3>
+                <div class="table-info">
+                    <span id="recordsCount">Showing 0 records</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="notificationsList" class="notifications-list">
+                    <div class="loading-state">Loading notifications...</div>
+                </div>
+                <div id="pagination" class="pagination"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template Modal -->
+<div id="templateModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-file-alt"></i> <span id="templateModalTitle">Add Template</span></h3>
+            <button class="modal-close" onclick="closeTemplateModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Template Name</label>
+                <input type="text" id="templateName" class="form-control" placeholder="e.g., Booking Confirmation">
+            </div>
+            <div class="form-group">
+                <label>Subject</label>
+                <input type="text" id="templateSubject" class="form-control" placeholder="Email subject line">
+            </div>
+            <div class="form-group">
+                <label>Body</label>
+                <textarea id="templateBody" rows="8" class="form-control" placeholder="Email body..."></textarea>
+            </div>
+            <div class="alert alert-info">
+                <small>Available variables: {{user_name}}, {{event_title}}, {{event_date}}, {{booking_id}}, {{ticket_link}}</small>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeTemplateModal()">Cancel</button>
+            <button class="btn-primary" onclick="saveTemplate()">Save Template</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/notifications/notifications.js' %}"></script>
+{% endblock %}

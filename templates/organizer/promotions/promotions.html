@@ -1,0 +1,185 @@
+{% extends "organizer/base.html" %}
+{% block title %}Promotions{% endblock %}
+{% block nav_promotions %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Clean, premium dark background */
+    body {
+        background-color: #000000 !important;
+    }
+
+    .stat-card {
+        background: #080808 !important; /* Softer solid black for cards */
+        border: 1px solid #141414 !important; /* Subtle divider-like borders */
+        border-radius: 16px !important;
+        padding: 1.5rem !important; /* Generous breathing space */
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7) !important;
+        color: #ffffff !important;
+    }
+
+    .stat-card h3 {
+        color: #ff6a00 !important; /* Brand orange highlight for values */
+        font-weight: 700 !important;
+    }
+
+    .stat-card small {
+        color: #888888 !important;
+        font-weight: 500 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+    }
+
+    .stat-card h5 {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        margin-bottom: 1.2rem !important;
+        border-bottom: 1px solid #1a1a1a !important;
+        padding-bottom: 0.75rem !important;
+    }
+
+    /* Minimal table styling */
+    .table {
+        background-color: transparent !important;
+        border-collapse: collapse !important;
+        margin-bottom: 0 !important;
+        width: 100% !important;
+    }
+
+    .table thead th {
+        background-color: #000000 !important;
+        color: #ffffff !important; /* Bold white */
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        border-bottom: 2px solid #1a1a1a !important;
+        padding: 14px 12px !important;
+        text-align: left;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #111111 !important; /* Subtle dividers */
+        background: transparent !important;
+        transition: background-color 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(255, 106, 0, 0.02) !important;
+    }
+
+    .table tbody td {
+        padding: 14px 12px !important; /* Cell padding */
+        color: #ffffff !important; /* Regular white text */
+        background: transparent !important;
+        border: none !important;
+        vertical-align: middle;
+        text-align: left;
+    }
+
+    /* Inputs in minimal dark theme */
+    .form-control, .form-select {
+        background-color: #000000 !important;
+        border: 1px solid #222222 !important;
+        color: #ffffff !important;
+        border-radius: 10px !important;
+        padding: 10px 14px !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #ff6a00 !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 106, 0, 0.15) !important;
+        background-color: #000000 !important;
+        color: #ffffff !important;
+    }
+
+    .form-control::placeholder {
+        color: #64748b !important;
+    }
+
+    .form-select option {
+        background-color: #080808;
+        color: #ffffff;
+    }
+
+    /* Custom pagination pill buttons */
+    .pagination {
+        gap: 6px;
+    }
+
+    .page-link {
+        background-color: transparent !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 30px !important;
+        padding: 6px 16px !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .page-item.active .page-link {
+        background-color: #ff6a00 !important;
+        border-color: #ff6a00 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 12px rgba(255, 106, 0, 0.35) !important;
+    }
+
+    .page-link:hover {
+        border-color: #ff6a00 !important;
+        color: #ff6a00 !important;
+        box-shadow: 0 0 8px rgba(255, 106, 0, 0.15) !important;
+    }
+
+    /* Modal styling */
+    .modal-content {
+        background-color: #080808 !important;
+        border: 1px solid #1a1a1a !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+        color: #ffffff !important;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #1a1a1a !important;
+    }
+
+    .modal-header h5 {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #1a1a1a !important;
+    }
+
+    .btn-close {
+        filter: invert(1) !important;
+    }
+
+    hr {
+        border-color: #1a1a1a !important;
+        opacity: 1 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between"><h1 class="h2">Promotions</h1><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#promoModal">Create Promo</button></div>
+    <div class="row g-4 my-3"><div class="col-md-3"><div class="stat-card text-center"><h3 id="totalPromos">--</h3><small>Total</small></div></div><div class="col-md-3"><div class="stat-card text-center"><h3 id="activePromos">--</h3><small>Active</small></div></div></div>
+    <div class="stat-card"><table class="table"><thead><tr><th>Code</th><th>Discount</th><th>Event</th><th>Valid Until</th><th>Usage</th><th>Status</th><th>Actions</th></tr></thead><tbody id="promoList"></tbody></table><nav><ul class="pagination" id="promoPagination"></ul></nav></div>
+</div>
+<div class="modal fade" id="promoModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5>Create/Edit Promo</h5></div><div class="modal-body"><input type="text" id="promoCode" class="form-control mb-2" placeholder="Code"><select id="discountType" class="form-select mb-2"><option value="percentage">Percentage</option><option value="fixed">Fixed</option></select><input type="number" id="discountValue" class="form-control mb-2" placeholder="Value"><select id="promoEventId" class="form-select mb-2"><option value="">All Events</option></select><input type="datetime-local" id="validUntil" class="form-control mb-2"><input type="number" id="usageLimit" class="form-control mb-2" placeholder="Usage limit (optional)"><textarea id="promoDesc" class="form-control" placeholder="Description"></textarea></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" id="savePromo">Save</button></div></div></div></div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    let promoPage=1, editingId=null;
+    async function loadPromos(){ let data=await OrganizerAPI.promotions.getAll(promoPage,20); const list = Array.isArray(data) ? data : (data.results || []); document.getElementById('totalPromos').innerText=data.count||list.length||0; document.getElementById('activePromos').innerText=list.filter(p=>p.is_active).length||0; let html=list.map(p=>`<tr><td>${p.code}</td><td>${p.discount_type=='percentage'?p.discount_value+'%':'$'+p.discount_value}</td><td>${p.event_title||'All'}</td><td>${p.valid_until?new Date(p.valid_until).toLocaleDateString():'Never'}</td><td>${p.used_count||0}/${p.usage_limit||'∞'}</td><td><span class="badge ${p.is_active?'bg-success':'bg-secondary'}">${p.is_active?'Active':'Inactive'}</span></td><td><button class="btn btn-sm btn-outline-primary togglePromo" data-id="${p.id}" data-active="${p.is_active}">${p.is_active?'Deactivate':'Activate'}</button> <button class="btn btn-sm btn-outline-danger deletePromo" data-id="${p.id}">Del</button></td></tr>`).join(''); document.getElementById('promoList').innerHTML=html||'<tr><td colspan="7">No promos</td></tr>'; window.renderPagination(data,promoPage,(p)=>{promoPage=p;loadPromos();},'promoPagination'); attachPromoActions(); }
+    async function loadEventsForSelect(){ let events=await OrganizerAPI.events.getAll(1,100); const list = Array.isArray(events) ? events : (events.results || []); let sel=document.getElementById('promoEventId'); sel.innerHTML='<option value="">All Events</option>'+list.map(e=>`<option value="${e.id}">${e.name || e.title}</option>`).join(''); }
+    async function savePromo(){ let data={code:document.getElementById('promoCode').value,discount_type:document.getElementById('discountType').value,discount_value:parseFloat(document.getElementById('discountValue').value),event_id:document.getElementById('promoEventId').value||null,valid_until:document.getElementById('validUntil').value||null,usage_limit:document.getElementById('usageLimit').value||null,description:document.getElementById('promoDesc').value}; if(!data.code||!data.discount_value) return alert('Fill required'); if(editingId) await OrganizerAPI.promotions.update(editingId,data); else await OrganizerAPI.promotions.create(data); window.showToast(editingId?'Updated':'Created','success'); bootstrap.Modal.getInstance(document.getElementById('promoModal')).hide(); loadPromos(); }
+    function attachPromoActions(){ document.querySelectorAll('.togglePromo').forEach(btn=>btn.onclick=async()=>{if(btn.dataset.active=='true') await OrganizerAPI.promotions.deactivate(btn.dataset.id); else await OrganizerAPI.promotions.activate(btn.dataset.id); loadPromos();}); document.querySelectorAll('.deletePromo').forEach(btn=>btn.onclick=async()=>{if(confirm('Delete?')){await OrganizerAPI.promotions.delete(btn.dataset.id); loadPromos();}}); }
+    document.getElementById('savePromo').onclick=savePromo; loadPromos(); loadEventsForSelect();
+</script>
+{% endblock %}

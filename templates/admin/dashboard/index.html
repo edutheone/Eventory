@@ -1,0 +1,190 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/dashboard/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-content">
+            <h1><span id="greetingText">Welcome back</span>, <span class="highlight">Admin</span></h1>
+            <p>Here's what's happening on your platform today</p>
+        </div>
+        <div class="welcome-date">
+            <i class="fas fa-calendar-day"></i>
+            <span id="currentDate"></span>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="totalEvents">0</h3>
+                <p>Total Events</p>
+                <span class="trend up" id="eventsTrend"><i class="fas fa-arrow-up"></i> 0%</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="totalBookings">0</h3>
+                <p>Total Bookings</p>
+                <span class="trend up" id="bookingsTrend"><i class="fas fa-arrow-up"></i> 0%</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="totalUsers">0</h3>
+                <p>Platform Users</p>
+                <span class="trend up" id="usersTrend"><i class="fas fa-arrow-up"></i> 0%</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="totalRevenue">Kes 0</h3>
+                <p>Platform Revenue</p>
+                <span class="trend up" id="revenueTrend"><i class="fas fa-arrow-up"></i> 0%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Approvals Alert -->
+    <div class="pending-alert" id="pendingAlert" style="display: none;">
+        <div class="alert-content">
+            <i class="fas fa-clock"></i>
+            <div class="alert-text">
+                <strong>Events Awaiting Approval</strong>
+                <p id="pendingCountText">You have events waiting for your review</p>
+            </div>
+            <a href="{% url 'admin_pending_approvals' %}" class="btn-primary-sm">
+                Review Now <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <button class="action-btn primary" onclick="location.href='{% url 'admin_pending_approvals' %}'">
+            <i class="fas fa-check-double"></i> Review Pending Events
+        </button>
+        <button class="action-btn warning" onclick="location.href='{% url 'admin_refunds' %}'">
+            <i class="fas fa-undo-alt"></i> Process Refunds
+        </button>
+        <button class="action-btn success" onclick="location.href='{% url 'admin_organizers' %}'">
+            <i class="fas fa-user-check"></i> Verify Organizers
+        </button>
+        <button class="action-btn info" onclick="location.href='{% url 'admin_reports' %}'">
+            <i class="fas fa-chart-pie"></i> View Reports
+        </button>
+        <button class="action-btn primary" style="background: linear-gradient(135deg, #ec6408, #f59e0b); border: none;" id="openBroadcastModalBtn">
+            <i class="fas fa-bullhorn"></i> Broadcast Campaign
+        </button>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-line"></i> Revenue Overview (Platform Fee)</h3>
+                <select id="revenuePeriod" class="period-select">
+                    <option value="7">Last 7 days</option>
+                    <option value="30" selected>Last 30 days</option>
+                    <option value="90">Last 90 days</option>
+                </select>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="280"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-pie"></i> Bookings by Category</h3>
+                <a href="{% url 'admin_reports' %}" class="link-btn">View Details â†’</a>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" height="280"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Top Events -->
+    <div class="recent-grid">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-clock"></i> Recent Activity</h3>
+                <a href="javascript:void(0)" class="link-btn" onclick="refreshActivity()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </a>
+            </div>
+            <div class="card-body">
+                <div id="recentActivity" class="activity-list">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading activity...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-trophy"></i> Top Performing Events</h3>
+                <a href="{% url 'admin_events_report' %}" class="link-btn">View All â†’</a>
+            </div>
+            <div class="card-body">
+                <div id="topEvents" class="top-events-list">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading top events...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EMAIL MARKETING BROADCAST MODAL OVERLAY -->
+<div id="broadcastModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center;">
+    <div class="modal-container" style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(236, 100, 8, 0.2); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); width: calc(100% - 32px); max-width: 580px; padding: 30px; font-family: 'Plus Jakarta Sans', sans-serif;">
+        <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;">
+            <h3 style="margin: 0; color: #0f172a; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-bullhorn" style="color: #ec6408;"></i> Broadcast Campaign
+            </h3>
+            <button type="button" id="closeBroadcastModalBtn" style="background: none; border: none; font-size: 24px; color: #94a3b8; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#94a3b8'">&times;</button>
+        </div>
+        <form id="broadcastForm">
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="broadcastAudience" style="font-size: 13px; font-weight: 600; color: #334155;">Target Audience *</label>
+                    <select id="broadcastAudience" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; background: #fff;" required>
+                        <option value="" disabled selected>Select target role...</option>
+                        <option value="attendees">Broadcast to Attendees</option>
+                        <option value="organizers">Broadcast to Organizers</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="broadcastSubject" style="font-size: 13px; font-weight: 600; color: #334155;">Subject *</label>
+                    <input type="text" id="broadcastSubject" placeholder="e.g., Exclusive Promos & Summer Tech Fests!" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none;" required>
+                </div>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="broadcastMessage" style="font-size: 13px; font-weight: 600; color: #334155;">Campaign Message *</label>
+                    <textarea id="broadcastMessage" placeholder="Type your custom email campaign message here..." rows="6" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; resize: vertical;" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #f1f5f9; padding-top: 18px; margin-top: 20px;">
+                <button type="button" id="cancelBroadcastModalBtn" style="background: transparent; color: #64748b; border: 1px solid #cbd5e1; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">Cancel</button>
+                <button type="submit" style="background: #ec6408; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f59e0b'" onmouseout="this.style.background='#ec6408'">Send Campaign</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/admin/dashboard/dashboard.js' %}"></script>
+{% endblock %}

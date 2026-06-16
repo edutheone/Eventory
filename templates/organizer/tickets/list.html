@@ -1,0 +1,269 @@
+{% extends "organizer/base.html" %}
+{% block title %}Check-in & Tickets - EventHub{% endblock %}
+{% block content_title %}Ticket Verification & Check-in{% endblock %}
+{% block content_subtitle %}Verify customer ticket numbers or scan check-in QR codes live with your camera device.{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<style>
+    .status-valid {
+        background: rgba(16, 185, 129, 0.2) !important;
+        color: #10b981 !important;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .status-used, .status-checked_in {
+        background: rgba(239, 68, 68, 0.2) !important;
+        color: #ef4444 !important;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    #cameraPreview {
+        border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        background: #000;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row g-4">
+        <!-- Manual/Quick Check-in -->
+        <div class="col-lg-5">
+            <div class="stat-card bg-gradient-primary p-4 h-100">
+                <h4 class="text-white mb-3"><i class="fa-solid fa-bolt me-2"></i>Quick Check-in</h4>
+                <p class="text-muted" style="font-size: 0.85rem;">Manually enter a ticket number to verify and check in the attendee.</p>
+                <div class="input-group mb-3">
+                    <input type="text" id="ticketNumber" class="form-control" placeholder="e.g., TICK-8F32C">
+                    <button class="btn btn-primary" id="verifyBtn"><i class="fa-solid fa-magnifying-glass me-1"></i>Verify</button>
+                </div>
+                <div id="scanResult" class="mt-3"></div>
+            </div>
+        </div>
+        
+        <!-- QR Scanner -->
+        <div class="col-lg-7">
+            <div class="stat-card text-center p-4">
+                <h4 class="text-white mb-3 text-start"><i class="fa-solid fa-camera me-2"></i>QR Scanner</h4>
+                <div class="ratio ratio-16x9 mb-3" style="max-height: 280px; overflow: hidden; border-radius: 12px;">
+                    <video id="cameraPreview" autoplay playsinline></video>
+                </div>
+                <button class="btn btn-primary" id="startCam"><i class="fa-solid fa-play me-1"></i>Start QR Scanner</button>
+                <button class="btn btn-secondary" id="stopCam" style="display:none"><i class="fa-solid fa-stop me-1"></i>Stop Camera</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Counters -->
+    <div class="row g-4 my-3">
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <h3 id="totalTicketsStat" class="text-primary font-weight-bold">--</h3>
+                <small class="text-muted">Total Tickets</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <h3 id="checkedInStat" class="text-success font-weight-bold">--</h3>
+                <small class="text-muted">Checked In</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <h3 id="checkinRateStat" class="text-info font-weight-bold">--%</h3>
+                <small class="text-muted">Check-in Rate</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <h3 id="recentCheckinsStat" class="text-warning font-weight-bold">--</h3>
+                <small class="text-muted">Recent (24h)</small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tickets List -->
+    <div class="stat-card mt-4">
+        <h5 class="text-white mb-4"><i class="fa-solid fa-rectangle-list text-primary me-2"></i>Registered Event Tickets</h5>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Ticket #</th>
+                        <th>Event</th>
+                        <th>Attendee Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="ticketsList">
+                    <!-- Loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center" id="ticketPagination"></ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let ticketPage = 1;
+    let stream = null;
+    let scanInterval = null;
+    
+    // Pagination utility since bootstrap/django pagination helper might not be imported
+    function renderPagination(data, currentPage, onPageChange, elementId) {
+        const pag = document.getElementById(elementId);
+        if (!pag) return;
+        
+        let html = '';
+        const total = data.total_pages || 1;
+        
+        if (total <= 1) {
+            pag.innerHTML = '';
+            return;
+        }
+        
+        html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}"><button class="page-link" onclick="window.setPage(${currentPage - 1})">Previous</button></li>`;
+        for (let i = 1; i <= total; i++) {
+            html += `<li class="page-item ${currentPage === i ? 'active' : ''}"><button class="page-link" onclick="window.setPage(${i})">${i}</button></li>`;
+        }
+        html += `<li class="page-item ${currentPage === total ? 'disabled' : ''}"><button class="page-link" onclick="window.setPage(${currentPage + 1})">Next</button></li>`;
+        
+        pag.innerHTML = html;
+        window.setPage = onPageChange;
+    }
+    window.renderPagination = renderPagination;
+    
+    async function loadStats() { 
+        try {
+            let s = await OrganizerAPI.tickets.getStats(null); 
+            document.getElementById('totalTicketsStat').innerText = s.total_tickets || 0; 
+            document.getElementById('checkedInStat').innerText = s.checked_in || 0; 
+            document.getElementById('checkinRateStat').innerText = s.total_tickets ? ((s.checked_in / s.total_tickets) * 100).toFixed(1) + '%' : '0%'; 
+            document.getElementById('recentCheckinsStat').innerText = s.recent_checkins || 0; 
+        } catch (e) {
+            console.error("Error loading ticket stats:", e);
+        }
+    }
+    
+    async function loadTickets() { 
+        try {
+            let data = await OrganizerAPI.tickets.getAll(ticketPage, 20); 
+            let list = data.results || [];
+            let html = list.map(t => {
+                let badgeClass = t.status === 'valid' ? 'status-valid' : 'status-used';
+                let displayStatus = t.status === 'valid' ? 'Valid' : 'Checked In';
+                
+                return `
+                    <tr>
+                        <td class="font-monospace text-warning">${t.ticket_number}</td>
+                        <td>${t.event_title}</td>
+                        <td class="text-white">${t.attendee_name}</td>
+                        <td><span class="badge ${badgeClass}">${displayStatus}</span></td>
+                        <td>
+                            ${t.status === 'valid' 
+                                ? `<button class="btn btn-sm btn-success checkin" data-ticket="${t.ticket_number}"><i class="fa-solid fa-circle-check me-1"></i>Check In</button>` 
+                                : '<span class="text-success"><i class="fa-solid fa-circle-check me-1"></i>Checked In</span>'}
+                        </td>
+                    </tr>
+                `;
+            }).join(''); 
+            
+            document.getElementById('ticketsList').innerHTML = html || '<tr><td colspan="5" class="text-muted text-center py-4">No tickets registered for your events yet.</td></tr>'; 
+            renderPagination(data, ticketPage, (p) => {
+                ticketPage = p;
+                loadTickets();
+            }, 'ticketPagination'); 
+            attachCheckin(); 
+        } catch (e) {
+            console.error("Error loading tickets:", e);
+            document.getElementById('ticketsList').innerHTML = '<tr><td colspan="5" class="text-danger text-center">Failed to load tickets. Please check server connection.</td></tr>';
+        }
+    }
+    
+    async function verify(ticket) { 
+        let scanResult = document.getElementById('scanResult');
+        scanResult.innerHTML = '<div class="alert alert-info py-2 m-0">Verifying...</div>';
+        
+        try {
+            let r = await OrganizerAPI.tickets.verify(ticket); 
+            if (r.valid) { 
+                scanResult.innerHTML = `<div class="alert alert-success py-2 m-0"><i class="fa-solid fa-circle-check me-1"></i>Valid: ${r.attendee_name} (${r.event_title})</div>`; 
+                await checkin(ticket, true); 
+            } else {
+                scanResult.innerHTML = `<div class="alert alert-danger py-2 m-0"><i class="fa-solid fa-circle-exclamation me-1"></i>Invalid Ticket or Checked-in</div>`; 
+            }
+        } catch (e) {
+            scanResult.innerHTML = `<div class="alert alert-danger py-2 m-0"><i class="fa-solid fa-circle-exclamation me-1"></i>Ticket validation failed</div>`;
+        }
+    }
+    
+    async function checkin(ticket, refresh) { 
+        try {
+            let r = await OrganizerAPI.tickets.checkin(ticket); 
+            window.showToast(r.success ? 'Attendee checked in successfully!' : (r.message || 'Check-in failed'), r.success ? 'success' : 'error'); 
+            if (refresh) {
+                loadTickets();
+                loadStats();
+            } 
+        } catch (e) {
+            window.showToast('Check-in network failure', 'error');
+        }
+    }
+    
+    function attachCheckin() { 
+        document.querySelectorAll('.checkin').forEach(btn => btn.onclick = () => checkin(btn.dataset.ticket, true)); 
+    }
+    
+    document.getElementById('verifyBtn').onclick = () => {
+        let tn = document.getElementById('ticketNumber').value.trim();
+        if (tn) verify(tn);
+    };
+    
+    let video = document.getElementById('cameraPreview'); 
+    
+    document.getElementById('startCam').onclick = () => {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(s => {
+            stream = s;
+            video.srcObject = s;
+            video.play();
+            document.getElementById('startCam').style.display = 'none';
+            document.getElementById('stopCam').style.display = 'inline-block';
+            
+            scanInterval = setInterval(() => {
+                let canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                if(canvas.width > 0 && canvas.height > 0) {
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+                    let code = jsQR(canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height);
+                    if (code) {
+                        verify(code.data);
+                    }
+                }
+            }, 800);
+        }).catch(err => {
+            console.error("Camera access failed:", err);
+            window.showToast("Failed to access camera", "error");
+        });
+    }; 
+    
+    document.getElementById('stopCam').onclick = () => {
+        if (stream) {
+            stream.getTracks().forEach(t => t.stop());
+        }
+        if (scanInterval) {
+            clearInterval(scanInterval);
+        }
+        video.srcObject = null;
+        document.getElementById('startCam').style.display = 'inline-block';
+        document.getElementById('stopCam').style.display = 'none';
+    };
+    
+    loadStats(); 
+    loadTickets();
+</script>
+{% endblock %}

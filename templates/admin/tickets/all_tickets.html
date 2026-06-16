@@ -1,0 +1,107 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}All Tickets - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/tickets/tickets.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="tickets-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-ticket-alt"></i> All Tickets</h1>
+            <p class="text-muted">View and manage all tickets across events</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-outline" onclick="exportTickets()">
+                <i class="fas fa-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group search-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchTickets" placeholder="Search by ticket number, attendee name...">
+            </div>
+            <div class="filter-group">
+                <select id="eventFilter">
+                    <option value="">All Events</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="valid">Valid (Not Checked In)</option>
+                    <option value="checked_in">Checked In</option>
+                    <option value="expired">Expired</option>
+                </select>
+            </div>
+            <button class="btn-secondary" onclick="applyFilters()">
+                <i class="fas fa-filter"></i> Apply
+            </button>
+            <button class="btn-outline" onclick="resetFilters()">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- Tickets Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-list-ul"></i> Tickets List</h3>
+            <div class="table-info">
+                <span id="recordsCount">Showing 0 records</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket Number</th>
+                            <th>Attendee</th>
+                            <th>Event</th>
+                            <th>Booking ID</th>
+                            <th>Purchase Date</th>
+                            <th>Status</th>
+                            <th>Checked In At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticketsList">
+                        <tr><td colspan="8" class="text-center">Loading tickets...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Ticket Details Modal -->
+<div id="ticketModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-qrcode"></i> Ticket Details</h3>
+            <button class="modal-close" onclick="closeTicketModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="ticketModalBody"></div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeTicketModal()">Close</button>
+            <button class="btn-success" id="manualCheckinBtn" onclick="manualCheckinFromModal()">
+                <i class="fas fa-check-circle"></i> Check In
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/tickets/all-tickets.js' %}"></script>
+{% endblock %}

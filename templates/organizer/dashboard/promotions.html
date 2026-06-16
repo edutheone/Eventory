@@ -1,0 +1,169 @@
+{% extends "organizer/base.html" %}
+{% load static %}
+{% block title %}Promotions | EventHub Organizer{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/organizers/promotions.css">
+<style>
+    /* Clean, premium dark background */
+    body {
+        background-color: #000000 !important;
+    }
+
+    .metric-card, .table-section {
+        background: #080808 !important; /* Softer solid black for cards */
+        border: 1px solid #141414 !important; /* Subtle divider-like borders */
+        border-radius: 16px !important;
+        padding: 1.5rem !important; /* Generous breathing space */
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7) !important;
+        color: #ffffff !important;
+    }
+
+    .metric-card h3 {
+        color: #ff6a00 !important; /* Brand orange highlight for values */
+        font-weight: 700 !important;
+    }
+
+    .metric-card small {
+        color: #888888 !important;
+        font-weight: 500 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+    }
+
+    /* Minimal table styling */
+    .table {
+        background-color: transparent !important;
+        border-collapse: collapse !important;
+        margin-bottom: 0 !important;
+        width: 100% !important;
+    }
+
+    .table thead th {
+        background-color: #000000 !important;
+        color: #ffffff !important; /* Bold white */
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        border-bottom: 2px solid #1a1a1a !important;
+        padding: 14px 12px !important;
+        text-align: left;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #111111 !important; /* Subtle dividers */
+        background: transparent !important;
+        transition: background-color 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(255, 106, 0, 0.02) !important;
+    }
+
+    .table tbody td {
+        padding: 14px 12px !important; /* Cell padding */
+        color: #ffffff !important; /* Regular white text */
+        background: transparent !important;
+        border: none !important;
+        vertical-align: middle;
+        text-align: left;
+    }
+
+    /* Inputs in minimal dark theme */
+    .form-control, .form-select {
+        background-color: #000000 !important;
+        border: 1px solid #222222 !important;
+        color: #ffffff !important;
+        border-radius: 10px !important;
+        padding: 10px 14px !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #ff6a00 !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 106, 0, 0.15) !important;
+        background-color: #000000 !important;
+        color: #ffffff !important;
+    }
+
+    .form-control::placeholder {
+        color: #64748b !important;
+    }
+
+    .form-select option {
+        background-color: #080808;
+        color: #ffffff;
+    }
+
+    /* Custom pagination pill buttons */
+    .pagination {
+        gap: 6px;
+    }
+
+    .page-link {
+        background-color: transparent !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 30px !important;
+        padding: 6px 16px !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .page-item.active .page-link {
+        background-color: #ff6a00 !important;
+        border-color: #ff6a00 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 12px rgba(255, 106, 0, 0.35) !important;
+    }
+
+    .page-link:hover {
+        border-color: #ff6a00 !important;
+        color: #ff6a00 !important;
+        box-shadow: 0 0 8px rgba(255, 106, 0, 0.15) !important;
+    }
+
+    /* Modal styling */
+    .modal-content {
+        background-color: #080808 !important;
+        border: 1px solid #1a1a1a !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+        color: #ffffff !important;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #1a1a1a !important;
+    }
+
+    .modal-header h5 {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #1a1a1a !important;
+    }
+
+    .btn-close {
+        filter: invert(1) !important;
+    }
+
+    hr {
+        border-color: #1a1a1a !important;
+        opacity: 1 !important;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div>
+    <div class="d-flex justify-content-between mb-4"><h1>Promotions</h1><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#promoModal">Create Promo</button></div>
+    <div class="row g-4 mb-4"><div class="col-md-3"><div class="metric-card text-center"><h3 id="totalPromos">--</h3><small>Total</small></div></div><div class="col-md-3"><div class="metric-card text-center"><h3 id="activePromos">--</h3><small>Active</small></div></div></div>
+    <div class="table-section"><table class="table"><thead><tr><th>Code</th><th>Discount</th><th>Event</th><th>Valid Until</th><th>Usage</th><th>Status</th><th>Actions</th></tr></thead><tbody id="promoList"></tbody></table><nav><ul class="pagination" id="promoPagination"></ul></nav></div>
+</div>
+<div class="modal fade" id="promoModal"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5>Create/Edit Promo</h5></div><div class="modal-body"><input type="text" id="promoCode" class="form-control mb-2" placeholder="Code"><select id="discountType" class="form-select mb-2"><option value="percentage">Percentage</option><option value="fixed">Fixed Amount</option></select><input type="number" id="discountValue" class="form-control mb-2" placeholder="Value"><select id="promoEventId" class="form-select mb-2"><option value="">All Events</option></select><input type="datetime-local" id="validUntil" class="form-control mb-2"><input type="number" id="usageLimit" class="form-control mb-2" placeholder="Usage limit"><textarea id="promoDesc" class="form-control" placeholder="Description"></textarea></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" id="savePromoBtn">Save</button></div></div></div></div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/organizer/promotions.js"></script>
+{% endblock %}

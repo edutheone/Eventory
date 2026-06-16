@@ -1,0 +1,153 @@
+{% load static %}
+<section class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-wrapper">
+            <div class="newsletter-icon">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <div class="newsletter-content">
+                <h2>Stay Updated</h2>
+                <p>Subscribe to our newsletter for the latest events and exclusive offers</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" placeholder="Enter your email address" id="newsletterEmail" required>
+                        <button type="submit">Subscribe</button>
+                    </div>
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="privacyCheck" required>
+                        <label for="privacyCheck">I agree to the <a href="/privacy/">Privacy Policy</a></label>
+                    </div>
+                    <div id="newsletterMessage" class="newsletter-message"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const newsletterForm = document.getElementById('newsletterForm');
+    const emailInput = document.getElementById('newsletterEmail');
+    const privacyCheck = document.getElementById('privacyCheck');
+    const messageDiv = document.getElementById('newsletterMessage');
+    let isSubmitting = false;
+    
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    
+    function showMessage(message, type) {
+        messageDiv.textContent = message;
+        messageDiv.className = `newsletter-message ${type}`;
+        
+        setTimeout(() => {
+            messageDiv.className = 'newsletter-message';
+        }, 5000);
+    }
+    
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    newsletterForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (isSubmitting) return;
+        
+        const email = emailInput.value.trim();
+        
+        // Email validation
+        if (!email) {
+            showMessage('Please enter your email address', 'error');
+            emailInput.classList.add('error');
+            emailInput.focus();
+            return;
+        }
+        
+        if (!validateEmail(email)) {
+            showMessage('Please enter a valid email address', 'error');
+            emailInput.classList.add('error');
+            emailInput.focus();
+            return;
+        }
+        
+        if (!privacyCheck.checked) {
+            showMessage('Please agree to the Privacy Policy', 'error');
+            privacyCheck.classList.add('error');
+            return;
+        }
+        
+        emailInput.classList.remove('error');
+        privacyCheck.classList.remove('error');
+        
+        // Show loading state
+        const submitBtn = newsletterForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subscribing...';
+        submitBtn.disabled = true;
+        isSubmitting = true;
+        
+        // Actual API call
+        try {
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            
+            const response = await fetch('/newsletter/subscribe/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ email: email })
+            });
+            const data = await response.json();
+            if (data.success) {
+                showMessage('Thank you for subscribing! Check your email for confirmation.', 'success');
+                showToast('Successfully subscribed!', 'success');
+                newsletterForm.reset();
+            } else {
+                showMessage(data.message || 'Subscription failed', 'error');
+            }
+        } catch (error) {
+            showMessage('Network error. Please try again.', 'error');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            isSubmitting = false;
+        }
+    });
+    
+    // Real-time validation
+    emailInput.addEventListener('input', function() {
+        if (this.classList.contains('error')) {
+            this.classList.remove('error');
+            messageDiv.className = 'newsletter-message';
+        }
+    });
+    
+    privacyCheck.addEventListener('change', function() {
+        if (this.classList.contains('error')) {
+            this.classList.remove('error');
+        }
+    });
+});
+</script>

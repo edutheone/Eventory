@@ -1,0 +1,83 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Pending Organizer Approvals - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/users/users.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="organizers-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-user-clock"></i> Pending Organizer Approvals</h1>
+            <p class="text-muted">Review and approve new organizer registrations</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-outline" onclick="refreshPending()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-card pending">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+                <h3 id="pendingCount">0</h3>
+                <span>Awaiting Approval</span>
+            </div>
+        </div>
+        <div class="stat-card approved">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <h3 id="approvedCount">0</h3>
+                <span>Approved This Month</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Organizers Grid -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-user-plus"></i> New Registrations</h3>
+        </div>
+        <div class="card-body">
+            <div id="pendingOrganizersList" class="organizers-grid">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading pending applications...</p>
+                </div>
+            </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div id="reviewModal" class="modal" style="display: none;">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3><i class="fas fa-id-card"></i> Review Organizer Application</h3>
+            <button class="modal-close" onclick="closeReviewModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="reviewModalBody"></div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeReviewModal()">Cancel</button>
+            <button class="btn-danger" onclick="rejectOrganizer()">
+                <i class="fas fa-times"></i> Reject
+            </button>
+            <button class="btn-success" onclick="approveOrganizer()">
+                <i class="fas fa-check"></i> Approve
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/users/pending-organizers.js' %}"></script>
+{% endblock %}

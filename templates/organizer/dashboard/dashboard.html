@@ -1,0 +1,147 @@
+{% extends "organizer/base.html" %}
+{% load static %}
+
+{% block title %}Dashboard | EventHub Organizer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/organizers/dashboard.css">
+{% endblock %}
+
+{% block content %}
+<div class="main-content-header">
+    <h1><span id="greetingText">Welcome back</span>, <span id="organizerName">{{ user.email|default:"Organizer" }}</span>!</h1>
+    <p>Here's what's happening with your events.</p>
+</div>
+<div>
+    <!-- Metric Cards -->
+    <div class="metrics-grid">
+        <!-- Total Events -->
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">Total Events</span>
+            </div>
+            <div class="metric-value-wrapper">
+                <span class="metric-value" id="totalEvents">--</span>
+                <span class="metric-change positive" id="eventsChange">+0%</span>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar bg-primary" style="width:0%"></div></div>
+        </div>
+
+        <!-- Tickets Sold -->
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">Tickets Sold</span>
+            </div>
+            <div class="metric-value-wrapper">
+                <span class="metric-value" id="totalTicketsSold">--</span>
+                <span class="metric-change positive" id="ticketsChange">+0%</span>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar bg-success" style="width:0%"></div></div>
+        </div>
+
+        <!-- Total Revenue -->
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">Total Revenue</span>
+            </div>
+            <div class="metric-value-wrapper">
+                <span class="metric-value" id="totalRevenue">Kes --</span>
+                <span class="metric-change positive" id="revenueChange">+0%</span>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar bg-warning" style="width:0%"></div></div>
+        </div>
+
+        <!-- Attendees -->
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">Attendees</span>
+            </div>
+            <div class="metric-value-wrapper">
+                <span class="metric-value" id="totalAttendees">--</span>
+                <span class="metric-change positive" id="attendeesChange">+0%</span>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar bg-info" style="width:0%"></div></div>
+        </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="analytics-section">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Revenue Overview</h3>
+                <select id="revenuePeriod" class="filter-select">
+                    <option value="7days">Last 7 Days</option>
+                    <option value="4weeks">Last 4 Weeks</option>
+                    <option value="12months" selected>12 Months</option>
+                    <option value="ytd">Year-to-Date</option>
+                </select>
+            </div>
+            <div class="chart-body"><canvas id="revenueChart"></canvas></div>
+        </div>
+        <div class="chart-card revenue-card">
+            <div class="chart-header"><h3>Performance Score</h3></div>
+            <div class="display-4 fw-bold" id="performanceScore">--</div>
+            <div class="progress-bar-container mt-3"><div class="progress-bar bg-white" id="performanceProgress" style="width:0%"></div></div>
+            <div class="mt-3">Avg Rating: <span id="avgRating">--</span> ★</div>
+            <div>Fulfillment: <span id="fulfillmentRate">--</span>%</div>
+        </div>
+    </div>
+
+    <!-- Upcoming Events & Recent Bookings -->
+    <div class="analytics-section grid-2col">
+        <div class="chart-card">
+            <div class="chart-header"><h3>Upcoming Events</h3><a href="/organizer/events/" class="btn btn-sm btn-outline">View All</a></div>
+            <div id="upcomingEventsList">Loading...</div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-header"><h3>Recent Bookings</h3><a href="/organizer/bookings/" class="btn btn-sm btn-outline">View All</a></div>
+            <div id="recentBookingsList">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Pending Payment Approvals -->
+    <div class="analytics-section">
+        <div class="chart-card">
+            <div class="chart-header"><h3>Pending Payment Approvals</h3></div>
+            <div id="pendingPaymentsList">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Notifications & Quick Actions -->
+    <div class="analytics-section grid-2col">
+        <div class="chart-card">
+            <div class="chart-header"><h3>Notifications</h3><button class="btn btn-sm btn-outline" id="markAllReadBtn">Mark all read</button></div>
+            <div id="notificationsList">Loading...</div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-header"><h3>Quick Actions</h3></div>
+            <div class="row g-2">
+                <div class="col-6"><button class="btn btn-primary w-100" onclick="location.href='/organizer/events/create/'"><i class="fas fa-plus me-2"></i>Create Event</button></div>
+                <div class="col-6"><button class="btn btn-outline w-100" onclick="location.href='/organizer/promotions/'"><i class="fas fa-tags me-2"></i>Promotions</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/organizer/dashboard.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof displayGreeting === 'function') {
+            displayGreeting();
+        }
+        if (typeof OrganizerAPI !== 'undefined') {
+            loadDashboardStats();
+            loadRevenueChart('12months');
+            loadUpcomingEvents();
+            loadRecentBookings();
+            loadPerformance();
+            loadPendingPayments();
+            loadNotifications();
+        } else {
+            console.error('OrganizerAPI not loaded');
+        }
+    });
+</script>
+{% endblock %}

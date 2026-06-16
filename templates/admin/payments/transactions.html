@@ -1,0 +1,139 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Payment Transactions - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/payments/payments.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="payments-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-credit-card"></i> Payment Transactions</h1>
+            <p class="text-muted">View all customer payment transactions</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-primary" id="exportBtn">
+                <i class="fas fa-download"></i> Export PDF
+            </button>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-info">
+                <h3 id="totalTransactions">0</h3>
+                <span>Total Transactions</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-chart-pie"></i></div>
+            <div class="stat-info">
+                <h3 id="totalVolume">Kes 0</h3>
+                <span>Total Volume</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <h3 id="successCount">0</h3>
+                <span>Successful</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+                <h3 id="pendingCount">0</h3>
+                <span>Pending</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group search-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchTransactions" placeholder="Search by transaction ID or customer...">
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="statusFilter">
+                    <option value="">All</option>
+                    <option value="success">Success</option>
+                    <option value="pending">Pending</option>
+                    <option value="failed">Failed</option>
+                    <option value="refunded">Refunded</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>From Date</label>
+                <input type="date" id="dateFrom">
+            </div>
+            <div class="filter-group">
+                <label>To Date</label>
+                <input type="date" id="dateTo">
+            </div>
+            <button class="btn-secondary" id="applyFiltersBtn">
+                <i class="fas fa-filter"></i> Apply
+            </button>
+            <button class="btn-outline" id="resetFiltersBtn">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-list-ul"></i> Transaction History</h3>
+            <div class="table-info">
+                <span id="recordsCount">0 records</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Date & Time</th>
+                            <th>Customer</th>
+                            <th>Event</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </thead>
+                        <tbody id="transactionsList">
+                            <tr><td colspan="7" class="text-center">Loading transactions...</td</tr>
+                        </tbody>
+                    </table>
+                </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<div id="transactionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-receipt"></i> Transaction Details</h3>
+            <button class="modal-close" id="closeModalBtn">&times;</button>
+        </div>
+        <div class="modal-body" id="transactionModalBody"></div>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="cancelModalBtn">Close</button>
+            <button class="btn-warning" id="refundBtn" style="display: none;">
+                <i class="fas fa-undo-alt"></i> Refund
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script src="{% static 'js/admin/payments/transactions.js' %}"></script>
+{% endblock %}

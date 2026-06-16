@@ -1,0 +1,117 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Notifications - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/notifications.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="notifications-page">
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1><i class="fas fa-bell"></i> Notifications</h1>
+                <p>Stay updated with your latest alerts</p>
+            </div>
+            <button class="btn-outline" id="markAllReadBtn" onclick="markAllAsRead()">
+                <i class="fas fa-check-double"></i> Mark All as Read
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="notifications" onclick="switchTab('notifications')">
+                <i class="fas fa-bell"></i> All Notifications
+            </button>
+            <button class="tab-btn" data-tab="preferences" onclick="switchTab('preferences')">
+                <i class="fas fa-sliders-h"></i> Preferences
+            </button>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div id="notificationsTab" class="tab-content active">
+            <div id="notificationsList" class="notifications-list">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading notifications...</p>
+                </div>
+            </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+
+        <!-- Preferences Tab -->
+        <div id="preferencesTab" class="tab-content" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-envelope"></i> Email Notifications</h3>
+                </div>
+                <div class="card-body">
+                    <div class="preference-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="emailBooking"> Booking Confirmation
+                            <span class="preference-desc">Receive email when you successfully book tickets</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="emailReminder"> Event Reminders
+                            <span class="preference-desc">Get reminded about upcoming events 24 hours before</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="emailPromotion"> Promotions & Offers
+                            <span class="preference-desc">Receive exclusive deals and discounts</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="emailEventUpdate"> Event Updates
+                            <span class="preference-desc">Get notified about event changes or cancellations</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-bell"></i> Push Notifications</h3>
+                </div>
+                <div class="card-body">
+                    <div class="preference-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="pushBooking"> Booking Confirmation
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="pushReminder"> Event Reminders
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="pushPromotion"> Promotions & Offers
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-sms"></i> SMS Notifications</h3>
+                </div>
+                <div class="card-body">
+                    <div class="preference-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="smsReminder"> Event Reminders
+                            <span class="preference-desc">Get SMS reminder 24 hours before your event</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-primary" onclick="savePreferences()">
+                    <i class="fas fa-save"></i> Save Preferences
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/notifications/notifications.js' %}"></script>
+{% endblock %}

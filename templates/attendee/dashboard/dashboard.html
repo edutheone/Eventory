@@ -1,0 +1,202 @@
+
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - EventHub{% endblock %}
+
+{% block extra_css %}
+<!-- Dashboard CSS -->
+<link rel="stylesheet" href="{% static 'css/attendee/dashboard/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/dashboard/stats-cards.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/dashboard/activity.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/dashboard/quick-actions.css' %}">
+<link rel="stylesheet" href="{% static 'css/attendee/dashboard/recommendations.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-content">
+            <h1><span id="greetingText">Welcome back</span>, <span id="userName">Attendee</span>!</h1>
+            <p>Here's what's happening with your events</p>
+        </div>
+        <div class="welcome-date">
+            <i class="fas fa-calendar-alt"></i>
+            <span id="currentDate"></span>
+        </div>
+    </div>
+
+    <!-- Dashboard Center Search Section -->
+    <div class="dashboard-search-section">
+        <h2 class="search-title">Sherehe iko wapi? Search it</h2>
+        <form class="dashboard-search-form" action="/events/search/" method="GET" id="dashboardSearchForm">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="q" id="dashboardSearchInput" placeholder="Search for events in your city, e.g. Nairobi..." autocomplete="off">
+                <div class="detected-location-badge" id="detectedLocationBadge">
+                    <i class="fas fa-location-arrow"></i>
+                    <span id="detectedLocationText">Detecting location...</span>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Discovery Results — populated dynamically by discovery.js -->
+    <div id="discoveryResultsSection" style="display:none;"></div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid" id="statsContainer">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
+            <div class="stat-info">
+                <h3 id="totalTickets">0</h3>
+                <span>Total Tickets</span>
+            </div>
+            <div class="stat-trend" id="ticketsTrend"></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+            <div class="stat-info">
+                <h3 id="totalSpent">Kes 0</h3>
+                <span>Total Spent</span>
+            </div>
+            <div class="stat-trend" id="spentTrend"></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
+            <div class="stat-info">
+                <h3 id="upcomingEvents">0</h3>
+                <span>Upcoming Events</span>
+            </div>
+            <div class="stat-trend" id="upcomingTrend"></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-star"></i></div>
+            <div class="stat-info">
+                <h3 id="reviewsWritten">0</h3>
+                <span>Reviews Written</span>
+            </div>
+            <div class="stat-trend" id="reviewsTrend"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+        <!-- Left Column -->
+        <div class="dashboard-left">
+            <!-- Upcoming Tickets -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-ticket-alt"></i> Upcoming Tickets</h3>
+                    <a href="/attendee/tickets/" class="btn-sm btn-outline">View All</a>
+                </div>
+                <div class="card-body">
+                    <div id="upcomingTicketsList" class="upcoming-tickets-list">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>Loading your tickets...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                    <button class="btn-sm btn-outline" onclick="refreshActivity()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="recentActivityList" class="activity-list">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>Loading activity...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="dashboard-right">
+            <!-- Recommendations -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-lightbulb"></i> Recommended For You</h3>
+                    <a href="/events/" class="btn-sm btn-outline">Browse More</a>
+                </div>
+                <div class="card-body">
+                    <div id="recommendationsList" class="recommendations-list">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>Finding recommendations...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions-grid">
+                        <button class="quick-action-btn" onclick="window.location.href='/events/'">
+                            <i class="fas fa-calendar"></i>
+                            <span>Browse Events</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="window.location.href='/attendee/tickets/'">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>My Tickets</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="window.location.href='/wishlist/'">
+                            <i class="fas fa-heart"></i>
+                            <span>Wishlist</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="window.location.href='/profile/'">
+                            <i class="fas fa-user-circle"></i>
+                            <span>My Profile</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="window.location.href='/support/'">
+                            <i class="fas fa-headset"></i>
+                            <span>Get Support</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> Your Stats</h3>
+                </div>
+                <div class="card-body">
+                    <div class="stats-overview">
+                        <div class="overview-item">
+                            <div class="overview-label">Member Since</div>
+                            <div class="overview-value" id="memberSince">-</div>
+                        </div>
+                        <div class="overview-item">
+                            <div class="overview-label">Favorite Category</div>
+                            <div class="overview-value" id="favoriteCategory">-</div>
+                        </div>
+                        <div class="overview-item">
+                            <div class="overview-label">Events Attended</div>
+                            <div class="overview-value" id="eventsAttended">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/dashboard/dashboard.js' %}"></script>
+<script src="{% static 'js/attendee/dashboard/discovery.js' %}"></script>
+{% endblock %}

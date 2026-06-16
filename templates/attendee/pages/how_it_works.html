@@ -1,0 +1,196 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}How It Works - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/pages/how-it-works.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="how-it-works-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>How It Works</h1>
+            <p>Get started in three simple steps</p>
+        </div>
+        
+        <!-- Steps Grid -->
+        <div class="steps-grid">
+            <!-- Step 1 -->
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon-wrapper">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Discover Events</h3>
+                <p>Browse through hundreds of exciting events happening near you. Filter by category, date, or location to find the perfect experience.</p>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Easy search & discovery</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Smart filters & categories</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Detailed event info</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Verified organizers</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon-wrapper">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <h3>Book Tickets</h3>
+                <p>Select your tickets, choose seating preferences, and complete payment securely in just a few clicks.</p>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Secure payment gateway</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Multiple payment options</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Instant confirmation</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Email receipt & tickets</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon-wrapper">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <h3>Attend Event</h3>
+                <p>Show your QR code at the venue, get scanned, and enjoy the experience. No paper tickets needed!</p>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>QR code entry system</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Digital tickets on app</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Easy venue check-in</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Share tickets with friends</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Benefits Section -->
+        <div class="benefits-section">
+            <div class="section-header">
+                <h2>Why Choose EventHub?</h2>
+                <p>We make event discovery and booking effortless</p>
+            </div>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure & Reliable</h3>
+                    <p>Your payments and data are protected with industry-standard security</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>24/7 Support</h3>
+                    <p>Our support team is always here to help you with any questions</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Book tickets on the go with our fully responsive platform</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3>Best Prices</h3>
+                    <p>Get the best deals and early bird discounts on popular events</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Video Section -->
+        <div class="video-section">
+            <div class="video-card">
+                <div class="video-icon">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <h3>Watch How It Works</h3>
+                <p>See how easy it is to discover and book events on EventHub</p>
+                <button class="video-btn" id="watchVideoBtn">
+                    <i class="fas fa-play"></i>
+                    Watch Demo Video
+                </button>
+            </div>
+        </div>
+        
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <div class="cta-card">
+                <h3>Ready to get started?</h3>
+                <p>Join thousands of happy attendees and start discovering amazing events today!</p>
+                <div class="cta-buttons">
+                    <a href="/register/" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Create Free Account
+                    </a>
+                    <a href="/events/" class="btn btn-outline">
+                        <i class="fas fa-calendar"></i>
+                        Browse Events
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Video Modal (Hidden by default) -->
+<div class="video-modal" id="videoModal">
+    <div class="video-modal-content">
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+        <div class="video-container">
+            <iframe id="demoVideo" width="100%" height="400" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=placeholder" title="EventHub Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/pages/how-it-works.js' %}"></script>
+{% endblock %}

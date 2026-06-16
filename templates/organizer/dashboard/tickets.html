@@ -1,0 +1,26 @@
+{% extends "organizer/base.html" %}
+{% load static %}
+{% block title %}Tickets | EventHub Organizer{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/organizers/tickets.css">
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+{% endblock %}
+{% block content %}
+<div>
+    <div class="d-flex justify-content-between mb-4"><h1>Ticket Management</h1><div><select id="eventFilter" class="filter-select"><option value="">All Events</option></select><button id="exportBtn" class="btn btn-outline ms-2">Export</button></div></div>
+    <div class="row g-4 mb-4">
+        <div class="col-lg-5"><div class="scan-section p-4"><h4>Quick Check-in</h4><div class="input-group"><input type="text" id="ticketNumberInput" class="form-control" placeholder="Ticket number"><button id="verifyBtn" class="btn btn-light">Verify</button></div><div id="scanResult" class="mt-3"></div></div></div>
+        <div class="col-lg-7"><div class="qr-scanner p-4 text-center"><video id="cameraPreview" width="100%" autoplay muted></video><div><button id="startScannerBtn" class="btn btn-primary mt-2">Start Camera</button><button id="stopScannerBtn" class="btn btn-secondary mt-2" style="display:none">Stop</button></div></div></div>
+    </div>
+    <div class="row g-4 mb-4">
+        <div class="col-md-3"><div class="metric-card text-center"><h3 id="totalTickets">--</h3><small>Total Tickets</small></div></div>
+        <div class="col-md-3"><div class="metric-card text-center"><h3 id="checkedInTickets">--</h3><small>Checked In</small></div></div>
+        <div class="col-md-3"><div class="metric-card text-center"><h3 id="checkinRate">--%</h3><small>Check-in Rate</small></div></div>
+        <div class="col-md-3"><div class="metric-card text-center"><h3 id="recentCheckins">--</h3><small>Recent Check-ins</small></div></div>
+    </div>
+    <div class="table-section"><table class="table"><thead><tr><th>Ticket #</th><th>Event</th><th>Attendee</th><th>Status</th><th>Action</th></tr></thead><tbody id="ticketsTableBody"></tbody><tr><nav><ul class="pagination" id="ticketsPagination"></ul></nav></div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/organizer/tickets.js"></script>
+{% endblock %}

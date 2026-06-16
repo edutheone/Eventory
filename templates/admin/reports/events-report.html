@@ -1,0 +1,124 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Events Performance Report - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/reports/reports.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="events-report-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-chart-bar"></i> Events Performance Report</h1>
+            <p class="text-muted">Analyze event performance and metrics</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-primary" onclick="exportEventsReport()">
+                <i class="fas fa-download"></i> Download PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group">
+                <label>Start Date</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="filter-group">
+                <label>End Date</label>
+                <input type="date" id="endDate">
+            </div>
+            <div class="filter-group">
+                <label>Category</label>
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="published">Published</option>
+                    <option value="draft">Draft</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <button class="btn-primary" onclick="applyFilters()">
+                <i class="fas fa-search"></i> Apply
+            </button>
+            <button class="btn-outline" onclick="resetFilters()">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="summary-grid">
+        <div class="summary-item">
+            <span class="summary-label">Total Events</span>
+            <strong class="summary-value" id="totalEvents">0</strong>
+            <span class="summary-change" id="eventsChange">+0%</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Total Tickets Sold</span>
+            <strong class="summary-value" id="totalTicketsSold">0</strong>
+            <span class="summary-change up" id="ticketsChange">+0%</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Total Revenue</span>
+            <strong class="summary-value" id="totalRevenue">Kes 0</strong>
+            <span class="summary-change up" id="revenueChange">+0%</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Avg Fill Rate</span>
+            <strong class="summary-value" id="avgFillRate">0%</strong>
+            <span class="summary-change" id="fillRateChange">+0%</span>
+        </div>
+    </div>
+
+    <!-- Events Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-calendar-alt"></i> Events Performance Metrics</h3>
+            <div class="table-info">
+                <span id="recordsCount">Showing 0 events</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Organizer</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>Tickets Sold / Capacity</th>
+                            <th>Fill Rate</th>
+                            <th>Revenue</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </thead>
+                        <tbody id="eventsPerformanceList">
+                            <tr><td colspan="9" class="text-center">Loading events...</td</tr>
+                        </tbody>
+                    </table>
+                </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script src="{% static 'js/admin/reports/events-report.js' %}"></script>
+{% endblock %}

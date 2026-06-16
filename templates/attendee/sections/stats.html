@@ -1,0 +1,84 @@
+{% load static %}
+<section class="stats-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Impact</h2>
+            <p>EventHub by the numbers</p>
+        </div>
+        <div class="analytics-grid" id="statsSection">
+            <div class="analytics-card">
+                <div class="card-accent"></div>
+                <div class="analytics-number" id="countEvents" data-target="{{ events_count|default:248 }}">0<span class="suffix">+</span></div>
+                <p>Events Hosted</p>
+            </div>
+            <div class="analytics-card">
+                <div class="card-accent"></div>
+                <div class="analytics-number" id="countTickets" data-target="{{ tickets_count|default:5842 }}">0<span class="suffix">+</span></div>
+                <p>Tickets Sold</p>
+            </div>
+            <div class="analytics-card">
+                <div class="card-accent"></div>
+                <div class="analytics-number" id="countOrganizers" data-target="{{ organizers_count|default:126 }}">0<span class="suffix">+</span></div>
+                <p>Active Organizers</p>
+            </div>
+            <div class="analytics-card">
+                <div class="card-accent"></div>
+                <div class="analytics-number" id="countSatisfaction" data-target="{{ satisfaction_rate|default:98 }}">0<span class="suffix">%</span></div>
+                <p>Satisfaction Rate</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Stats Counter Animation - Restarts every time section is scrolled into view
+document.addEventListener('DOMContentLoaded', function() {
+    const statsNumbers = document.querySelectorAll('.analytics-number');
+    let hasAnimated = false;
+    
+    function resetAndAnimateNumber(element) {
+        const target = parseInt(element.getAttribute('data-target'));
+        const suffix = element.querySelector('.suffix') ? element.querySelector('.suffix').textContent : '';
+        
+        // Reset to 0
+        element.innerHTML = '0' + `<span class="suffix">${suffix}</span>`;
+        
+        let current = 0;
+        const increment = target / 50;
+        
+        // Clear any existing interval
+        if (element.interval) {
+            clearInterval(element.interval);
+        }
+        
+        element.interval = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                element.innerHTML = target.toLocaleString() + `<span class="suffix">${suffix}</span>`;
+                clearInterval(element.interval);
+                delete element.interval;
+            } else {
+                element.innerHTML = Math.floor(current).toLocaleString() + `<span class="suffix">${suffix}</span>`;
+            }
+        }, 30);
+    }
+    
+    // Create observer for stats section
+    const statsSection = document.querySelector('.stats-section');
+    
+    if (statsSection) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Reset and restart animation for all stats
+                    statsNumbers.forEach(stat => {
+                        resetAndAnimateNumber(stat);
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        observer.observe(statsSection);
+    }
+});
+</script>

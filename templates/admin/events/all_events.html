@@ -1,0 +1,65 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}All Events - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/events/approvals.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="approvals-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-calendar-alt"></i> All Events</h1>
+            <p class="text-muted">View and manage all events on the platform</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-outline" onclick="exportEvents()">
+                <i class="fas fa-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group search-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchEvents" placeholder="Search by event or organizer...">
+            </div>
+            <div class="filter-group">
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending Approval</option>
+                    <option value="approved">Approved</option>
+                    <option value="published">Published</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <button class="btn-secondary" onclick="applyFilters()">
+                <i class="fas fa-filter"></i> Apply
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>ID</th><th>Event Name</th><th>Organizer</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="eventsList">
+                        <tr><td colspan="6" class="text-center">Loading events...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/events/all-events.js' %}"></script>
+{% endblock %}

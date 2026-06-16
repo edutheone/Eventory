@@ -1,0 +1,270 @@
+{% load static %}
+<section class="categories-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Browse by Category</h2>
+            <p>Find events that match your interests</p>
+        </div>
+        <div class="categories-carousel-wrapper">
+            <button class="carousel-nav prev" id="catPrevBtn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="categories-carousel" id="categoryCarousel">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading categories...</p>
+                </div>
+            </div>
+            <button class="carousel-nav next" id="catNextBtn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<script>
+let categoriesData = [];
+let scrollInterval = null;
+let isDragging = false;
+let startX;
+let scrollLeft;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadCategories();
+    setupCarousel();
+    setupDragScroll();
+    setupResponsiveArrows();
+});
+
+function loadCategories() {
+    const carousel = document.getElementById('categoryCarousel');
+    
+    let categories = [];
+    
+    if (window.MockEventsData) {
+        categories = window.MockEventsData.categories;
+    } else {
+        categories = [
+            { id: 1, name: "Music", slug: "music", event_count: 8, description: "Live concerts and music festivals", featured: "Summer Music Festival 2024" },
+            { id: 2, name: "Technology", slug: "technology", event_count: 6, description: "Tech conferences and workshops", featured: "Tech Innovation Summit" },
+            { id: 3, name: "Sports", slug: "sports", event_count: 5, description: "Sports tournaments and events", featured: "Nairobi City Marathon" },
+            { id: 4, name: "Food & Drink", slug: "food", event_count: 4, description: "Food festivals and tasting events", featured: "Food & Wine Expo" },
+            { id: 5, name: "Arts", slug: "arts", event_count: 4, description: "Art exhibitions and galleries", featured: "Modern Art Exhibition" },
+            { id: 6, name: "Business", slug: "business", event_count: 5, description: "Networking and business events", featured: "Business Leadership Forum" }
+        ];
+    }
+    
+    categoriesData = categories;
+    
+    if (categories.length === 0) {
+        carousel.innerHTML = '<div class="empty-state">No categories available</div>';
+        return;
+    }
+    
+    carousel.innerHTML = categories.map(cat => `
+        <div class="category-card" data-category-id="${cat.id}" data-category-name="${cat.name}" data-category-slug="${cat.slug}">
+            <div class="category-icon-wrapper">
+                <i class="fas ${getCategoryIcon(cat.name)}"></i>
+            </div>
+            <div class="category-card-content">
+                <h3>${escapeHtml(cat.name)}</h3>
+                <p>${escapeHtml(cat.description)}</p>
+                <div class="category-stats">
+                    <span><i class="fas fa-calendar-week"></i> ${cat.event_count} events this month</span>
+                </div>
+                <div class="category-featured">
+                    <i class="fas fa-star"></i> <span>${escapeHtml(cat.featured)}</span>
+                </div>
+                <span class="category-count">Explore ${cat.name} →</span>
+            </div>
+        </div>
+    `).join('');
+    
+    // Add click handlers
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            const categoryName = card.dataset.categoryName;
+            const categorySlug = card.dataset.categorySlug;
+            
+            // Show loader before navigation
+            if (window.PageLoader) {
+                window.PageLoader.show();
+            }
+            
+            // Redirect to events page with category filter
+            window.location.href = `/events/?category=${encodeURIComponent(categorySlug || categoryName)}`;
+        });
+    });
+}
+
+function setupCarousel() {
+    const carousel = document.getElementById('categoryCarousel');
+    const prevBtn = document.getElementById('catPrevBtn');
+    const nextBtn = document.getElementById('catNextBtn');
+    
+    if (!carousel) return;
+    
+    // Get the scroll amount (width of one card + gap)
+    function getScrollAmount() {
+        const card = carousel.querySelector('.category-card');
+        if (card) {
+            const cardWidth = card.offsetWidth;
+            const style = window.getComputedStyle(carousel);
+            const gap = parseInt(style.gap) || 24;
+            return cardWidth + gap;
+        }
+        return 340;
+    }
+    
+    // Scroll left function
+    function scrollLeft() {
+        const amount = getScrollAmount();
+        carousel.scrollBy({ left: -amount, behavior: 'smooth' });
+    }
+    
+    // Scroll right function
+    function scrollRight() {
+        const amount = getScrollAmount();
+        carousel.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+    
+    // Attach event listeners
+    if (prevBtn) {
+        prevBtn.removeEventListener('click', scrollLeft);
+        prevBtn.addEventListener('click', scrollLeft);
+    }
+    
+    if (nextBtn) {
+        nextBtn.removeEventListener('click', scrollRight);
+        nextBtn.addEventListener('click', scrollRight);
+    }
+    
+    // Update button visibility
+    function updateButtonsVisibility() {
+        if (!prevBtn || !nextBtn) return;
+        
+        const isAtStart = carousel.scrollLeft <= 10;
+        const isAtEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 10;
+        
+        if (window.innerWidth > 768) {
+            prevBtn.style.opacity = isAtStart ? '0.5' : '1';
+            prevBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
+            nextBtn.style.opacity = isAtEnd ? '0.5' : '1';
+            nextBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+        }
+    }
+    
+    carousel.addEventListener('scroll', updateButtonsVisibility);
+    window.addEventListener('resize', () => {
+        updateButtonsVisibility();
+        setupResponsiveArrows();
+    });
+    
+    updateButtonsVisibility();
+}
+
+function setupDragScroll() {
+    const carousel = document.getElementById('categoryCarousel');
+    if (!carousel) return;
+    
+    // Mouse drag scrolling
+    carousel.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.pageX - carousel.offsetLeft;
+        scrollLeft = carousel.scrollLeft;
+        carousel.style.cursor = 'grabbing';
+    });
+    
+    carousel.addEventListener('mouseleave', () => {
+        isDragging = false;
+        carousel.style.cursor = 'grab';
+    });
+    
+    carousel.addEventListener('mouseup', () => {
+        isDragging = false;
+        carousel.style.cursor = 'grab';
+    });
+    
+    carousel.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - carousel.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        carousel.scrollLeft = scrollLeft - walk;
+    });
+    
+    // Touch scrolling for mobile
+    carousel.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startX = e.touches[0].pageX - carousel.offsetLeft;
+        scrollLeft = carousel.scrollLeft;
+    });
+    
+    carousel.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+    
+    carousel.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const x = e.touches[0].pageX - carousel.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        carousel.scrollLeft = scrollLeft - walk;
+    });
+    
+    // Set initial cursor
+    carousel.style.cursor = 'grab';
+}
+
+function setupResponsiveArrows() {
+    const prevBtn = document.getElementById('catPrevBtn');
+    const nextBtn = document.getElementById('catNextBtn');
+    
+    if (!prevBtn || !nextBtn) return;
+    
+    // Hide arrows on mobile, show on desktop
+    if (window.innerWidth <= 768) {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+    } else {
+        prevBtn.style.display = 'flex';
+        nextBtn.style.display = 'flex';
+    }
+}
+
+function getCategoryIcon(categoryName) {
+    const icons = {
+        'Music': 'fa-music',
+        'Technology': 'fa-microchip',
+        'Business': 'fa-briefcase',
+        'Sports': 'fa-futbol',
+        'Arts': 'fa-palette',
+        'Food': 'fa-utensils',
+        'Food & Drink': 'fa-utensils'
+    };
+    return icons[categoryName] || 'fa-tag';
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Make functions available globally for debugging
+window.scrollCategoriesLeft = () => {
+    const carousel = document.getElementById('categoryCarousel');
+    if (carousel) {
+        const amount = carousel.querySelector('.category-card')?.offsetWidth + 24 || 340;
+        carousel.scrollBy({ left: -amount, behavior: 'smooth' });
+    }
+};
+
+window.scrollCategoriesRight = () => {
+    const carousel = document.getElementById('categoryCarousel');
+    if (carousel) {
+        const amount = carousel.querySelector('.category-card')?.offsetWidth + 24 || 340;
+        carousel.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+};
+</script>

@@ -1,0 +1,224 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Event Details - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/events/event-detail.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/events/approvals.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-calendar-alt"></i> <span id="eventTitle">Event Details</span></h1>
+            <p class="text-muted">Review event information and take action</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-secondary" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <button class="btn-danger" id="deleteBtn" onclick="deleteEvent()">
+                <i class="fas fa-trash-alt"></i> Delete
+            </button>
+        </div>
+    </div>
+
+    <!-- Approval Banner (only for pending events) -->
+    <div id="approvalBanner" class="approval-banner" style="display: none;">
+        <div class="banner-content">
+            <div class="banner-icon">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="banner-text">
+                <h3>Event Awaiting Approval</h3>
+                <p>Review the event details below before making a decision.</p>
+            </div>
+            <div class="banner-actions">
+                <button class="btn-approve" onclick="approveEvent()">
+                    <i class="fas fa-check-circle"></i> Approve
+                </button>
+                <button class="btn-reject" onclick="openRejectModal()">
+                    <i class="fas fa-times-circle"></i> Reject
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Banner Image -->
+    <div class="event-banner" id="eventBanner"></div>
+
+    <!-- Event Info Grid -->
+    <div class="detail-grid">
+        <div class="detail-card">
+            <div class="detail-header">
+                <i class="fas fa-info-circle"></i>
+                <h3>Event Information</h3>
+            </div>
+            <div class="detail-body">
+                <div class="info-row">
+                    <span>Event Title:</span>
+                    <strong id="eventTitleDetail">-</strong>
+                </div>
+                <div class="info-row">
+                    <span>Status:</span>
+                    <span id="eventStatus"></span>
+                </div>
+                <div class="info-row">
+                    <span>Category:</span>
+                    <span id="eventCategory">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Organizer:</span>
+                    <span id="eventOrganizer">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Submitted On:</span>
+                    <span id="eventCreated">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-header">
+                <i class="fas fa-calendar-alt"></i>
+                <h3>Date & Time</h3>
+            </div>
+            <div class="detail-body">
+                <div class="info-row">
+                    <span>Start Date:</span>
+                    <span id="eventStartDate">-</span>
+                </div>
+                <div class="info-row">
+                    <span>End Date:</span>
+                    <span id="eventEndDate">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Registration Deadline:</span>
+                    <span id="eventRegDeadline">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-header">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Location</h3>
+            </div>
+            <div class="detail-body">
+                <div class="info-row">
+                    <span>Venue:</span>
+                    <span id="eventVenue">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Address:</span>
+                    <span id="eventAddress">-</span>
+                </div>
+                <div class="info-row">
+                    <span>City:</span>
+                    <span id="eventCity">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Type:</span>
+                    <span id="eventType">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-header">
+                <i class="fas fa-ticket-alt"></i>
+                <h3>Tickets & Revenue</h3>
+            </div>
+            <div class="detail-body">
+                <div class="info-row">
+                    <span>Ticket Price:</span>
+                    <span id="eventPrice">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Total Capacity:</span>
+                    <span id="eventTotalSeats">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Tickets Sold:</span>
+                    <span id="eventSold">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Available:</span>
+                    <span id="eventAvailable">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Total Revenue:</span>
+                    <strong id="eventRevenue">-</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Description -->
+    <div class="detail-card full-width">
+        <div class="detail-header">
+            <i class="fas fa-align-left"></i>
+            <h3>Description</h3>
+        </div>
+        <div class="detail-body">
+            <p id="eventDescription"></p>
+        </div>
+    </div>
+
+    <!-- Ticket Types -->
+    <div class="detail-card full-width" id="ticketTypesCard" style="display: none;">
+        <div class="detail-header">
+            <i class="fas fa-tags"></i>
+            <h3>Ticket Types</h3>
+        </div>
+        <div class="detail-body">
+            <div id="ticketTypesList" class="ticket-types-grid"></div>
+        </div>
+    </div>
+
+    <!-- Approval History -->
+    <div class="detail-card full-width" id="historyCard" style="display: none;">
+        <div class="detail-header">
+            <i class="fas fa-history"></i>
+            <h3>Approval History</h3>
+        </div>
+        <div class="detail-body">
+            <div id="approvalHistory" class="timeline"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div id="rejectModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="rejectModalTitle"><i class="fas fa-times-circle"></i> Reject Event</h3>
+            <button class="modal-close" onclick="closeRejectModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="warning-text" id="rejectModalWarning">
+                <i class="fas fa-exclamation-triangle"></i> 
+                Provide a reason for rejection. The organizer will be notified.
+            </p>
+            <div class="form-group">
+                <label id="rejectModalLabel">Rejection Reason <span class="required">*</span></label>
+                <textarea id="rejectionReason" rows="4" class="form-control" 
+                    placeholder="Explain why this event is being rejected..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeRejectModal()">Cancel</button>
+            <button class="btn-danger" id="rejectModalSubmit" onclick="confirmReject()">
+                <i class="fas fa-times-circle"></i> Reject Event
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/events/event-detail.js' %}"></script>
+{% endblock %}

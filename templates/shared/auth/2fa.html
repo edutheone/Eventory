@@ -1,0 +1,166 @@
+{% extends "shared/auth_base.html" %}
+{% load static %}
+
+{% block title %}Two-Factor Authentication - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shared/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-background login-bg"></div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-card-inner">
+            <a href="/" class="auth-back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="auth-logo">
+                <div class="auth-logo-wrapper">
+                    <div class="auth-logo-glow"></div>
+                    <div class="auth-logo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                </div>
+            </div>
+            <h2 class="auth-title">Two-Factor Authentication</h2>
+            <p class="auth-subtitle">Enter the 6-digit code from your authenticator app</p>
+
+            <!-- Role Selection Radio Buttons -->
+            <div class="auth-role-group">
+                <label class="auth-role-label">Account type:</label>
+                <div class="auth-role-options">
+                    <label class="auth-role-option">
+                        <input type="radio" name="role_select" value="attendee" checked>
+                        <span>🎟️ Attendee</span>
+                    </label>
+                    <label class="auth-role-option">
+                        <input type="radio" name="role_select" value="organizer">
+                        <span>📅 Organizer</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="otp-container">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="0" id="digit-0">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="1" id="digit-1">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="2" id="digit-2">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="3" id="digit-3">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="4" id="digit-4">
+                <input type="text" maxlength="1" class="otp-input digit-input" data-index="5" id="digit-5">
+            </div>
+            <div id="otpError" class="error-message hidden"></div>
+
+            <button onclick="verify2FA()" id="verifyBtn" class="auth-btn">Verify & Continue</button>
+
+            <div class="resend-container">
+                <button id="backupBtn" onclick="useBackupCode()" class="auth-link">Use backup code</button>
+            </div>
+
+            <div class="auth-info-banner">
+                <i class="fas fa-info-circle"></i>
+                <span>Having trouble? <a href="/login/">Sign in with backup method</a></span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Role selection handler
+    const roleRadios = document.querySelectorAll('input[name="role_select"]');
+    let selectedRole = 'attendee';
+    
+    roleRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            selectedRole = this.value;
+            localStorage.setItem('user_role', selectedRole);
+        });
+    });
+    
+    const inputs = document.querySelectorAll('.digit-input');
+    const otpError = document.getElementById('otpError');
+    
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            if (e.target.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+        });
+        
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && index > 0 && !e.target.value) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+    
+    inputs[0].focus();
+    
+    function getOTP() {
+        let otp = '';
+        inputs.forEach(input => { otp += input.value; });
+        return otp;
+    }
+    
+    function validateOTP(otp) {
+        if (!otp) return 'Please enter the verification code';
+        if (otp.length !== 6) return 'Please enter a valid 6-digit code';
+        if (!/^\d+$/.test(otp)) return 'Code must contain only numbers';
+        return '';
+    }
+    
+    function verify2FA() {
+        const otp = getOTP();
+        const validationError = validateOTP(otp);
+        
+        if (validationError) {
+            otpError.textContent = validationError;
+            otpError.classList.remove('hidden');
+            return;
+        }
+        
+        otpError.classList.add('hidden');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const originalText = verifyBtn.innerHTML;
+        verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+        verifyBtn.disabled = true;
+        
+        setTimeout(() => {
+            if (otp.length === 6) {
+                showToast('2FA verification successful! Redirecting...', 'success');
+                const userRole = selectedRole;
+                setTimeout(() => {
+                    if (userRole === 'organizer') {
+                        window.location.href = '/organizer/dashboard/';
+                    } else {
+                        window.location.href = '/attendee/dashboard/';
+                    }
+                }, 1500);
+            } else {
+                otpError.textContent = 'Invalid code. Please try again.';
+                otpError.classList.remove('hidden');
+                verifyBtn.innerHTML = originalText;
+                verifyBtn.disabled = false;
+            }
+        }, 1500);
+    }
+    
+    function useBackupCode() {
+        showToast('Please enter your backup code', 'info');
+        setTimeout(() => {
+            window.location.href = '/login/';
+        }, 2000);
+    }
+    
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i> ${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Refund Requests - EventHub Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/bookings/bookings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="refunds-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-undo-alt"></i> Refund Requests</h1>
+            <p class="text-muted">Process and manage customer refund requests</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-outline" onclick="exportRefunds()">
+                <i class="fas fa-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+                <h3 id="pendingRefunds">0</h3>
+                <span>Pending Requests</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <h3 id="approvedRefunds">0</h3>
+                <span>Approved This Month</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+            <div class="stat-info">
+                <h3 id="rejectedRefunds">0</h3>
+                <span>Rejected</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-info">
+                <h3 id="totalRefundAmount">Kes 0</h3>
+                <span>Total Refunded</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group search-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchRefunds" placeholder="Search by booking ID or customer...">
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="completed">Completed</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>From Date</label>
+                <input type="date" id="dateFrom">
+            </div>
+            <div class="filter-group">
+                <label>To Date</label>
+                <input type="date" id="dateTo">
+            </div>
+            <button class="btn-secondary" onclick="applyFilters()">
+                <i class="fas fa-filter"></i> Apply
+            </button>
+            <button class="btn-outline" onclick="resetFilters()">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- Refunds Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-list-ul"></i> Refund Requests</h3>
+            <div class="table-info">
+                <span id="recordsCount">Showing 0 records</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Booking ID</th>
+                            <th>Customer</th>
+                            <th>Event</th>
+                            <th>Amount</th>
+                            <th>Reason</th>
+                            <th>Requested</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </thead>
+                    <tbody id="refundsList">
+                        <tr><td colspan="9" class="text-center">Loading refund requests...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Process Refund Modal -->
+<div id="processRefundModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-exchange-alt"></i> Process Refund</h3>
+            <button class="modal-close" onclick="closeProcessModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="refund-info" id="processRefundInfo"></div>
+            <div class="form-group">
+                <label>Admin Response</label>
+                <textarea id="adminResponse" rows="3" class="form-control" placeholder="Response to customer..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Refund Method</label>
+                <select id="refundMethod" class="form-control">
+                    <option value="original">Original Payment Method</option>
+                    <option value="manual">Manual Bank Transfer</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeProcessModal()">Cancel</button>
+            <button class="btn-danger" onclick="rejectRefund()">Reject</button>
+            <button class="btn-success" onclick="approveRefund()">Approve Refund</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/bookings/refunds.js' %}"></script>
+{% endblock %}

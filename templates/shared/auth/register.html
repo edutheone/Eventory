@@ -1,0 +1,484 @@
+{% extends "shared/auth_base.html" %}
+{% load static %}
+
+{% block title %}Sign Up - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shared/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-background register-bg"></div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-card-inner">
+            <a href="/" class="auth-back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="auth-logo">
+                <div class="auth-logo-wrapper">
+                    <div class="auth-logo-glow"></div>
+                    <div class="auth-logo-icon">
+                        <span>E</span>
+                    </div>
+                </div>
+            </div>
+            <h2 class="auth-title">Create Account</h2>
+            <p class="auth-subtitle">Join our community of event lovers</p>
+
+            <!-- Role Selection Radio Buttons -->
+            <div class="auth-role-group">
+                <label class="auth-role-label">Register as:</label>
+                <div class="auth-role-options">
+                    <label class="auth-role-option">
+                        <input type="radio" name="role_select" value="attendee" checked>
+                        <span>🎟️ Attendee</span>
+                    </label>
+                    <label class="auth-role-option">
+                        <input type="radio" name="role_select" value="organizer">
+                        <span>📅 Organizer</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Google Sign In -->
+            <div style="position: relative; width: 100%; margin-bottom: 0.875rem;">
+                <button class="social-login-btn" id="googleSignInBtn" style="margin-bottom: 0; pointer-events: none;">
+                    <i class="fab fa-google social-login-icon"></i>
+                    Continue with Google
+                </button>
+                <div id="googleSignInBtnContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; z-index: 10; cursor: pointer;"></div>
+            </div>
+
+            <div class="auth-divider" style="margin-bottom: 1rem;">
+                <div class="auth-divider-line"><span></span></div>
+                <div class="auth-divider-text"><span>OR</span></div>
+            </div>
+
+            <form method="POST" action="/api/auth/register/" id="registerForm">
+                {% csrf_token %}
+                <input type="hidden" name="role" id="roleInput" value="attendee">
+                
+                <div class="auth-input-wrapper">
+                    <i class="fas fa-id-card auth-input-icon"></i>
+                    <input type="text" name="name" id="fullName" placeholder="Full name" class="auth-input" required>
+                </div>
+                <div id="nameError" class="error-message hidden"></div>
+
+                <div class="auth-input-wrapper">
+                    <i class="fas fa-envelope auth-input-icon"></i>
+                    <input type="email" name="email" id="email" placeholder="Email address" class="auth-input" required>
+                </div>
+                <div id="emailError" class="error-message hidden"></div>
+
+                <div class="auth-input-wrapper">
+                    <i class="fas fa-lock auth-input-icon"></i>
+                    <input type="password" name="password1" id="password1" placeholder="Password" class="auth-input" required>
+                    <button type="button" onclick="togglePassword('password1', 'toggleIcon1')" class="auth-password-toggle">
+                        <i class="fas fa-eye-slash" id="toggleIcon1"></i>
+                    </button>
+                </div>
+                <div id="passwordStrength" class="password-strength hidden"></div>
+                <div id="password1Error" class="error-message hidden"></div>
+
+                <div class="auth-input-wrapper">
+                    <i class="fas fa-lock auth-input-icon"></i>
+                    <input type="password" name="password2" id="password2" placeholder="Confirm password" class="auth-input" required>
+                    <button type="button" onclick="togglePassword('password2', 'toggleIcon2')" class="auth-password-toggle">
+                        <i class="fas fa-eye-slash" id="toggleIcon2"></i>
+                    </button>
+                </div>
+                <div id="passwordMatchError" class="error-message hidden"></div>
+
+                <div id="organizerFields" class="organizer-fields">
+                    <div class="auth-input-wrapper">
+                        <i class="fas fa-building auth-input-icon"></i>
+                        <input type="text" name="organization_name" id="orgName" placeholder="Organization name" class="auth-input">
+                    </div>
+                    <div id="orgError" class="error-message hidden"></div>
+                    <div class="auth-input-wrapper">
+                        <i class="fas fa-phone auth-input-icon"></i>
+                        <input type="tel" name="phone" id="phone" placeholder="Phone number" class="auth-input">
+                    </div>
+                    <div id="phoneError" class="error-message hidden"></div>
+                </div>
+
+                <button type="submit" id="registerBtn" class="auth-btn">Create Account</button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account?
+                <a href="/login/">Sign In</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+    // Role selection handler
+    const roleRadios = document.querySelectorAll('input[name="role_select"]');
+    const roleInput = document.getElementById('roleInput');
+    const organizerFields = document.getElementById('organizerFields');
+    const authTitle = document.querySelector('.auth-title');
+    const authSubtitle = document.querySelector('.auth-subtitle');
+    
+    roleRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            roleInput.value = this.value;
+            if (this.value === 'organizer') {
+                organizerFields.classList.add('show');
+                authTitle.textContent = 'Register as Organizer';
+                authSubtitle.textContent = 'Start creating and managing events';
+            } else {
+                organizerFields.classList.remove('show');
+                authTitle.textContent = 'Create Account';
+                authSubtitle.textContent = 'Join our community of event lovers';
+            }
+        });
+    });
+    
+    // Validation functions
+    function validateName(name) {
+        if (!name) return 'Full name is required';
+        if (name.length < 3) return 'Name must be at least 3 characters';
+        if (name.length > 50) return 'Name must be less than 50 characters';
+        if (!/^[a-zA-Z\s]+$/.test(name)) return 'Name can only contain letters and spaces';
+        return '';
+    }
+    
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) return 'Email address is required';
+        if (!emailRegex.test(email)) return 'Please enter a valid email address';
+        return '';
+    }
+    
+    function validatePassword(password) {
+        if (!password) return 'Password is required';
+        if (password.length < 8) return 'Password must be at least 8 characters';
+        if (password.length > 50) return 'Password must be less than 50 characters';
+        if (!/[a-z]/.test(password)) return 'Password must contain at least one lowercase letter';
+        if (!/[A-Z]/.test(password)) return 'Password must contain at least one uppercase letter';
+        if (!/[0-9]/.test(password)) return 'Password must contain at least one number';
+        if (!/[^a-zA-Z0-9]/.test(password)) return 'Password must contain at least one special character';
+        return '';
+    }
+    
+    function validateOrganization(org) {
+        if (roleInput.value === 'organizer') {
+            if (!org) return 'Organization name is required for organizers';
+            if (org.length < 2) return 'Organization name must be at least 2 characters';
+        }
+        return '';
+    }
+    
+    function validatePhone(phone) {
+        if (roleInput.value === 'organizer' && phone) {
+            const phoneRegex = /^[0-9+\-\s()]+$/;
+            if (!phoneRegex.test(phone)) return 'Please enter a valid phone number';
+        }
+        return '';
+    }
+    
+    // Real-time validation
+    const nameInput = document.getElementById('fullName');
+    const emailInput = document.getElementById('email');
+    const password1Input = document.getElementById('password1');
+    const password2Input = document.getElementById('password2');
+    const orgInput = document.getElementById('orgName');
+    const phoneInput = document.getElementById('phone');
+    
+    const nameError = document.getElementById('nameError');
+    const emailError = document.getElementById('emailError');
+    const password1Error = document.getElementById('password1Error');
+    const passwordMatchError = document.getElementById('passwordMatchError');
+    const orgError = document.getElementById('orgError');
+    const phoneError = document.getElementById('phoneError');
+    
+    nameInput.addEventListener('input', function() {
+        const error = validateName(this.value);
+        if (error) {
+            nameError.textContent = error;
+            nameError.classList.remove('hidden');
+        } else {
+            nameError.classList.add('hidden');
+        }
+    });
+    
+    emailInput.addEventListener('input', function() {
+        const error = validateEmail(this.value);
+        if (error) {
+            emailError.textContent = error;
+            emailError.classList.remove('hidden');
+        } else {
+            emailError.classList.add('hidden');
+        }
+    });
+    
+    password1Input.addEventListener('input', function() {
+        const error = validatePassword(this.value);
+        if (error) {
+            password1Error.textContent = error;
+            password1Error.classList.remove('hidden');
+        } else {
+            password1Error.classList.add('hidden');
+        }
+        
+        if (password2Input.value) {
+            if (this.value !== password2Input.value) {
+                passwordMatchError.textContent = 'Passwords do not match';
+                passwordMatchError.classList.remove('hidden');
+            } else {
+                passwordMatchError.classList.add('hidden');
+            }
+        }
+        
+        const password = this.value;
+        const strengthDiv = document.getElementById('passwordStrength');
+        
+        if (password.length === 0) {
+            strengthDiv.classList.add('hidden');
+            return;
+        }
+        
+        strengthDiv.classList.remove('hidden');
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]/)) strength++;
+        if (password.match(/[A-Z]/)) strength++;
+        if (password.match(/[0-9]/)) strength++;
+        if (password.match(/[^a-zA-Z0-9]/)) strength++;
+        
+        let strengthText = '', strengthClass = '';
+        if (strength <= 2) { strengthText = 'Weak'; strengthClass = 'strength-weak'; }
+        else if (strength <= 4) { strengthText = 'Medium'; strengthClass = 'strength-medium'; }
+        else { strengthText = 'Strong'; strengthClass = 'strength-strong'; }
+        
+        strengthDiv.innerHTML = `<span class="${strengthClass}">🔒 ${strengthText} password</span>`;
+    });
+    
+    password2Input.addEventListener('input', function() {
+        if (password1Input.value !== this.value) {
+            passwordMatchError.textContent = 'Passwords do not match';
+            passwordMatchError.classList.remove('hidden');
+        } else {
+            passwordMatchError.classList.add('hidden');
+        }
+    });
+    
+    if (orgInput) {
+        orgInput.addEventListener('input', function() {
+            const error = validateOrganization(this.value);
+            if (error) {
+                orgError.textContent = error;
+                orgError.classList.remove('hidden');
+            } else {
+                orgError.classList.add('hidden');
+            }
+        });
+    }
+    
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() {
+            const error = validatePhone(this.value);
+            if (error) {
+                phoneError.textContent = error;
+                phoneError.classList.remove('hidden');
+            } else {
+                phoneError.classList.add('hidden');
+            }
+        });
+    }
+    
+    function togglePassword(fieldId, iconId) {
+        const input = document.getElementById(fieldId);
+        const icon = document.getElementById(iconId);
+        const type = input.type === 'password' ? 'text' : 'password';
+        input.type = type;
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    }
+    
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        
+        const name = nameInput.value;
+        const email = emailInput.value;
+        const password1 = password1Input.value;
+        const password2 = password2Input.value;
+        const org = orgInput ? orgInput.value : '';
+        
+        const nameValidation = validateName(name);
+        const emailValidation = validateEmail(email);
+        const passwordValidation = validatePassword(password1);
+        
+        if (nameValidation || emailValidation || passwordValidation) {
+            if (nameValidation) {
+                nameError.textContent = nameValidation;
+                nameError.classList.remove('hidden');
+            }
+            if (emailValidation) {
+                emailError.textContent = emailValidation;
+                emailError.classList.remove('hidden');
+            }
+            if (passwordValidation) {
+                password1Error.textContent = passwordValidation;
+                password1Error.classList.remove('hidden');
+            }
+            return;
+        }
+        
+        if (password1 !== password2) {
+            passwordMatchError.textContent = 'Passwords do not match';
+            passwordMatchError.classList.remove('hidden');
+            return;
+        }
+        
+        // Split full name into first_name and last_name
+        const fullName = data.name || '';
+        const nameParts = fullName.trim().split(' ');
+        data.first_name = nameParts[0] || '';
+        data.last_name = nameParts.slice(1).join(' ') || '';
+        data.password = password1; // Map for backend
+        
+        // Auto-generate username from email since backend requires it
+        if (data.email) {
+            const emailPrefix = data.email.split('@')[0];
+            const randomDigits = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            data.username = `${emailPrefix}_${randomDigits}`;
+        }
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text().then(text => {
+            let resData = null;
+            try { resData = JSON.parse(text); } catch (e) { /* non-JSON response */ }
+            return {status: response.status, body: resData};
+        }))
+        .then(({status, body}) => {
+            if (body === null) {
+                showToast(`Unexpected server response (HTTP ${status}). Please try again or contact support.`, 'error');
+                return;
+            }
+            if (status === 201) {
+                const prefix = body.user.role === 'organizer' ? 'organizer' : 'attendee';
+                
+                // Store tokens and user profile
+                localStorage.setItem(`${prefix}_access_token`, body.access);
+                localStorage.setItem(`${prefix}_refresh_token`, body.refresh);
+                localStorage.setItem(`${prefix}_user`, JSON.stringify(body.user));
+                
+                showToast('Registration successful! Redirecting...', 'success');
+                setTimeout(() => {
+                    if (body.user.role === 'organizer') {
+                        window.location.href = '/organizer/dashboard/';
+                    } else {
+                        window.location.href = '/dashboard/';
+                    }
+                }, 1000);
+            } else {
+                if (body.errors) {
+                    const firstError = Object.values(body.errors)[0];
+                    showToast(Array.isArray(firstError) ? firstError[0] : firstError, 'error');
+                } else {
+                    showToast(body.error || 'Registration failed', 'error');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Registration request failed:', error);
+            showToast('Could not reach the server. Please check that it is running and try again.', 'error');
+        });
+    });
+    
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Google Sign In Callback
+    function handleCredentialResponse(response) {
+        const selectedRole = roleInput.value;
+        const googleBtn = document.getElementById('googleSignInBtn');
+        if (googleBtn) {
+            googleBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+        }
+        
+        fetch('/api/auth/google/', {
+            method: 'POST',
+            body: JSON.stringify({
+                credential: response.credential,
+                role: selectedRole
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json().then(data => ({status: res.status, body: data})))
+        .then(({status, body}) => {
+            if (status === 200 || status === 201) {
+                const userRole = body.user.role;
+                const prefix = userRole === 'organizer' ? 'organizer' : 'attendee';
+                
+                localStorage.setItem(`${prefix}_access_token`, body.access);
+                localStorage.setItem(`${prefix}_refresh_token`, body.refresh);
+                localStorage.setItem(`${prefix}_user`, JSON.stringify(body.user));
+                
+                showToast('Registration successful! Redirecting...', 'success');
+                setTimeout(() => {
+                    if (body.user.role === 'organizer') {
+                        window.location.href = '/organizer/dashboard/';
+                    } else {
+                        window.location.href = '/dashboard/';
+                    }
+                }, 1000);
+            } else {
+                showToast(body.error || 'Google Sign-in failed', 'error');
+                if (googleBtn) {
+                    googleBtn.innerHTML = '<i class="fab fa-google social-login-icon"></i> Continue with Google';
+                }
+            }
+        })
+        .catch(error => {
+            showToast('Network error during Google Sign-in.', 'error');
+            if (googleBtn) {
+                googleBtn.innerHTML = '<i class="fab fa-google social-login-icon"></i> Continue with Google';
+            }
+        });
+    }
+
+    // Initialize GIS Client
+    function initGoogleSignIn() {
+        if (typeof google !== 'undefined') {
+            google.accounts.id.initialize({
+                client_id: '{{ GOOGLE_OAUTH_CLIENT_ID }}',
+                callback: handleCredentialResponse
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("googleSignInBtnContainer"),
+                { theme: "outline", size: "large", width: "360" }
+            );
+        } else {
+            setTimeout(initGoogleSignIn, 100);
+        }
+    }
+
+    initGoogleSignIn();
+</script>
+{% endblock %}

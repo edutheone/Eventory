@@ -1,0 +1,20 @@
+{% extends "organizer/base.html" %}
+{% load static %}
+{% block title %}Support | EventHub Organizer{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/organizers/support.css">
+{% endblock %}
+{% block content %}
+<div>
+    <div class="d-flex justify-content-between mb-4"><h1>Support Center</h1><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTicketModal">New Ticket</button></div>
+    <div class="row g-4">
+        <div class="col-lg-8"><div class="chart-card"><h5>My Tickets</h5><table class="table"><thead><tr><th>ID</th><th>Subject</th><th>Status</th><th>Updated</th><th>Action</th></tr></thead><tbody id="ticketList"></tbody></table><nav><ul class="pagination" id="supportPagination"></ul></nav></div></div>
+        <div class="col-lg-4"><div class="chart-card"><h5>FAQ</h5><div id="faqList"></div></div><div class="chart-card mt-4"><h5>Guides</h5><div id="guidesList"></div></div></div>
+    </div>
+</div>
+<div class="modal fade" id="newTicketModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5>New Ticket</h5></div><div class="modal-body"><input type="text" id="ticketSubject" class="form-control mb-2" placeholder="Subject"><select id="ticketCategory" class="form-select mb-2"><option value="general">General</option><option value="technical">Technical</option><option value="billing">Billing</option></select><textarea id="ticketMessage" class="form-control" rows="4" placeholder="Message"></textarea></div><div class="modal-footer"><button class="btn btn-primary" id="createTicketBtn">Submit</button></div></div></div></div>
+<div class="modal fade" id="ticketDetailModal"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5>Ticket #<span id="ticketDetailId"></span></h5></div><div class="modal-body" id="ticketDetailBody"></div><div class="modal-footer"><textarea id="replyMessage" class="form-control mb-2" rows="2" placeholder="Reply"></textarea><button class="btn btn-primary" id="replyTicketBtn">Send Reply</button></div></div></div></div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/organizer/support.js"></script>
+{% endblock %}

@@ -1,0 +1,267 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}About Us - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/pages/about.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="about-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>About EventHub</h1>
+            <p>Connecting people through unforgettable experiences</p>
+        </div>
+        
+        <!-- Hero Section -->
+        <div class="about-hero">
+            <div class="about-hero-content">
+                <p class="about-hero-text">
+                    EventHub is Kenya's leading event discovery and ticketing platform. We connect event organizers with attendees,
+                    making it easy to discover, book, and attend amazing events across the country.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Stats Section - Modern Card Style with Counters -->
+        <div class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-number">
+                        <span class="counter" data-target="100">0</span>+
+                    </div>
+                    <div class="stat-label">Events Hosted</div>
+                    <p class="stat-description">Successfully hosted across Kenya</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number">
+                        <span class="counter" data-target="1000">0</span>+
+                    </div>
+                    <div class="stat-label">Happy Attendees</div>
+                    <p class="stat-description">Satisfied customers served</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="stat-number">
+                        <span class="counter" data-target="20">0</span>+
+                    </div>
+                    <div class="stat-label">Event Organizers</div>
+                    <p class="stat-description">Trusted partners nationwide</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-number">
+                        <span class="counter" data-target="98">0</span>%
+                    </div>
+                    <div class="stat-label">Satisfaction Rate</div>
+                    <p class="stat-description">Customer satisfaction rate</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mission Section -->
+        <div class="mission-section">
+            <div class="mission-card">
+                <div class="mission-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h2>Our Mission</h2>
+                <p>To make event discovery and ticket booking seamless, secure, and accessible to everyone in Kenya.</p>
+            </div>
+        </div>
+        
+        <!-- Values Section -->
+        <div class="values-section">
+            <div class="section-header">
+                <h2>Our Core Values</h2>
+                <p>What drives us every day</p>
+            </div>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Trust & Integrity</h3>
+                    <p>Building honest relationships with organizers and attendees</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Innovation</h3>
+                    <p>Constantly improving our platform for better experiences</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Community First</h3>
+                    <p>Putting our community at the heart of everything we do</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Excellence</h3>
+                    <p>Delivering the highest quality service</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Section -->
+        <div class="team-section">
+            <div class="section-header">
+                <h2>Meet Our Team</h2>
+                <p>The passionate people behind EventHub</p>
+            </div>
+            
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar-img">
+                        <img src="https://randomuser.me/api/portraits/women/89.jpg" alt="Scholasticah Mutuku">
+                    </div>
+                    <h3>Scholasticah Mutuku</h3>
+                    <p>Founder & CEO</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar-img">
+                        <img src="https://randomuser.me/api/portraits/men/54.jpg" alt="Edwin Nyambane">
+                    </div>
+                    <h3>Edwin Nyambane</h3>
+                    <p>Head of Technology</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar-img">
+                        <img src="https://randomuser.me/api/portraits/women/16.jpg" alt="Yvonne Eshitemi">
+                    </div>
+                    <h3>Yvonne Eshitemi</h3>
+                    <p>Head of Operations</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar-img">
+                        <img src="https://randomuser.me/api/portraits/men/80.jpg" alt="Wilson Thoma">
+                    </div>
+                    <h3>Wilson Thoma</h3>
+                    <p>Technical Director</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar-img">
+                        <img src="https://randomuser.me/api/portraits/men/70.jpg" alt="Brad Omwamba">
+                    </div>
+                    <h3>Brad Omwamba</h3>
+                    <p>Product Manager</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar-img">
+                        <img src="https://randomuser.me/api/portraits/women/90.jpg" alt="Bullim Njeri">
+                    </div>
+                    <h3>Bullim Njeri</h3>
+                    <p>Customer Success Lead</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar-img">
+                        <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Toji Mraster">
+                    </div>
+                    <h3>Toji Mraster</h3>
+                    <p>Sales Director</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar-img">
+                        <img src="https://randomuser.me/api/portraits/women/69.jpg" alt="Stacy Naomi">
+                    </div>
+                    <h3>Stacy Naomi</h3>
+                    <p>Community Manager</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <div class="cta-card">
+                <h3>Ready to start your event journey?</h3>
+                <p>Join thousands of happy attendees and organizers on EventHub</p>
+                <div class="cta-buttons">
+                    <a href="/events/" class="btn btn-primary">Browse Events</a>
+                    <a href="/register/" id="ctaAccountBtn" class="btn btn-outline">Create Account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/pages/about.js' %}"></script>
+<script>
+    // Check login state and update CTA button on About page
+    (function() {
+        const accessToken = localStorage.getItem('attendee_access_token');
+        const user = JSON.parse(localStorage.getItem('attendee_user') || '{}');
+        const isLoggedIn = accessToken && user && Object.keys(user).length > 0;
+        
+        const ctaAccountBtn = document.getElementById('ctaAccountBtn');
+        
+        if (ctaAccountBtn) {
+            if (isLoggedIn) {
+                // Logged in - change to Dashboard button
+                ctaAccountBtn.href = '/dashboard/';
+                ctaAccountBtn.innerHTML = 'Go to Dashboard <i class="fas fa-tachometer-alt"></i>';
+                ctaAccountBtn.classList.remove('btn-outline');
+                ctaAccountBtn.classList.add('btn-primary');
+            } else {
+                // Not logged in - keep as Create Account
+                ctaAccountBtn.href = '/register/';
+                ctaAccountBtn.innerHTML = 'Create Account';
+                ctaAccountBtn.classList.remove('btn-primary');
+                ctaAccountBtn.classList.add('btn-outline');
+            }
+        }
+        
+        // Listen for auth state changes
+        window.addEventListener('auth-state-changed', function(event) {
+            const isLoggedInEvent = event.detail?.isLoggedIn || false;
+            
+            if (ctaAccountBtn) {
+                if (isLoggedInEvent) {
+                    ctaAccountBtn.href = '/dashboard/';
+                    ctaAccountBtn.innerHTML = 'Go to Dashboard <i class="fas fa-tachometer-alt"></i>';
+                    ctaAccountBtn.classList.remove('btn-outline');
+                    ctaAccountBtn.classList.add('btn-primary');
+                } else {
+                    ctaAccountBtn.href = '/register/';
+                    ctaAccountBtn.innerHTML = 'Create Account';
+                    ctaAccountBtn.classList.remove('btn-primary');
+                    ctaAccountBtn.classList.add('btn-outline');
+                }
+            }
+        });
+    })();
+</script>
+{% endblock %}

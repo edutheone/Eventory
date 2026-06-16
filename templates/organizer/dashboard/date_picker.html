@@ -1,0 +1,927 @@
+{% extends "organizer/base.html" %}
+{% load static %}
+{% block title %}Date Synchronizer | EventHub Organizer{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Encapsulating date sync container to override global layout dark background */
+.sync-container {
+    background-color: #ffffff !important;
+    color: #111111 !important;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.sync-container h2, 
+.sync-container h3, 
+.sync-container h4, 
+.sync-container h5,
+.sync-container label {
+    color: #111111 !important;
+}
+
+.sync-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 36px;
+    margin-top: 24px;
+}
+
+@media (max-width: 850px) {
+    .sync-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+/* LEFT COLUMN: Input & Shortcuts & Logs */
+.input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.field-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+}
+
+.nlp-input {
+    background-color: #f8fafc !important;
+    color: #111111 !important;
+    border: 2px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    padding: 16px 20px !important;
+    width: 100% !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    height: 52px;
+}
+
+.nlp-input:focus,
+.nlp-input:focus-visible {
+    border-color: #ff6b00 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.25) !important;
+}
+
+/* Accessibility Keyboard Focus ring helper */
+.sync-container *:focus-visible {
+    outline: 3px solid #ff6b00 !important;
+    outline-offset: 2px !important;
+}
+
+.validation-feedback {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-radius: 8px;
+    min-height: 40px;
+    transition: all 0.2s;
+}
+
+.validation-feedback.success {
+    background-color: rgba(16, 185, 129, 0.08);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.validation-feedback.error {
+    background-color: rgba(239, 68, 68, 0.08);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Pills Shortcuts */
+.shortcuts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.shortcuts-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.shortcut-pill {
+    background-color: #ffffff;
+    color: #111111;
+    border: 1px solid #cbd5e1;
+    border-radius: 50px;
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shortcut-pill:hover {
+    border-color: #ff6b00;
+    color: #ff6b00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(255, 107, 0, 0.08);
+}
+
+.shortcut-pill:active {
+    transform: translateY(0);
+}
+
+/* Event Logs Console */
+.logs-card {
+    background-color: #0f172a !important;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #1e293b;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    color: #38bdf8;
+    height: 180px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.logs-card h5 {
+    color: #94a3b8 !important;
+    font-family: inherit;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 4px;
+}
+
+.log-entry {
+    line-height: 1.4;
+    word-break: break-all;
+}
+
+.log-entry.nlp { color: #f43f5e; }
+.log-entry.ui { color: #10b981; }
+
+/* RIGHT COLUMN: Interactive Calendar Card */
+.calendar-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.cal-select {
+    padding: 8px 12px;
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #111111;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 40px;
+}
+
+.cal-select:focus {
+    border-color: #ff6b00;
+}
+
+.nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    color: #111111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    border-color: #ff6b00;
+    color: #ff6b00;
+}
+
+/* Grid layout for Calendar */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+}
+
+.week-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
+    padding: 8px 0;
+}
+
+.day-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+    background-color: #ffffff;
+    color: #111111;
+    min-width: 36px;
+    min-height: 36px;
+}
+
+.day-cell:hover:not(.empty) {
+    background-color: rgba(255, 107, 0, 0.08);
+    color: #ff6b00;
+}
+
+.day-cell.other-month {
+    color: #94a3b8;
+}
+
+.day-cell.today {
+    border: 1px dashed #ff6b00;
+}
+
+.day-cell.selected {
+    background-color: #ff6b00 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(255, 107, 0, 0.35);
+}
+
+.day-cell.empty {
+    cursor: default;
+}
+
+/* Time Sliders Section */
+.time-section {
+    border-top: 1px solid #e2e8f0;
+    margin-top: 20px;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.slider-header span.val {
+    color: #ff6b00;
+    font-size: 0.95rem;
+}
+
+/* Custom Orange Range Input Styling */
+.orange-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 5px;
+    background: #cbd5e1;
+    outline: none;
+    transition: background 0.15s;
+    min-height: 24px; /* Tap targets buffer */
+}
+
+.orange-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff6b00;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(255, 107, 0, 0.3);
+    transition: transform 0.15s;
+}
+
+.orange-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.orange-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff6b00;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(255, 107, 0, 0.3);
+    transition: transform 0.15s;
+}
+
+.orange-slider::-moz-range-thumb:hover {
+    transform: scale(1.15);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sync-container">
+    <div class="mb-4">
+        <h2>Hybrid Date Synchronizer</h2>
+        <p class="text-muted">Type in natural language or interact directly with the calendar grid. Fully synchronized in real-time.</p>
+    </div>
+
+    <div class="sync-grid">
+        <!-- LEFT COLUMN: Input, Defaults & Logs -->
+        <div class="input-section">
+            <div class="field-wrapper">
+                <label for="dateTextInput" class="form-label font-bold" style="font-weight:700">Enter Date & Time (Natural Text)</label>
+                <input type="text" 
+                       id="dateTextInput" 
+                       class="form-control nlp-input" 
+                       placeholder="e.g. 'tomorrow at 3:30pm', 'next Friday at 7pm'" 
+                       aria-describedby="validationMessage"
+                       aria-autocomplete="none">
+                
+                <!-- ARIA live status announcement block -->
+                <div id="validationMessage" class="validation-feedback success" role="status" aria-live="polite">
+                    <span>🟢 Type a date phrase to begin...</span>
+                </div>
+            </div>
+
+            <!-- Smart Defaults Pill Shortcuts -->
+            <div class="shortcuts-section">
+                <label style="font-weight:700">Smart Shortcuts</label>
+                <div class="shortcuts-grid">
+                    <button type="button" class="shortcut-pill" onclick="applyShortcut('today')">Today</button>
+                    <button type="button" class="shortcut-pill" onclick="applyShortcut('tomorrow')">Tomorrow</button>
+                    <button type="button" class="shortcut-pill" onclick="applyShortcut('weekend')">This Weekend</button>
+                    <button type="button" class="shortcut-pill" onclick="applyShortcut('next 30 days')">Next 30 Days</button>
+                </div>
+            </div>
+
+            <!-- Interactive Logs Terminal -->
+            <div class="field-wrapper">
+                <label style="font-weight:700">Bidirectional Binding Event Log</label>
+                <div id="logsConsole" class="logs-card">
+                    <h5>[Event Logger Ready]</h5>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Interactive Grid Calendar & Time Sliders -->
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <button type="button" class="nav-btn" onclick="adjustMonth(-1)" aria-label="Previous Month"><i class="fas fa-chevron-left"></i></button>
+                <div class="d-flex gap-2">
+                    <select id="calMonthSelect" class="cal-select" onchange="changeCalendarMonthYear()" aria-label="Select Month">
+                        <option value="0">January</option>
+                        <option value="1">February</option>
+                        <option value="2">March</option>
+                        <option value="3">April</option>
+                        <option value="4">May</option>
+                        <option value="5">June</option>
+                        <option value="6">July</option>
+                        <option value="7">August</option>
+                        <option value="8">September</option>
+                        <option value="9">October</option>
+                        <option value="10">November</option>
+                        <option value="11">December</option>
+                    </select>
+                    <select id="calYearSelect" class="cal-select" onchange="changeCalendarMonthYear()" aria-label="Select Year">
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+                <button type="button" class="nav-btn" onclick="adjustMonth(1)" aria-label="Next Month"><i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <!-- Calendar Days Grid -->
+            <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="Interactive Calendar Grid">
+                <!-- Row 1: Weekday Labels -->
+                <div class="week-label" role="columnheader">Su</div>
+                <div class="week-label" role="columnheader">Mo</div>
+                <div class="week-label" role="columnheader">Tu</div>
+                <div class="week-label" role="columnheader">We</div>
+                <div class="week-label" role="columnheader">Th</div>
+                <div class="week-label" role="columnheader">Fr</div>
+                <div class="week-label" role="columnheader">Sa</div>
+
+                <!-- Days cells will be populated dynamically -->
+            </div>
+
+            <!-- Time Selection Sliders -->
+            <div class="time-section">
+                <!-- Hours Slider -->
+                <div class="slider-wrapper">
+                    <div class="slider-header">
+                        <label for="hourSlider">Hour Selection</label>
+                        <span class="val" id="hourSliderVal">12:00 PM</span>
+                    </div>
+                    <input type="range" 
+                           id="hourSlider" 
+                           class="orange-slider" 
+                           min="0" 
+                           max="23" 
+                           value="12" 
+                           oninput="onTimeSliderInput()" 
+                           aria-label="Hour slider">
+                </div>
+
+                <!-- Minutes Slider -->
+                <div class="slider-wrapper">
+                    <div class="slider-header">
+                        <label for="minuteSlider">Minute Selection</label>
+                        <span class="val" id="minuteSliderVal">00 min</span>
+                    </div>
+                    <input type="range" 
+                           id="minuteSlider" 
+                           class="orange-slider" 
+                           min="0" 
+                           max="59" 
+                           value="0" 
+                           oninput="onTimeSliderInput()" 
+                           aria-label="Minute slider">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let activeDate = new Date();
+let shownMonth = activeDate.getMonth();
+let shownYear = activeDate.getFullYear();
+
+// Escape HTML safety helper
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+}
+
+// ----------------------------------------------------
+// EVENT LOG CONSOLE HELPER
+// ----------------------------------------------------
+function logEvent(source, msg) {
+    const consoleEl = document.getElementById('logsConsole');
+    if (!consoleEl) return;
+    
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${source}`;
+    
+    const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+    entry.innerText = `[${timestamp}] [${source.toUpperCase()}] ${msg}`;
+    
+    consoleEl.appendChild(entry);
+    consoleEl.scrollTop = consoleEl.scrollHeight; // Auto-scroll
+}
+
+// ----------------------------------------------------
+// THE NATURAL LANGUAGE DATE PARSER (CHRONO-LIKE)
+// ----------------------------------------------------
+function parseNaturalDate(str) {
+    const text = str.toLowerCase().trim();
+    if (!text) return null;
+
+    let d = new Date();
+    
+    // Relative keywords
+    if (text === 'today' || text === 'now' || text === 'td') {
+        return d;
+    }
+    if (text === 'tomorrow' || text === 'tmw' || text === 'tm') {
+        d.setDate(d.getDate() + 1);
+        return d;
+    }
+    if (text === 'yesterday') {
+        d.setDate(d.getDate() - 1);
+        return d;
+    }
+    if (text === 'this weekend' || text === 'weekend') {
+        const day = d.getDay();
+        const diff = (day <= 6) ? (6 - day) : 0; // Align with upcoming Saturday
+        d.setDate(d.getDate() + diff);
+        d.setHours(10, 0, 0, 0); // Default to 10:00 AM
+        return d;
+    }
+    if (text === 'next week') {
+        d.setDate(d.getDate() + 7);
+        return d;
+    }
+    if (text === 'next 30 days') {
+        d.setDate(d.getDate() + 30);
+        return d;
+    }
+
+    // Relative day patterns: "in 5 days"
+    const inDaysRegex = /(?:in\s+)?(\d+)\s+days?(?:\s+from\s+now)?/;
+    const inDaysMatch = text.match(inDaysRegex);
+    if (inDaysMatch) {
+        d.setDate(d.getDate() + parseInt(inDaysMatch[1]));
+        return d;
+    }
+
+    // Weekdays match: "next Friday", "next Tuesday"
+    const weekdayNames = {
+        sunday: 0, sun: 0,
+        monday: 1, mon: 1,
+        tuesday: 2, tue: 2,
+        wednesday: 3, wed: 3,
+        thursday: 4, thu: 4,
+        friday: 5, fri: 5,
+        saturday: 6, sat: 6
+    };
+
+    for (const key in weekdayNames) {
+        if (text.startsWith(`next ${key}`)) {
+            const targetDay = weekdayNames[key];
+            const currentDay = d.getDay();
+            let diff = targetDay - currentDay;
+            if (diff <= 0) diff += 7; // Get next weekday instance
+            d.setDate(d.getDate() + diff);
+            return d;
+        }
+    }
+
+    // Month parsing (e.g., "June 5", "Jun 5", "5 June", "5 Jun")
+    const monthNames = {
+        january: 0, jan: 0,
+        february: 1, feb: 1,
+        march: 2, mar: 2,
+        april: 3, apr: 3,
+        may: 4,
+        june: 5, jun: 5,
+        july: 6, jul: 6,
+        august: 7, aug: 7,
+        september: 8, sep: 8,
+        october: 9, oct: 9,
+        november: 10, nov: 10,
+        december: 11, dec: 11
+    };
+
+    let parsedMonth = null;
+    let parsedDay = null;
+    let parsedYear = d.getFullYear();
+
+    for (const mname in monthNames) {
+        // Pattern 1: "june 5" or "jun 5th"
+        const regex1 = new RegExp(`${mname}\\s+(\\d+)(?:st|nd|rd|th)?`);
+        const match1 = text.match(regex1);
+        if (match1) {
+            parsedMonth = monthNames[mname];
+            parsedDay = parseInt(match1[1]);
+            break;
+        }
+
+        // Pattern 2: "5 june" or "5th jun"
+        const regex2 = new RegExp(`(\\d+)(?:st|nd|rd|th)?\\s+${mname}`);
+        const match2 = text.match(regex2);
+        if (match2) {
+            parsedMonth = monthNames[mname];
+            parsedDay = parseInt(match2[1]);
+            break;
+        }
+    }
+
+    // Capture explicit Year value
+    const yearMatch = text.match(/\b(202\d|203\d)\b/);
+    if (yearMatch) {
+        parsedYear = parseInt(yearMatch[1]);
+    }
+
+    if (parsedMonth !== null && parsedDay !== null) {
+        d.setFullYear(parsedYear, parsedMonth, parsedDay);
+    } else {
+        // Native Date parse fallback
+        const nativeTimestamp = Date.parse(str);
+        if (!isNaN(nativeTimestamp)) {
+            d = new Date(nativeTimestamp);
+        } else {
+            return null; // Parser failure
+        }
+    }
+
+    // Try parsing optional time suffix (e.g. "at 7pm", "at 9:30am", "at 14:00")
+    const timeMatch = text.match(/(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);
+    if (timeMatch) {
+        let hr = parseInt(timeMatch[1]);
+        const min = timeMatch[2] ? parseInt(timeMatch[2]) : 0;
+        const ampm = timeMatch[3];
+
+        if (ampm === 'pm' && hr < 12) hr += 12;
+        if (ampm === 'am' && hr === 12) hr = 0;
+
+        d.setHours(hr, min, 0, 0);
+    }
+
+    return d;
+}
+
+// ----------------------------------------------------
+// INTERACTIVE CALENDAR ENGINE
+// ----------------------------------------------------
+function populateYearSelector() {
+    const yearSelect = document.getElementById('calYearSelect');
+    if (!yearSelect) return;
+    
+    let html = '';
+    const currentYear = new Date().getFullYear();
+    for (let y = currentYear - 5; y <= currentYear + 10; y++) {
+        html += `<option value="${y}">${y}</option>`;
+    }
+    yearSelect.innerHTML = html;
+}
+
+function renderCalendar(year, month) {
+    const grid = document.getElementById('calendarGrid');
+    if (!grid) return;
+
+    // Clear previous date cells (keeping weekday headers)
+    const headers = grid.querySelectorAll('.week-label');
+    grid.innerHTML = '';
+    headers.forEach(h => grid.appendChild(h));
+
+    // Get calendar values
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // Add empty spacer cells for padding
+    for (let i = 0; i < firstDay; i++) {
+        const spacer = document.createElement('div');
+        spacer.className = 'day-cell empty';
+        spacer.setAttribute('role', 'gridcell');
+        grid.appendChild(spacer);
+    }
+
+    const today = new Date();
+    
+    // Populate date cell buttons
+    for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+        cell.innerText = day;
+        cell.setAttribute('role', 'gridcell');
+        cell.setAttribute('tabindex', '0');
+        cell.setAttribute('aria-label', `${day} ${document.getElementById('calMonthSelect').options[month].text} ${year}`);
+        
+        // Highlight active / selected date
+        if (activeDate && 
+            activeDate.getDate() === day && 
+            activeDate.getMonth() === month && 
+            activeDate.getFullYear() === year) {
+            cell.classList.add('selected');
+            cell.setAttribute('aria-selected', 'true');
+        } else {
+            cell.setAttribute('aria-selected', 'false');
+        }
+
+        // Highlight current today date
+        if (today.getDate() === day && 
+            today.getMonth() === month && 
+            today.getFullYear() === year) {
+            cell.classList.add('today');
+        }
+
+        // Click day selection handler
+        cell.addEventListener('click', () => selectCalendarDay(day));
+        
+        // Keyboard support on calendar cells
+        cell.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                selectCalendarDay(day);
+            }
+        });
+
+        grid.appendChild(cell);
+    }
+}
+
+function changeCalendarMonthYear() {
+    shownMonth = parseInt(document.getElementById('calMonthSelect').value);
+    shownYear = parseInt(document.getElementById('calYearSelect').value);
+    renderCalendar(shownYear, shownMonth);
+    
+    logEvent('ui', `Navigated calendar month grid to ${document.getElementById('calMonthSelect').options[shownMonth].text} ${shownYear}`);
+}
+
+function adjustMonth(offset) {
+    shownMonth += offset;
+    if (shownMonth < 0) {
+        shownMonth = 11;
+        shownYear -= 1;
+    } else if (shownMonth > 11) {
+        shownMonth = 0;
+        shownYear += 1;
+    }
+    
+    document.getElementById('calMonthSelect').value = shownMonth;
+    document.getElementById('calYearSelect').value = shownYear;
+    
+    renderCalendar(shownYear, shownMonth);
+    logEvent('ui', `Adjusted calendar month grid to ${document.getElementById('calMonthSelect').options[shownMonth].text} ${shownYear}`);
+}
+
+// ----------------------------------------------------
+// TIME SLIDER EVENT HANDLERS
+// ----------------------------------------------------
+function updateTimeSliderLabels(hr, min) {
+    const hrSliderVal = document.getElementById('hourSliderVal');
+    const minSliderVal = document.getElementById('minuteSliderVal');
+    
+    // Format Hour display
+    let dispHr = hr;
+    const ampm = hr >= 12 ? 'PM' : 'AM';
+    if (dispHr > 12) dispHr -= 12;
+    if (dispHr === 0) dispHr = 12;
+    
+    const formattedMin = String(min).padStart(2, '0');
+    hrSliderVal.innerText = `${dispHr}:${formattedMin} ${ampm}`;
+    minSliderVal.innerText = `${min} min`;
+}
+
+function onTimeSliderInput() {
+    const hr = parseInt(document.getElementById('hourSlider').value);
+    const min = parseInt(document.getElementById('minuteSlider').value);
+    
+    // Sync to active Date object
+    activeDate.setHours(hr, min);
+    
+    updateTimeSliderLabels(hr, min);
+    syncDateToTextInput('ui');
+}
+
+// ----------------------------------------------------
+// BIDIRECTIONAL SYNC DISPATCHERS
+// ----------------------------------------------------
+function syncDateToTextInput(source) {
+    const input = document.getElementById('dateTextInput');
+    if (!input) return;
+    
+    // Format full absolute string
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    const dateStr = activeDate.toLocaleDateString('en-US', options);
+    
+    // Format Time Suffix
+    let hr = activeDate.getHours();
+    let min = activeDate.getMinutes();
+    const ampm = hr >= 12 ? 'PM' : 'AM';
+    let dispHr = hr;
+    if (dispHr > 12) dispHr -= 12;
+    if (dispHr === 0) dispHr = 12;
+    const formattedMin = String(min).padStart(2, '0');
+    
+    const val = `${dateStr} at ${dispHr}:${formattedMin} ${ampm}`;
+    input.value = val;
+    
+    // Visual feedback block
+    const feedback = document.getElementById('validationMessage');
+    feedback.className = 'validation-feedback success';
+    feedback.innerHTML = `<span>🟢 Valid selection: ${activeDate.toLocaleString('en-US')}</span>`;
+    
+    logEvent(source, `Synchronized Text Input field value to: "${val}"`);
+}
+
+function selectCalendarDay(day) {
+    activeDate.setDate(day);
+    activeDate.setMonth(shownMonth);
+    activeDate.setFullYear(shownYear);
+    
+    // Synchronize Calendar select state
+    renderCalendar(shownYear, shownMonth);
+    
+    syncDateToTextInput('ui');
+}
+
+function applyShortcut(type) {
+    let d = new Date();
+    
+    if (type === 'today') {
+        // Today
+        logEvent('ui', 'Clicked shortcut option "Today"');
+    } else if (type === 'tomorrow') {
+        d.setDate(d.getDate() + 1);
+        logEvent('ui', 'Clicked shortcut option "Tomorrow"');
+    } else if (type === 'weekend') {
+        const day = d.getDay();
+        const diff = (day <= 6) ? (6 - day) : 0;
+        d.setDate(d.getDate() + diff);
+        d.setHours(10, 0, 0, 0);
+        logEvent('ui', 'Clicked shortcut option "This Weekend"');
+    } else if (type === 'next 30 days') {
+        d.setDate(d.getDate() + 30);
+        logEvent('ui', 'Clicked shortcut option "Next 30 Days"');
+    }
+    
+    activeDate = d;
+    shownMonth = activeDate.getMonth();
+    shownYear = activeDate.getFullYear();
+    
+    // Update selectors and grids
+    document.getElementById('calMonthSelect').value = shownMonth;
+    document.getElementById('calYearSelect').value = shownYear;
+    renderCalendar(shownYear, shownMonth);
+    
+    // Update Sliders
+    document.getElementById('hourSlider').value = activeDate.getHours();
+    document.getElementById('minuteSlider').value = activeDate.getMinutes();
+    updateTimeSliderLabels(activeDate.getHours(), activeDate.getMinutes());
+    
+    syncDateToTextInput('ui');
+}
+
+// Input text keyboard sync handler
+function onTextInputKeyUp(e) {
+    const phrase = e.target.value;
+    const parsed = parseNaturalDate(phrase);
+    
+    const feedback = document.getElementById('validationMessage');
+    
+    if (parsed) {
+        activeDate = parsed;
+        shownMonth = activeDate.getMonth();
+        shownYear = activeDate.getFullYear();
+        
+        // Sync Calendar selects and grids
+        document.getElementById('calMonthSelect').value = shownMonth;
+        document.getElementById('calYearSelect').value = shownYear;
+        renderCalendar(shownYear, shownMonth);
+        
+        // Sync sliders
+        document.getElementById('hourSlider').value = activeDate.getHours();
+        document.getElementById('minuteSlider').value = activeDate.getMinutes();
+        updateTimeSliderLabels(activeDate.getHours(), activeDate.getMinutes());
+        
+        // Success feedback
+        feedback.className = 'validation-feedback success';
+        feedback.innerHTML = `<span>🟢 Parsed phrase as: ${activeDate.toLocaleString('en-US')}</span>`;
+        
+        logEvent('nlp', `Successfully parsed text phrase "${phrase}" -> Selected ${activeDate.toLocaleDateString()}`);
+    } else {
+        // Error validation
+        feedback.className = 'validation-feedback error';
+        feedback.innerHTML = `<span>🔴 Unrecognized date phrase. Try relative words like 'tomorrow at 3pm'...</span>`;
+    }
+}
+
+// ----------------------------------------------------
+// APP DOM INITIALIZATION
+// ----------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    populateYearSelector();
+    
+    // Set initially shown values
+    document.getElementById('calMonthSelect').value = shownMonth;
+    document.getElementById('calYearSelect').value = shownYear;
+    
+    renderCalendar(shownYear, shownMonth);
+    
+    // Set time sliders
+    document.getElementById('hourSlider').value = activeDate.getHours();
+    document.getElementById('minuteSlider').value = activeDate.getMinutes();
+    updateTimeSliderLabels(activeDate.getHours(), activeDate.getMinutes());
+    
+    // Keyup binding with a small keyup delay/buffer
+    let typingTimer;
+    document.getElementById('dateTextInput').addEventListener('keyup', (e) => {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => onTextInputKeyUp(e), 300);
+    });
+    
+    // Fill text input initially
+    syncDateToTextInput('ui');
+    
+    logEvent('ui', 'Completed widget DOM rendering. Initialized bidirectional synchronization.');
+});
+</script>
+{% endblock %}

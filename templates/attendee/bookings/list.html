@@ -1,0 +1,52 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}My Bookings - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/bookings/bookings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="bookings-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-receipt"></i> My Bookings</h1>
+            <p class="text-muted">View and manage all your event bookings</p>
+        </div>
+        <div class="action-buttons">
+            <button class="btn-outline" onclick="exportBookings()">
+                <i class="fas fa-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <button class="tab-btn active" data-tab="all" onclick="switchTab('all')">All Bookings</button>
+        <button class="tab-btn" data-tab="upcoming" onclick="switchTab('upcoming')">Upcoming</button>
+        <button class="tab-btn" data-tab="past" onclick="switchTab('past')">Past</button>
+    </div>
+
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group search-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchBookings" placeholder="Search by event or booking ID...">
+            </div>
+        </div>
+    </div>
+
+    <div id="bookingsList" class="bookings-list">
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading your bookings...</p>
+        </div>
+    </div>
+
+    <div id="pagination"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/bookings/bookings.js' %}"></script>
+{% endblock %}

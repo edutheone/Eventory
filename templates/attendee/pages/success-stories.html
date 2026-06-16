@@ -1,0 +1,122 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Success Stories - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/pages/success-stories.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="success-stories-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Success Stories</h1>
+            <p>Real stories from our amazing community</p>
+        </div>
+        
+        <!-- Stats Bar (values from platform stats pipeline) -->
+        <div class="stats-bar" id="platformStatsBar">
+            <div class="stat-item">
+                <div class="stat-number">
+                    <span class="counter" data-stat="happy_attendees" data-target="{{ happy_attendees|default:0 }}">0</span><span class="plus-sign">+</span>
+                </div>
+                <div class="stat-label">Happy Attendees</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">
+                    <span class="counter" data-stat="events_hosted" data-target="{{ events_hosted|default:0 }}">0</span><span class="plus-sign">+</span>
+                </div>
+                <div class="stat-label">Events Hosted</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">
+                    <span class="counter" data-stat="satisfaction_rate" data-target="{{ satisfaction_rate|default:0 }}">0</span><span class="percent-sign">%</span>
+                </div>
+                <div class="stat-label">Satisfaction Rate</div>
+            </div>
+        </div>
+        
+        <!-- Featured Story -->
+        <div class="featured-story">
+            <div class="featured-story-content">
+                <div class="featured-badge">
+                    <i class="fas fa-star"></i> Featured Story
+                </div>
+                <i class="fas fa-quote-left quote-icon"></i>
+                <p class="featured-quote">
+                    EventHub transformed how I discover events in Kenya. The platform is intuitive, secure, and the customer support is outstanding. I've attended over 50 events and counting!
+                </p>
+                <div class="featured-author">
+                    <div class="author-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/54.jpg" alt="Edwin Nyambane">
+                    </div>
+                    <div class="author-info">
+                        <h4>Edwin Nyambane</h4>
+                        <p>Tech Enthusiast • 50+ Events Attended</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stories Grid -->
+        <div class="testimonials-grid" id="testimonialsGrid"></div>
+        
+        <!-- Buttons -->
+        <div class="testimonials-buttons">
+            <button id="readMoreBtn" class="testimonial-btn testimonial-btn-primary">
+                <i class="fas fa-book-open"></i> Load More
+            </button>
+            <button id="shareStoryBtn" class="testimonial-btn testimonial-btn-secondary">
+                <i class="fas fa-pen-fancy"></i> Share Your Story
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="story-modal" id="storyModal">
+    <div class="modal-content">
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+        <h3>Share Your Success Story</h3>
+        <form id="storyForm">
+            <div class="form-group">
+                <label>Your Name *</label>
+                <input type="text" id="storyName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" id="storyEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label>Event Attended</label>
+                <input type="text" id="storyEvent" placeholder="Which event did you attend?">
+            </div>
+            <div class="form-group">
+                <label>Your Rating *</label>
+                <div class="rating-input" id="ratingInput">
+                    <i class="far fa-star" data-rating="1"></i>
+                    <i class="far fa-star" data-rating="2"></i>
+                    <i class="far fa-star" data-rating="3"></i>
+                    <i class="far fa-star" data-rating="4"></i>
+                    <i class="far fa-star" data-rating="5"></i>
+                </div>
+                <input type="hidden" id="storyRating" value="0">
+            </div>
+            <div class="form-group">
+                <label>Your Story *</label>
+                <textarea id="storyMessage" rows="4" placeholder="Tell us about your experience..." required></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Submit Your Story</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendee/pages/success-stories.js' %}"></script>
+{% endblock %}

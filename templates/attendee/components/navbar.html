@@ -1,0 +1,850 @@
+{% load static %}
+<header class="attendee-navbar">
+    <div class="navbar-container">
+        <a href="/" class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="logo-text">
+                <span>EventHub</span>
+                <small>Attendee</small>
+            </div>
+        </a>
+
+        <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="nav-links" id="navLinks">
+            <div class="mobile-close">
+                <button class="close-menu" id="closeMenu">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Search Form -->
+            <div class="mobile-search">
+                <form action="/events/search/" method="GET" id="mobileSearchForm">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="q" id="mobileSearchInput" placeholder="Search events..." autocomplete="off">
+                    <button type="submit" id="mobileSearchBtn">Search</button>
+                </form>
+                <div class="search-validation-mobile" id="mobileSearchValidation"></div>
+            </div>
+
+            <!-- Account Dropdown - AT THE TOP (Mobile only) -->
+            <div class="nav-item-dropdown mobile-account-dropdown" id="mobileAccountDropdown">
+                <a href="#" class="nav-link dropdown-trigger" onclick="return false;">
+                    <div class="mobile-account-info">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="mobileAccountLabel">Account</span>
+                    </div>
+                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                </a>
+                <div class="dropdown-submenu" id="mobileAccountSubmenu">
+                    <!-- Logged Out View (Mobile) -->
+                    <div id="mobileGuestLinks">
+                        <a href="/login/" class="submenu-item">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Login</span>
+                        </a>
+                    </div>
+                    <!-- Logged In View (Mobile) -->
+                    <div id="mobileUserLinks" style="display: none;">
+                        <div class="mobile-user-info-dropdown">
+                            <div class="mobile-user-avatar-dropdown">
+                                <img src="" alt="User Avatar" style="display: none;">
+                                <span class="avatar-initial" id="mobileUserInitial">U</span>
+                            </div>
+                            <div class="mobile-user-details-dropdown">
+                                <div class="mobile-user-name-dropdown" id="mobileUserName">User</div>
+                                <div class="mobile-user-role-dropdown">Attendee</div>
+                            </div>
+                        </div>
+                        <div class="mobile-dropdown-divider"></div>
+                        <a href="/dashboard/" class="submenu-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/profile/" class="submenu-item">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="/settings/" class="submenu-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events - Simple Link -->
+            <a href="/events/" class="nav-link">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Events</span>
+            </a>
+
+            <!-- About Dropdown -->
+            <div class="nav-item-dropdown">
+                <a href="#" class="nav-link dropdown-trigger" onclick="return false;">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About</span>
+                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                </a>
+                <div class="dropdown-submenu">
+                    <a href="/contact/" class="submenu-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>Contact Us</span>
+                    </a>
+                    <a href="/why-eventhub/" class="submenu-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Why EventHub</span>
+                    </a>
+                    <a href="/customer-stories/" class="submenu-item">
+                        <i class="fas fa-users"></i>
+                        <span>Customer Stories</span>
+                    </a>
+                    <a href="/privacy/" class="submenu-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Privacy Policy</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- My Tickets Dropdown (Logged In Users) -->
+            <div class="nav-item-dropdown auth-only" style="display: none;">
+                <a href="#" class="nav-link dropdown-trigger" onclick="return false;">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>My Tickets</span>
+                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    <span class="my-tickets-badge" id="myTicketsBadge" style="display: none;">0</span>
+                </a>
+                <div class="dropdown-submenu">
+                    <a href="/tickets/" class="submenu-item" id="myTicketsLink">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>My Tickets</span>
+                    </a>
+                    <a href="/cart/" class="submenu-item" id="navCartLink">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>My Bookings</span>
+                        <span class="mobile-cart-badge" id="navCartBadge" style="display: none;">0</span>
+                    </a>
+                    <a href="/wishlist/" class="submenu-item" id="navWishlistLink">
+                        <i class="fas fa-heart"></i>
+                        <span>Wishlist</span>
+                        <span class="mobile-wishlist-badge" id="navWishlistBadge" style="display: none;">0</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Divider before logout (Mobile only) -->
+            <div class="mobile-divider-line"></div>
+
+            <!-- SEPARATE LOGOUT BUTTON - Bottom of mobile menu -->
+            <div id="mobileLogoutBtn" class="mobile-logout-wrapper" style="display: none;">
+                <a href="#" onclick="logout(); return false;" class="mobile-logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="nav-actions">
+            <form class="search-form-desktop" action="/events/search/" method="GET" id="desktopSearchForm">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" id="desktopSearchInput" placeholder="Search events..." autocomplete="off">
+                <div class="search-validation" id="desktopSearchValidation"></div>
+                <button type="submit" id="desktopSearchBtn">Search</button>
+            </form>
+
+            <div class="notifications-dropdown">
+                <button class="notifications-btn" id="notificationsBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </button>
+                <div class="notifications-panel" id="notificationsPanel">
+                    <div class="notifications-header">
+                        <h4>Notifications</h4>
+                        <button onclick="markAllNotificationsRead()">Mark all as read</button>
+                    </div>
+                    <div class="notifications-list" id="notificationsList">
+                        <div class="loading-state">No notifications</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Dropdown (Desktop only) -->
+            <div class="profile-dropdown">
+                <button class="profile-btn" id="profileBtn">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="profileUserName">Account</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <!-- Logged Out View -->
+                    <div id="desktopGuestLinks">
+                        <a href="/login/" class="dropdown-item">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Login</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Logged In View -->
+                    <div id="desktopUserLinks" style="display: none;">
+                        <div class="user-info-dropdown">
+                            <div class="user-avatar-dropdown">
+                                <img src="" alt="User Avatar" style="display: none;">
+                                <span class="avatar-initial" id="desktopUserInitial">U</span>
+                            </div>
+                            <div>
+                                <div class="user-name-dropdown" id="desktopUserName">User</div>
+                                <div class="user-role-dropdown">Attendee</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="/dashboard/" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/profile/" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="/settings/" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="logout()" class="dropdown-item logout-link">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+</header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const accessToken = localStorage.getItem('attendee_access_token');
+    const user = JSON.parse(localStorage.getItem('attendee_user') || '{}');
+    
+    // Desktop elements
+    const desktopGuest = document.getElementById('desktopGuestLinks');
+    const desktopUser = document.getElementById('desktopUserLinks');
+    const profileUserName = document.getElementById('profileUserName');
+    const navLinks = document.getElementById('navLinks');
+    const desktopUserInitial = document.getElementById('desktopUserInitial');
+    const desktopUserAvatar = document.querySelector('.user-avatar-dropdown img');
+    const desktopUserNameSpan = document.getElementById('desktopUserName');
+    
+    // Mobile elements
+    const mobileGuest = document.getElementById('mobileGuestLinks');
+    const mobileUser = document.getElementById('mobileUserLinks');
+    const mobileAccountLabel = document.getElementById('mobileAccountLabel');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    const mobileUserInitial = document.getElementById('mobileUserInitial');
+    const mobileUserAvatar = document.querySelector('.mobile-user-avatar-dropdown img');
+    const mobileUserNameSpan = document.getElementById('mobileUserName');
+    
+    const authOnlyElements = document.querySelectorAll('.auth-only');
+    const guestOnlyElements = document.querySelectorAll('.guest-only');
+    
+    const isLoggedIn = accessToken && user && Object.keys(user).length > 0;
+    
+    // ========== AVATAR & USER NAME UPDATE ==========
+    function updateUserAvatarAndName() {
+        const firstName = user.first_name || '';
+        const lastName = user.last_name || '';
+        const email = user.email || '';
+        const fullName = user.full_name || (firstName + ' ' + lastName).trim() || email.split('@')[0] || 'User';
+        const userInitial = (firstName.charAt(0) || lastName.charAt(0) || email.charAt(0) || 'U').toUpperCase();
+        
+        // Update desktop
+        if (desktopUserNameSpan) desktopUserNameSpan.textContent = fullName;
+        if (profileUserName) profileUserName.textContent = fullName.split(' ')[0] || fullName;
+        
+        if (user.avatar_url) {
+            if (desktopUserAvatar) {
+                desktopUserAvatar.src = user.avatar_url;
+                desktopUserAvatar.style.display = 'block';
+                if (desktopUserInitial) desktopUserInitial.style.display = 'none';
+            }
+        } else {
+            if (desktopUserAvatar) desktopUserAvatar.style.display = 'none';
+            if (desktopUserInitial) {
+                desktopUserInitial.textContent = userInitial;
+                desktopUserInitial.style.display = 'flex';
+            }
+        }
+        
+        // Update mobile
+        if (mobileUserNameSpan) mobileUserNameSpan.textContent = fullName;
+        if (mobileAccountLabel) mobileAccountLabel.textContent = fullName.split(' ')[0] || fullName;
+        
+        if (user.avatar_url) {
+            if (mobileUserAvatar) {
+                mobileUserAvatar.src = user.avatar_url;
+                mobileUserAvatar.style.display = 'block';
+                if (mobileUserInitial) mobileUserInitial.style.display = 'none';
+            }
+        } else {
+            if (mobileUserAvatar) mobileUserAvatar.style.display = 'none';
+            if (mobileUserInitial) {
+                mobileUserInitial.textContent = userInitial;
+                mobileUserInitial.style.display = 'flex';
+            }
+        }
+    }
+    
+    // ========== BADGE MANAGEMENT SYSTEM ==========
+    function getRawCartCount() {
+        try {
+            const savedCart = localStorage.getItem('eventhub_cart');
+            let cart = { items: [] };
+            if (savedCart) cart = JSON.parse(savedCart);
+            return cart.items ? cart.items.reduce((sum, item) => sum + (item.quantity || 1), 0) : 0;
+        } catch (error) {
+            return 0;
+        }
+    }
+    
+    function getRawWishlistCount() {
+        try {
+            const savedWishlist = localStorage.getItem('event_wishlist');
+            const wishlist = savedWishlist ? JSON.parse(savedWishlist) : [];
+            return wishlist.length;
+        } catch (error) {
+            return 0;
+        }
+    }
+    
+    function getCurrentPage() {
+        const path = window.location.pathname;
+        if (path.includes('/cart/')) return 'cart';
+        if (path.includes('/wishlist/')) return 'wishlist';
+        if (path.includes('/tickets/')) return 'tickets';
+        return null;
+    }
+    
+    // Track which pages have been visited
+    let cartPageVisited = false;
+    let wishlistPageVisited = false;
+    let ticketsPageVisited = false;
+    
+    function markCurrentPageAsVisited() {
+        const currentPage = getCurrentPage();
+        
+        if (currentPage === 'cart') {
+            cartPageVisited = true;
+        } else if (currentPage === 'wishlist') {
+            wishlistPageVisited = true;
+        } else if (currentPage === 'tickets') {
+            cartPageVisited = true;
+            wishlistPageVisited = true;
+            ticketsPageVisited = true;
+        }
+        
+        updateAllBadges();
+    }
+    
+    function resetVisitedStatusOnNewItems() {
+        const cartCount = getRawCartCount();
+        const wishlistCount = getRawWishlistCount();
+        const lastCart = parseInt(localStorage.getItem('cart_last_count') || '0');
+        const lastWishlist = parseInt(localStorage.getItem('wishlist_last_count') || '0');
+        
+        if (cartCount > lastCart) {
+            cartPageVisited = false;
+        }
+        if (wishlistCount > lastWishlist) {
+            wishlistPageVisited = false;
+        }
+        if ((cartCount + wishlistCount) > parseInt(localStorage.getItem('total_last_count') || '0')) {
+            ticketsPageVisited = false;
+        }
+        
+        localStorage.setItem('cart_last_count', cartCount.toString());
+        localStorage.setItem('wishlist_last_count', wishlistCount.toString());
+        localStorage.setItem('total_last_count', (cartCount + wishlistCount).toString());
+    }
+    
+    function getDisplayedCartCount() {
+        const rawCount = getRawCartCount();
+        if (cartPageVisited) {
+            const lastCount = parseInt(localStorage.getItem('cart_last_count') || '0');
+            if (rawCount > lastCount) {
+                cartPageVisited = false;
+                return rawCount;
+            }
+            return 0;
+        }
+        localStorage.setItem('cart_last_count', rawCount.toString());
+        return rawCount;
+    }
+    
+    function getDisplayedWishlistCount() {
+        const rawCount = getRawWishlistCount();
+        if (wishlistPageVisited) {
+            const lastCount = parseInt(localStorage.getItem('wishlist_last_count') || '0');
+            if (rawCount > lastCount) {
+                wishlistPageVisited = false;
+                return rawCount;
+            }
+            return 0;
+        }
+        localStorage.setItem('wishlist_last_count', rawCount.toString());
+        return rawCount;
+    }
+    
+    function getDisplayedTicketsCount() {
+        const cartCount = getDisplayedCartCount();
+        const wishlistCount = getDisplayedWishlistCount();
+        const totalCount = cartCount + wishlistCount;
+        
+        if (ticketsPageVisited) {
+            const lastTotal = parseInt(localStorage.getItem('total_last_count') || '0');
+            if (totalCount > lastTotal) {
+                ticketsPageVisited = false;
+                return totalCount;
+            }
+            return 0;
+        }
+        localStorage.setItem('total_last_count', totalCount.toString());
+        return totalCount;
+    }
+    
+    function updateAllBadges() {
+        if (!isLoggedIn) {
+            const badges = document.querySelectorAll('.my-tickets-badge, .mobile-cart-badge, .mobile-wishlist-badge');
+            badges.forEach(badge => badge.style.display = 'none');
+            return;
+        }
+        
+        const displayCartCount = getDisplayedCartCount();
+        const displayWishlistCount = getDisplayedWishlistCount();
+        const displayTicketsCount = getDisplayedTicketsCount();
+        
+        const navCartBadge = document.getElementById('navCartBadge');
+        if (navCartBadge) {
+            if (displayCartCount > 0) {
+                navCartBadge.textContent = displayCartCount;
+                navCartBadge.style.display = 'inline-block';
+            } else {
+                navCartBadge.style.display = 'none';
+                navCartBadge.textContent = '0';
+            }
+        }
+        
+        const navWishlistBadge = document.getElementById('navWishlistBadge');
+        if (navWishlistBadge) {
+            if (displayWishlistCount > 0) {
+                navWishlistBadge.textContent = displayWishlistCount;
+                navWishlistBadge.style.display = 'inline-block';
+            } else {
+                navWishlistBadge.style.display = 'none';
+                navWishlistBadge.textContent = '0';
+            }
+        }
+        
+        const myTicketsBadge = document.getElementById('myTicketsBadge');
+        if (myTicketsBadge) {
+            if (displayTicketsCount > 0) {
+                myTicketsBadge.textContent = displayTicketsCount;
+                myTicketsBadge.style.display = 'inline-flex';
+            } else {
+                myTicketsBadge.style.display = 'none';
+                myTicketsBadge.textContent = '0';
+            }
+        }
+    }
+    
+    function setupNavigationHandlers() {
+        const cartLink = document.getElementById('navCartLink');
+        const wishlistLink = document.getElementById('navWishlistLink');
+        const myTicketsLink = document.getElementById('myTicketsLink');
+        
+        if (cartLink) {
+            cartLink.addEventListener('click', function() {
+                cartPageVisited = true;
+                setTimeout(() => updateAllBadges(), 10);
+            });
+        }
+        
+        if (wishlistLink) {
+            wishlistLink.addEventListener('click', function() {
+                wishlistPageVisited = true;
+                setTimeout(() => updateAllBadges(), 10);
+            });
+        }
+        
+        if (myTicketsLink) {
+            myTicketsLink.addEventListener('click', function() {
+                cartPageVisited = true;
+                wishlistPageVisited = true;
+                ticketsPageVisited = true;
+                setTimeout(() => updateAllBadges(), 10);
+            });
+        }
+    }
+    
+    function closeAllDesktopDropdowns() {
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        if (dropdownMenu) dropdownMenu.classList.remove('show');
+        const notifPanel = document.getElementById('notificationsPanel');
+        if (notifPanel) notifPanel.classList.remove('show');
+    }
+    
+    function closeAllCenterDropdowns() {
+        const centerDropdowns = document.querySelectorAll('.nav-item-dropdown');
+        centerDropdowns.forEach(dropdown => {
+            const submenu = dropdown.querySelector('.dropdown-submenu');
+            if (submenu) submenu.classList.remove('show-desktop');
+            const arrow = dropdown.querySelector('.dropdown-arrow');
+            if (arrow) arrow.style.transform = '';
+        });
+    }
+    
+    function closeAllMobileDropdowns() {
+        const mobileSubmenus = document.querySelectorAll('.nav-links .dropdown-submenu');
+        mobileSubmenus.forEach(submenu => submenu.classList.remove('show-mobile'));
+        const mobileArrows = document.querySelectorAll('.nav-links .dropdown-arrow');
+        mobileArrows.forEach(arrow => arrow.style.transform = '');
+    }
+    
+    // Desktop center dropdowns on hover
+    if (window.innerWidth > 768) {
+        const centerDropdowns = document.querySelectorAll('.nav-item-dropdown');
+        centerDropdowns.forEach(dropdown => {
+            const trigger = dropdown.querySelector('.dropdown-trigger');
+            const submenu = dropdown.querySelector('.dropdown-submenu');
+            if (trigger && submenu) {
+                dropdown.addEventListener('mouseenter', function() {
+                    if (window.innerWidth > 768) {
+                        centerDropdowns.forEach(otherDropdown => {
+                            if (otherDropdown !== dropdown) {
+                                const otherSubmenu = otherDropdown.querySelector('.dropdown-submenu');
+                                const otherArrow = otherDropdown.querySelector('.dropdown-arrow');
+                                if (otherSubmenu) otherSubmenu.classList.remove('show-desktop');
+                                if (otherArrow) otherArrow.style.transform = '';
+                            }
+                        });
+                        submenu.classList.add('show-desktop');
+                        const arrow = dropdown.querySelector('.dropdown-arrow');
+                        if (arrow) arrow.style.transform = 'rotate(180deg)';
+                    }
+                });
+                dropdown.addEventListener('mouseleave', function() {
+                    if (window.innerWidth > 768) {
+                        submenu.classList.remove('show-desktop');
+                        const arrow = dropdown.querySelector('.dropdown-arrow');
+                        if (arrow) arrow.style.transform = '';
+                    }
+                });
+            }
+        });
+    }
+    
+    // Desktop Account dropdown
+    const profileBtn = document.getElementById('profileBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    if (profileBtn && dropdownMenu) {
+        profileBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeAllCenterDropdowns();
+            const notifPanel = document.getElementById('notificationsPanel');
+            if (notifPanel) notifPanel.classList.remove('show');
+            dropdownMenu.classList.toggle('show');
+        });
+        document.addEventListener('click', function(e) {
+            if (!dropdownMenu.contains(e.target) && !profileBtn.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+    }
+    
+    // Desktop Notifications dropdown
+    const notifBtn = document.getElementById('notificationsBtn');
+    const notifPanel = document.getElementById('notificationsPanel');
+    if (notifBtn && notifPanel) {
+        notifBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeAllCenterDropdowns();
+            if (dropdownMenu) dropdownMenu.classList.remove('show');
+            notifPanel.classList.toggle('show');
+            loadNotifications();
+        });
+        document.addEventListener('click', function(e) {
+            if (!notifPanel.contains(e.target) && !notifBtn.contains(e.target)) {
+                notifPanel.classList.remove('show');
+            }
+        });
+    }
+    
+    // Mobile accordion dropdowns
+    const mobileTriggers = document.querySelectorAll('.nav-links .dropdown-trigger');
+    mobileTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                e.stopPropagation();
+                const parent = this.closest('.nav-item-dropdown');
+                const submenu = parent.querySelector('.dropdown-submenu');
+                const arrow = this.querySelector('.dropdown-arrow');
+                if (!submenu) return;
+                const isOpen = submenu.classList.contains('show-mobile');
+                const allMobileSubmenus = document.querySelectorAll('.nav-links .dropdown-submenu');
+                allMobileSubmenus.forEach(sub => {
+                    if (sub !== submenu) {
+                        sub.classList.remove('show-mobile');
+                        const prevParent = sub.closest('.nav-item-dropdown');
+                        if (prevParent) {
+                            const prevArrow = prevParent.querySelector('.dropdown-arrow');
+                            if (prevArrow) prevArrow.style.transform = '';
+                        }
+                    }
+                });
+                if (!isOpen) {
+                    submenu.classList.add('show-mobile');
+                    if (arrow) arrow.style.transform = 'rotate(180deg)';
+                } else {
+                    submenu.classList.remove('show-mobile');
+                    if (arrow) arrow.style.transform = '';
+                }
+            }
+        });
+    });
+    
+    function handleMobileAccountVisibility() {
+        const mobileAccountDropdown = document.getElementById('mobileAccountDropdown');
+        if (mobileAccountDropdown) {
+            mobileAccountDropdown.style.display = window.innerWidth > 768 ? 'none' : '';
+        }
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function loadNotifications() {
+        const notificationsList = document.getElementById('notificationsList');
+        if (!notificationsList) return;
+        const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+        if (notifications.length === 0) {
+            notificationsList.innerHTML = '<div class="empty-state">No notifications</div>';
+            return;
+        }
+        notificationsList.innerHTML = notifications.map(notif => `
+            <div class="notification-item ${notif.read ? '' : 'unread'}" data-id="${notif.id}">
+                <div class="notification-icon"><i class="fas ${notif.icon || 'fa-bell'}"></i></div>
+                <div class="notification-content">
+                    <div class="notification-title">${escapeHtml(notif.title)}</div>
+                    <div class="notification-message">${escapeHtml(notif.message)}</div>
+                    <div class="notification-time">${escapeHtml(notif.time)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function loadNotificationCount() {
+        const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+        const unreadCount = notifications.filter(n => !n.read).length;
+        const badge = document.getElementById('notificationBadge');
+        if (badge) {
+            badge.textContent = unreadCount;
+            badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+        }
+    }
+    
+    // Search validation
+    const mobileSearchInput = document.getElementById('mobileSearchInput');
+    const mobileSearchValidation = document.getElementById('mobileSearchValidation');
+    if (mobileSearchInput) {
+        mobileSearchInput.addEventListener('input', function() {
+            const value = this.value.trim();
+            if (mobileSearchValidation) {
+                if (value.length > 0 && value.length < 2) {
+                    mobileSearchValidation.innerHTML = '<i class="fas fa-info-circle"></i> Please enter at least 2 characters';
+                    mobileSearchValidation.classList.add('show', 'error');
+                } else if (value.length >= 2) {
+                    mobileSearchValidation.innerHTML = '<i class="fas fa-check-circle"></i> Press Enter or click Search';
+                    mobileSearchValidation.classList.add('show', 'success');
+                } else {
+                    mobileSearchValidation.classList.remove('show');
+                }
+            }
+        });
+    }
+    
+    const desktopSearchInput = document.getElementById('desktopSearchInput');
+    const desktopSearchValidation = document.getElementById('desktopSearchValidation');
+    if (desktopSearchInput) {
+        desktopSearchInput.addEventListener('input', function() {
+            const value = this.value.trim();
+            if (desktopSearchValidation) {
+                if (value.length > 0 && value.length < 2) {
+                    desktopSearchValidation.innerHTML = '<i class="fas fa-info-circle"></i> Please enter at least 2 characters';
+                    desktopSearchValidation.classList.add('show', 'error');
+                } else if (value.length >= 2) {
+                    desktopSearchValidation.innerHTML = '<i class="fas fa-check-circle"></i> Press Enter or click Search';
+                    desktopSearchValidation.classList.add('show', 'success');
+                } else {
+                    desktopSearchValidation.classList.remove('show');
+                }
+            }
+        });
+    }
+    
+    // Mobile menu functions
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const closeMenu = document.getElementById('closeMenu');
+    
+    function openMobileMenu() {
+        navLinks.classList.add('show');
+        mobileOverlay.classList.add('show');
+        document.body.classList.add('menu-open');
+    }
+    
+    function closeMobileMenu() {
+        navLinks.classList.remove('show');
+        mobileOverlay.classList.remove('show');
+        document.body.classList.remove('menu-open');
+        closeAllMobileDropdowns();
+    }
+    
+    if (mobileToggle) mobileToggle.addEventListener('click', openMobileMenu);
+    if (closeMenu) closeMenu.addEventListener('click', closeMobileMenu);
+    if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenu);
+    
+    document.querySelectorAll('.nav-link:not(.dropdown-trigger), .submenu-item').forEach(link => {
+        link.addEventListener('click', closeMobileMenu);
+    });
+    
+    window.addEventListener('resize', handleMobileAccountVisibility);
+    
+    // ========== INITIALIZATION ==========
+    
+    // Initialize last counts
+    if (localStorage.getItem('cart_last_count') === null) {
+        localStorage.setItem('cart_last_count', getRawCartCount().toString());
+    }
+    if (localStorage.getItem('wishlist_last_count') === null) {
+        localStorage.setItem('wishlist_last_count', getRawWishlistCount().toString());
+    }
+    if (localStorage.getItem('total_last_count') === null) {
+        localStorage.setItem('total_last_count', (getRawCartCount() + getRawWishlistCount()).toString());
+    }
+    
+    // Listen for storage events from other tabs
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'event_wishlist' || e.key === 'eventhub_cart') {
+            updateAllBadges();
+        }
+    });
+    
+    // Listen for custom events from other components
+    window.addEventListener('cart-updated', function() {
+        if (!isLoggedIn) return;
+        resetVisitedStatusOnNewItems();
+        updateAllBadges();
+    });
+    
+    window.addEventListener('wishlist-updated', function() {
+        if (!isLoggedIn) return;
+        resetVisitedStatusOnNewItems();
+        updateAllBadges();
+    });
+    
+    if (isLoggedIn) {
+        if (desktopUser) desktopUser.style.display = 'block';
+        if (desktopGuest) desktopGuest.style.display = 'none';
+        if (mobileUser) mobileUser.style.display = 'block';
+        if (mobileGuest) mobileGuest.style.display = 'none';
+        
+        authOnlyElements.forEach(el => el.style.display = 'block');
+        guestOnlyElements.forEach(el => el.style.display = 'none');
+        if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
+        
+        if (window.AccountProfile) {
+            AccountProfile.applyToNavbar(user);
+            AccountProfile.syncFromAPI();
+        }
+        
+        window.addEventListener('profile-updated', function(e) {
+            if (e.detail && window.AccountProfile) {
+                Object.assign(user, e.detail);
+                updateUserAvatarAndName();
+                AccountProfile.applyToNavbar(e.detail);
+            }
+        });
+        
+        updateUserAvatarAndName();
+        updateAllBadges();
+        setupNavigationHandlers();
+        markCurrentPageAsVisited();
+        
+        if (navLinks) navLinks.classList.add('logged-in');
+        loadNotificationCount();
+    } else {
+        if (desktopUser) desktopUser.style.display = 'none';
+        if (desktopGuest) desktopGuest.style.display = 'block';
+        if (mobileUser) mobileUser.style.display = 'none';
+        if (mobileGuest) mobileGuest.style.display = 'block';
+        
+        authOnlyElements.forEach(el => el.style.display = 'none');
+        guestOnlyElements.forEach(el => el.style.display = 'block');
+        if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
+        
+        if (profileUserName) profileUserName.textContent = 'Account';
+        if (mobileAccountLabel) mobileAccountLabel.textContent = 'Account';
+        
+        if (navLinks) navLinks.classList.add('logged-out');
+    }
+    
+    handleMobileAccountVisibility();
+    
+    window.addEventListener('pageshow', function() {
+        markCurrentPageAsVisited();
+        updateAllBadges();
+    });
+});
+
+function logout() {
+    localStorage.removeItem('cart_badge_cleared');
+    localStorage.removeItem('wishlist_badge_cleared');
+    localStorage.removeItem('tickets_badge_cleared');
+    localStorage.removeItem('cart_last_count');
+    localStorage.removeItem('wishlist_last_count');
+    localStorage.removeItem('total_last_count');
+    localStorage.removeItem('attendee_access_token');
+    localStorage.removeItem('attendee_refresh_token');
+    localStorage.removeItem('attendee_user');
+    localStorage.removeItem('eventhub_cart');
+    localStorage.removeItem('event_wishlist');
+    window.dispatchEvent(new CustomEvent('auth-state-changed', { 
+        detail: { isLoggedIn: false, user: null } 
+    }));
+    window.location.href = '/';
+}
+
+function markAllNotificationsRead() {
+    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+    notifications.forEach(n => n.read = true);
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+    const badge = document.getElementById('notificationBadge');
+    if (badge) badge.style.display = 'none';
+    const panel = document.getElementById('notificationsPanel');
+    if (panel) panel.classList.remove('show');
+}
+
+window.logout = logout;
+window.markAllNotificationsRead = markAllNotificationsRead;
+</script>

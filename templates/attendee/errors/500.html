@@ -1,0 +1,63 @@
+{% extends 'attendee/base.html' %}
+{% load static %}
+
+{% block title %}Server Error - EventHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendee/error-pages.css' %}">
+{% endblock %}
+
+{% block attendee_content %}
+<div class="error-container error-500">
+    <div class="error-content">
+        <div class="error-code">500</div>
+        <h1>Server Error</h1>
+        <p>Something went wrong on our end. Please try again later.</p>
+        
+        <div class="error-actions">
+            <a href="/attendee/" class="btn-primary">
+                <i class="fas fa-home"></i> Go Home
+            </a>
+            <button class="btn-outline" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i> Try Again
+            </button>
+        </div>
+        
+        <div class="error-contact">
+            <p class="text-sm text-muted">If the problem persists, please contact our support team.</p>
+            <a href="/attendee/support/" class="btn-outline">
+                <i class="fas fa-headset"></i> Contact Support
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Log server error
+    console.error('500 Error occurred on page:', window.location.pathname);
+    
+    // Optional: Send error report to server
+    async function reportError() {
+        try {
+            await fetch('/api/attender/error/report/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    page: window.location.pathname,
+                    user_agent: navigator.userAgent,
+                    timestamp: new Date().toISOString()
+                })
+            });
+        } catch (e) {
+            console.error('Failed to report error:', e);
+        }
+    }
+    
+    // Report error if needed
+    // reportError();
+</script>
+{% endblock %}
