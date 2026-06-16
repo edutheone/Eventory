@@ -1,0 +1,8 @@
+
+POST /api/auth/login/ -> 200
+{"message": "Login successful.", "user": {"id": 15, "username": "auth_test_user", "email": "auth_test@example.com", "first_name": "", "last_name": "", "full_name": "", "phone": "", "role": "attendee", "organization_name": "", "date_of_birth": null, "location": "", "is_staff": false, "is_superuser": false, "date_joined": "2026-06-11T08:16:59.355628+00:00", "avatar_url": ""}, "access": "UDiPPJSE1xIfExYSsX4Bc-D5tD0drygMawdbVDcu3WGTV7qJBJEuTuZkBIv-CYHh", "refresh": "Rq7N1iN7tpUn4maLECl4Hge0iUqPplLbPaqm96m6bVGwywl4jMGm4cHn4oIEe59W", "token_type": "Bearer", "expires_in": 1800}
+
+POST /api/auth/register/ -> 201
+{"message": "Registration successful.", "user": {"id": 16, "username": "newuser999", "email": "newuser999@example.com", "first_name": "", "last_name": "", "full_name": "", "phone": "", "role": "attendee", "organization_name": "", "date_of_birth": null, "location": "", "is_staff": false, "is_superuser": false, "date_joined": "2026-06-11T08:17:01.814349+00:00", "avatar_url": ""}, "access": "NuWQUQjKyi3gNHobwoGMC7wrMY0rFLP3e5amK_n3L1QxKXeWDu9N01XW27e7rn84", "refresh": "8XKG10Ulgt2Eex18Gm279Y1nyhz9bTKsjy4WwdtHpeVnvMJad6XaGVwV99fk2wOJ", "token_type": "Bearer", "expires_in": 1800}
+
+APIToken count: 96
