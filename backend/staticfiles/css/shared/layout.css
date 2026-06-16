@@ -1,0 +1,86 @@
+/* ============================================
+   LAYOUT CSS
+   ============================================ */
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.section {
+    padding: 5rem 0;
+}
+
+.section-sm {
+    padding: 3rem 0;
+}
+
+.section-lg {
+    padding: 7rem 0;
+}
+
+/* Section Header - Larger, No underline */
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-header h2 {
+    font-size: clamp(48px, 8vw, 88px);
+    font-weight: 400;
+    font-family: 'Kaushan Script', cursive;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.section-header p {
+    font-size: 1.1rem;
+    color: #64748b;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Grid System */
+.grid {
+    display: grid;
+    gap: 2rem;
+}
+
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-cols-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .section {
+        padding: 3rem 0;
+    }
+    
+    .section-header h2 {
+        font-size: clamp(36px, 6vw, 64px);
+    }
+    
+    .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-header h2 {
+        font-size: clamp(28px, 5vw, 44px);
+    }
+    
+    .section-header p {
+        font-size: 0.9rem;
+    }
+}

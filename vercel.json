@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "installCommand": "pip install -r requirements.txt && python manage.py migrate --noinput",
+  "builds": [
+    {
+      "src": "config/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.12"
+      }
+    },
+    {
+      "src": "frontend/static/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/favicon.ico",
+      "dest": "frontend/static/favicon.ico"
+    },
+    {
+      "src": "/favicon.png",
+      "dest": "frontend/static/favicon.png"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "frontend/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "config/wsgi.py"
+    }
+  ]
+}

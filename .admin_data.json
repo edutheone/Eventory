@@ -1,0 +1,535 @@
+{
+    "notifications": [
+        {
+            "id": 53,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T09:55:44.295365+00:00",
+            "requires_action": false,
+            "redirect_url": "/admin-portal/events/detail/?id=1",
+            "entity_type": "event",
+            "entity_id": 1
+        },
+        {
+            "id": 52,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T08:47:02.875506+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=9"
+        },
+        {
+            "id": 51,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T08:25:53.814748+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 50,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T07:44:56.191783+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 49,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T07:31:01.626564+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 48,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T06:04:28.371967+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 47,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T05:54:30.972418+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 46,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T05:47:50.655656+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 45,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T05:46:42.892489+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 44,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T05:42:57.978395+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 43,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T05:32:16.635101+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 42,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T05:22:40.214053+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 41,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T05:18:05.884939+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 40,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T05:13:33.056674+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 39,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T05:11:06.520501+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 38,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T04:54:34.916565+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 37,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T04:50:48.902801+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 36,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T04:41:26.741642+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 35,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-11T04:34:02.595198+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 34,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-10T14:14:31.932582+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 33,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-10T14:11:08.319297+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 32,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-10T14:01:15.995666+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 31,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-10T13:58:24.546747+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 30,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-10T13:42:08.985990+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 29,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-10T13:22:30.938025+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 28,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-09T11:13:55.780469+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 27,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-09T11:13:20.315010+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 26,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-09T11:06:43.226339+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 25,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-09T10:59:32.627460+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 24,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-09T10:52:19.833991+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 23,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-09T10:49:31.372311+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 22,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-09T10:43:35.747823+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 21,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-09T10:31:15.668670+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 20,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-09T10:22:22.680783+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 19,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T13:22:53.694679+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 18,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T13:10:30.686269+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 17,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T13:04:55.639279+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 16,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T12:52:42.613998+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 15,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T12:14:45.838988+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 14,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T12:00:40.215249+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 13,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T11:56:47.540727+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 12,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T11:18:42.382583+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 11,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T11:16:30.307561+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 10,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T11:15:07.641111+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 9,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T11:14:01.304199+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 8,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T10:40:16.308864+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 7,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T10:28:37.834315+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 6,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T09:47:34.490807+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 5,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T09:03:24.264774+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 4,
+            "title": "Event Approved",
+            "message": "Event 'Draft Event' has been approved successfully.",
+            "type": "success",
+            "is_read": false,
+            "created_at": "2026-06-08T08:59:17.857472+00:00",
+            "redirect_url": "/admin-portal/events/detail/?id=1"
+        },
+        {
+            "id": 1,
+            "title": "New Event Submitted",
+            "message": "Organizer  has submitted a new event 'Nairobi Food Festival' for approval.",
+            "type": "warning",
+            "is_read": false,
+            "created_at": "2026-06-08T06:59:17.853604+00:00"
+        },
+        {
+            "id": 2,
+            "title": "Refund Request Pending",
+            "message": "Attendee  has requested a refund for booking TICK-9E28B.",
+            "type": "info",
+            "is_read": false,
+            "created_at": "2026-06-07T08:59:17.853620+00:00"
+        },
+        {
+            "id": 3,
+            "title": "New Organizer Registration",
+            "message": "A new organizer 'Tech Innovations' is awaiting verification.",
+            "type": "warning",
+            "is_read": true,
+            "created_at": "2026-06-07T08:59:17.853620+00:00"
+        }
+    ],
+    "support_tickets": [
+        {
+            "id": 1,
+            "customer_name": "",
+            "customer_email": "admin@example.com",
+            "customer_phone": "0712345678",
+            "subject": "Unable to download ticket PDF",
+            "message": "Hello, I recently booked a seat for the Music Festival but when I click download ticket, the PDF returns an error. Please assist.",
+            "status": "open",
+            "created_at": "2026-06-08T06:59:17.853604+00:00",
+            "replies": []
+        },
+        {
+            "id": 2,
+            "customer_name": "",
+            "customer_email": "org@example.com",
+            "customer_phone": "0722345678",
+            "subject": "Payout processing timeline question",
+            "message": "Hi Admin, my event 'Summer Music Fest' ended yesterday. When will the payout be processed to my bank account?",
+            "status": "pending",
+            "created_at": "2026-06-07T08:59:17.853620+00:00",
+            "replies": [
+                {
+                    "sender": "admin",
+                    "message": "Hello, payouts are processed within 2-3 business days after the event completes. We are reviewing your event sales now.",
+                    "created_at": "2026-06-07T20:59:17.853636+00:00"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "customer_name": "Alice Njeri",
+            "customer_email": "alice.njeri@outlook.com",
+            "customer_phone": "0733456789",
+            "subject": "Change attendee details on booking",
+            "message": "Hello, I bought two tickets but put the same name on both. Can I change one of them to my friend's name?",
+            "status": "resolved",
+            "created_at": "2026-06-06T08:59:17.853644+00:00",
+            "replies": [
+                {
+                    "sender": "admin",
+                    "message": "Hello Alice, yes you can change details from your profile dashboard under tickets or let us know the name and we will update it for you.",
+                    "created_at": "2026-06-07T08:59:17.853649+00:00"
+                },
+                {
+                    "sender": "user",
+                    "message": "Thank you, I was able to edit it from the profile page. Resolved!",
+                    "created_at": "2026-06-07T14:59:17.853656+00:00"
+                }
+            ]
+        }
+    ],
+    "next_notification_id": 54,
+    "next_support_ticket_id": 4
+}
